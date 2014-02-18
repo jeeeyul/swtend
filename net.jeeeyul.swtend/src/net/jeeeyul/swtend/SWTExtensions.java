@@ -66,134 +66,300 @@ public class SWTExtensions {
 		return getDisplay().getSystemColor(SWT.COLOR_BLACK);
 	}
 
+	/**
+	 * 
+	 * @return a blue {@link Color} Object
+	 * 
+	 * @since 1.1.0
+	 */
 	public Color COLOR_BLUE() {
 		return getDisplay().getSystemColor(SWT.COLOR_BLUE);
 	}
 
+	/**
+	 * 
+	 * @return a cyan {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_CYAN() {
 		return getDisplay().getSystemColor(SWT.COLOR_CYAN);
 	}
 
+	/**
+	 * 
+	 * @return a dark blue {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_DARK_BLUE() {
 		return getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE);
 	}
 
+	/**
+	 * 
+	 * @return a dark cyan {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_DARK_CYAN() {
 		return getDisplay().getSystemColor(SWT.COLOR_DARK_CYAN);
 	}
 
+	/**
+	 * 
+	 * @return a dark gray {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_DARK_GRAY() {
 		return getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY);
 	}
 
+	/**
+	 * 
+	 * @return a dark green {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_DARK_GREEN() {
 		return getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN);
 	}
 
+	/**
+	 * 
+	 * @return a dark magenta {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_DARK_MARGENTA() {
 		return getDisplay().getSystemColor(SWT.COLOR_DARK_MAGENTA);
 	}
 
+	/**
+	 * 
+	 * @return a dark red {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_DARK_RED() {
 		return getDisplay().getSystemColor(SWT.COLOR_DARK_RED);
 	}
 
+	/**
+	 * 
+	 * @return a dark yellow {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_DARK_YELLOW() {
 		return getDisplay().getSystemColor(SWT.COLOR_DARK_YELLOW);
 	}
 
+	/**
+	 * 
+	 * @return a gray {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_GRAY() {
 		return getDisplay().getSystemColor(SWT.COLOR_GRAY);
 	}
 
+	/**
+	 * 
+	 * @return a green {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_GREEN() {
 		return getDisplay().getSystemColor(SWT.COLOR_GREEN);
 	}
 
+	/**
+	 * 
+	 * @return info background {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_INFO_BACKGROUND() {
 		return getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND);
 	}
 
+	/**
+	 * 
+	 * @return info foreground {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_INFO_FOREGROUND() {
 		return getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND);
 	}
 
+	/**
+	 * 
+	 * @return link foreground {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_LINK_FOREGROUND() {
 		return getDisplay().getSystemColor(SWT.COLOR_LINK_FOREGROUND);
 	}
 
+	/**
+	 * 
+	 * @return list background {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_LIST_BACKGROUND() {
 		return getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
 	}
 
+	/**
+	 * 
+	 * @return list foreground {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_LIST_FOREGROUND() {
 		return getDisplay().getSystemColor(SWT.COLOR_LIST_FOREGROUND);
 	}
 
+	/**
+	 * 
+	 * @return a magenta {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_MARGENTA() {
 		return getDisplay().getSystemColor(SWT.COLOR_MAGENTA);
 	}
 
+	/**
+	 * 
+	 * @return a red {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_RED() {
 		return getDisplay().getSystemColor(SWT.COLOR_RED);
 	}
 
+	/**
+	 * 
+	 * @return title background {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_TITLE_BACKGROUND() {
 		return getDisplay().getSystemColor(SWT.COLOR_TITLE_BACKGROUND);
 	}
 
+	/**
+	 * 
+	 * @return title background gradient {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_TITLE_BACKGROUND_GRADIENT() {
 		return getDisplay().getSystemColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT);
 	}
 
+	/**
+	 * 
+	 * @return title foreground {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_TITLE_FOREGROUND() {
 		return getDisplay().getSystemColor(SWT.COLOR_TITLE_FOREGROUND);
 	}
 
+	/**
+	 * 
+	 * @return inactive title background {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_TITLE_INACTIVE_BACKGROUND() {
 		return getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND);
 	}
 
+	/**
+	 * 
+	 * @return inactive title background {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT() {
 		return getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT);
 	}
 
+	/**
+	 * 
+	 * @return inactive title foreground {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_TITLE_INACTIVE_FOREGROUND() {
 		return getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND);
 	}
 
+	/**
+	 * 
+	 * @return a white {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_WHITE() {
 		return getDisplay().getSystemColor(SWT.COLOR_WHITE);
 	}
 
+	/**
+	 * 
+	 * @return widget background {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_WIDGET_BACKGROUND() {
 		return getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
 	}
 
+	/**
+	 * 
+	 * @return widget border {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_WIDGET_BORDER() {
 		return getDisplay().getSystemColor(SWT.COLOR_WIDGET_BORDER);
 	}
 
+	/**
+	 * 
+	 * @return widget dark shadow {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_WIDGET_DARK_SHADOW() {
 		return getDisplay().getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW);
 	}
 
+	/**
+	 * 
+	 * @return widget foreground {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_WIDGET_FOREGROUND() {
 		return getDisplay().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND);
 	}
 
+	/**
+	 * 
+	 * @return widget highlight shadow {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_WIDGET_HIGHLIGHT_SHADOW() {
 		return getDisplay().getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
 	}
 
+	/**
+	 * 
+	 * @return widget light shadow {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_WIDGET_LIGHT_SHADOW() {
 		return getDisplay().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
 	}
 
+	/**
+	 * 
+	 * @return widget normal shadow {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_WIDGET_NORMAL_SHADOW() {
 		return getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
 	}
 
+	/**
+	 * 
+	 * @return An yellow {@link Color} object.
+	 * @since 1.1.0
+	 */
 	public Color COLOR_YELLOW() {
 		return getDisplay().getSystemColor(SWT.COLOR_YELLOW);
 	}
@@ -207,7 +373,7 @@ public class SWTExtensions {
 	}
 
 	/**
-	 * @deprecated
+	 * @deprecated Depricated at 1.1.0, Use {@link #COLOR_DARK_GRAY()} instead.
 	 * @return
 	 */
 	public Color darkGrayColor() {
@@ -356,10 +522,6 @@ public class SWTExtensions {
 
 	public Rectangle getTranslated(Rectangle source, Point delta) {
 		return translate(getCopy(source), delta);
-	}
-
-	public String toHTMLCode(RGB rgb) {
-		return String.format("#%02x%02x%02x", rgb.red, rgb.green, rgb.blue);
 	}
 
 	public <T extends Object> T init(T widget, Procedure1<T> initializer) {
@@ -585,26 +747,28 @@ public class SWTExtensions {
 		return tableItem;
 	}
 
+	public Text newText(final Composite parent, int style, final Procedure1<? super Text> initializer) {
+		Text text = new Text(parent, style);
+		initializer.apply(text);
+		return text;
+	}
+
 	public Text newTextArea(final Composite parent, final Procedure1<? super Text> initializer) {
-		int _bitwiseOr = SWT.MULTI | SWT.BORDER;
-		Text _text = new Text(parent, _bitwiseOr);
-		Text label = _text;
-		initializer.apply(label);
-		return label;
+		Text text = new Text(parent, SWT.MULTI | SWT.BORDER);
+		initializer.apply(text);
+		return text;
 	}
 
 	public Text newTextField(final Composite parent, int style, final Procedure1<? super Text> initializer) {
-		Text _text = new Text(parent, style);
-		Text label = _text;
-		initializer.apply(label);
-		return label;
+		Text text = new Text(parent, style);
+		initializer.apply(text);
+		return text;
 	}
 
 	public Text newTextField(final Composite parent, final Procedure1<? super Text> initializer) {
-		Text _text = new Text(parent, SWT.BORDER);
-		Text label = _text;
-		initializer.apply(label);
-		return label;
+		Text text = new Text(parent, SWT.BORDER);
+		initializer.apply(text);
+		return text;
 	}
 
 	public ToolBar newToolBar(final Composite parent, int style, final Procedure1<? super ToolBar> initializer) {
@@ -832,6 +996,10 @@ public class SWTExtensions {
 	 */
 	public HSB toHSB(RGB rgb) {
 		return new HSB(rgb);
+	}
+
+	public String toHTMLCode(RGB rgb) {
+		return String.format("#%02x%02x%02x", rgb.red, rgb.green, rgb.blue);
 	}
 
 	public Point translate(Point point, int dx, int dy) {
