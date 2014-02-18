@@ -1,5 +1,10 @@
 package net.jeeeyul.swtend;
 
+import java.util.Iterator;
+
+import net.jeeeyul.swtend.sam.Procedure0;
+import net.jeeeyul.swtend.sam.Procedure1;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -46,10 +51,6 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.progress.UIJob;
-import org.eclipse.xtext.xbase.lib.BooleanExtensions;
-import org.eclipse.xtext.xbase.lib.IntegerExtensions;
-import org.eclipse.xtext.xbase.lib.Procedures.Procedure0;
-import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
 
 public class SWTExtensions {
 	public class Colors {
@@ -81,6 +82,10 @@ public class SWTExtensions {
 	public Display display() {
 		Display display = Display.getDefault();
 		return display;
+	}
+
+	public Iterator<? extends Widget> getAllContent(Composite root) {
+		return new WidgetIterator(root, true);
 	}
 
 	public GC drawImage(GC gc, Image image, Point location) {
@@ -495,7 +500,7 @@ public class SWTExtensions {
 
 	public Text newTextArea(final Composite parent,
 			final Procedure1<? super Text> initializer) {
-		int _bitwiseOr = IntegerExtensions.bitwiseOr(SWT.MULTI, SWT.BORDER);
+		int _bitwiseOr = SWT.MULTI | SWT.BORDER;
 		Text _text = new Text(parent, _bitwiseOr);
 		Text label = _text;
 		initializer.apply(label);
@@ -603,22 +608,10 @@ public class SWTExtensions {
 	}
 
 	public void runLoop(final Shell s) {
-		boolean _isDisposed = s.isDisposed();
-		boolean _operator_not = BooleanExtensions.operator_not(_isDisposed);
-		boolean _while = _operator_not;
-		while (_while) {
-			Display _display = this.display();
-			boolean _readAndDispatch = _display.readAndDispatch();
-			boolean _operator_not_1 = BooleanExtensions
-					.operator_not(_readAndDispatch);
-			if (_operator_not_1) {
-				Display _display_1 = this.display();
-				_display_1.sleep();
+		while (!s.isDisposed()) {
+			if (!display().readAndDispatch()) {
+				display().sleep();
 			}
-			boolean _isDisposed_1 = s.isDisposed();
-			boolean _operator_not_2 = BooleanExtensions
-					.operator_not(_isDisposed_1);
-			_while = _operator_not_2;
 		}
 	}
 
