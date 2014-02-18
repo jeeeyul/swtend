@@ -17,6 +17,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Resource;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -51,8 +52,17 @@ import org.eclipse.xtext.xbase.lib.Procedures.Procedure0;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
 
 public class SWTExtensions {
+	public class Colors {
+		public Color getWhite() {
+			return display().getSystemColor(SWT.COLOR_WHITE);
+		}
+	}
+
 	private static Integer MENU_BAR_HEIGHT = null;
+
 	public static final SWTExtensions INSTANCE = new SWTExtensions();
+
+	private Colors colors;
 
 	public boolean contains(Point size, Point targetSize) {
 		return size.x >= targetSize.x && size.y >= targetSize.y;
@@ -69,8 +79,8 @@ public class SWTExtensions {
 	}
 
 	public Display display() {
-		Display _default = Display.getDefault();
-		return _default;
+		Display display = Display.getDefault();
+		return display;
 	}
 
 	public GC drawImage(GC gc, Image image, Point location) {
@@ -96,36 +106,39 @@ public class SWTExtensions {
 	}
 
 	public GridData FILL_BOTH() {
-		GridData _gridData = new GridData(GridData.FILL_BOTH);
-		GridData gd = _gridData;
-		return gd;
+		GridData gridData = new GridData(GridData.FILL_BOTH);
+		return gridData;
 	}
 
 	public GridData FILL_BOTH(final Procedure1<? super GridData> initializer) {
-		GridData _gridData = new GridData(GridData.FILL_BOTH);
-		GridData gd = _gridData;
-		initializer.apply(gd);
-		return gd;
+		GridData gridData = new GridData(GridData.FILL_BOTH);
+		initializer.apply(gridData);
+		return gridData;
 	}
 
 	public GridData FILL_HORIZONTAL() {
-		GridData _gridData = new GridData(GridData.FILL_HORIZONTAL);
-		GridData gd = _gridData;
-		return gd;
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		return gridData;
 	}
 
 	public GridData FILL_HORIZONTAL(
 			final Procedure1<? super GridData> initializer) {
-		GridData _gridData = new GridData(GridData.FILL_HORIZONTAL);
-		GridData gd = _gridData;
-		initializer.apply(gd);
-		return gd;
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		initializer.apply(gridData);
+		return gridData;
 	}
 
 	public GC fillRoundRectangle(GC gc, Rectangle rectangle, int radius) {
 		gc.fillRoundRectangle(rectangle.x, rectangle.y, rectangle.width,
 				rectangle.height, radius, radius);
 		return gc;
+	}
+
+	public Colors getColors() {
+		if (colors == null) {
+			colors = new Colors();
+		}
+		return colors;
 	}
 
 	public Point getCopy(Point point) {
@@ -232,18 +245,23 @@ public class SWTExtensions {
 		return widget;
 	}
 
+	public Button newButton(final Composite parent, int style,
+			Procedure1<? super Button> initializer) {
+		Button button = new Button(parent, style);
+		initializer.apply(button);
+		return button;
+	}
+
 	public Button newCheckbox(final Composite parent,
 			final Procedure1<? super Button> initializer) {
-		Button _button = new Button(parent, SWT.CHECK);
-		Button label = _button;
-		initializer.apply(label);
-		return label;
+		Button button = new Button(parent, SWT.CHECK);
+		initializer.apply(button);
+		return button;
 	}
 
 	public CLabel newCLabel(final Composite parent,
 			final Procedure1<? super CLabel> initializer) {
-		CLabel _label = new CLabel(parent, SWT.NORMAL);
-		CLabel label = _label;
+		CLabel label = new CLabel(parent, SWT.NORMAL);
 		initializer.apply(label);
 		return label;
 	}
@@ -255,20 +273,34 @@ public class SWTExtensions {
 		return combo;
 	}
 
-	public Composite newComposite(final Composite parent,
+	public Composite newComposite(final Composite parent, int style,
 			final Procedure1<? super Composite> initializer) {
-		Composite _composite = new Composite(parent, SWT.NORMAL);
-		Composite comp = _composite;
-		initializer.apply(comp);
-		return comp;
+		Composite composite = new Composite(parent, style);
+		initializer.apply(composite);
+		return composite;
 	}
 
-	public Composite newCompositeWithStyle(final Composite parent, int style,
+	public Composite newComposite(final Composite parent,
 			final Procedure1<? super Composite> initializer) {
-		Composite _composite = new Composite(parent, style);
-		Composite comp = _composite;
-		initializer.apply(comp);
-		return comp;
+		Composite composite = new Composite(parent, SWT.NORMAL);
+		initializer.apply(composite);
+		return composite;
+	}
+
+	public Composite newComposite(final CTabItem ctabItem,
+			final Procedure1<? super Composite> initializer) {
+		Composite composite = new Composite(ctabItem.getParent(), SWT.NORMAL);
+		initializer.apply(composite);
+		ctabItem.setControl(composite);
+		return composite;
+	}
+
+	public Composite newComposite(final TabItem tabItem,
+			final Procedure1<? super Composite> initializer) {
+		Composite composite = new Composite(tabItem.getParent(), SWT.NORMAL);
+		initializer.apply(composite);
+		tabItem.setControl(composite);
+		return composite;
 	}
 
 	public CTabFolder newCTabFolder(Composite parent, int style,
@@ -292,11 +324,14 @@ public class SWTExtensions {
 		return item;
 	}
 
+	public FillLayout newFillLayout() {
+		return new FillLayout();
+	}
+
 	public GridData newGridData(final Procedure1<? super GridData> initializer) {
-		GridData _gridData = new GridData();
-		GridData gd = _gridData;
-		initializer.apply(gd);
-		return gd;
+		GridData gridData = new GridData();
+		initializer.apply(gridData);
+		return gridData;
 	}
 
 	public GridLayout newGridLayout() {
@@ -311,33 +346,30 @@ public class SWTExtensions {
 
 	public Group newGroup(final Composite parent,
 			final Procedure1<? super Group> initializer) {
-		Group _group = new Group(parent, SWT.NORMAL);
-		Group comp = _group;
-		initializer.apply(comp);
-		return comp;
+		Group group = new Group(parent, SWT.NORMAL);
+		initializer.apply(group);
+		return group;
 	}
 
 	public Label newHorizontalSeperator(final Composite parent,
 			final Procedure1<? super Label> initializer) {
-		Label _label = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
-		Label label = _label;
-		initializer.apply(label);
-		return label;
+		Label separator = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
+		initializer.apply(separator);
+		return separator;
 	}
 
 	public Label newLabel(final Composite parent,
 			final Procedure1<? super Label> initializer) {
-		Label _label = new Label(parent, SWT.NORMAL);
-		Label label = _label;
+		Label label = new Label(parent, SWT.NORMAL);
 		initializer.apply(label);
 		return label;
 	}
 
 	public Link newLink(final Composite parent,
 			final Procedure1<? super Link> initializer) {
-		Link _link = new Link(parent, SWT.CHECK);
-		initializer.apply(_link);
-		return _link;
+		Link link = new Link(parent, SWT.CHECK);
+		initializer.apply(link);
+		return link;
 	}
 
 	public PageBook newPageBook(final Composite parent,
@@ -414,6 +446,12 @@ public class SWTExtensions {
 		return separator;
 	}
 
+	public Shell newShell(Procedure1<? super Shell> initializer) {
+		Shell shell = new Shell(display());
+		initializer.apply(shell);
+		return shell;
+	}
+
 	public TreeItem newSubItem(TreeItem parent,
 			final Procedure1<TreeItem> initializer) {
 		TreeItem item = new TreeItem(parent, SWT.NORMAL);
@@ -424,6 +462,13 @@ public class SWTExtensions {
 	public TabFolder newTabFolder(Composite parent,
 			final Procedure1<? super TabFolder> initializer) {
 		TabFolder tabFolder = new TabFolder(parent, SWT.NORMAL);
+		initializer.apply(tabFolder);
+		return tabFolder;
+	}
+
+	public TabFolder newTabFolder(Composite parent, int style,
+			final Procedure1<? super TabFolder> initializer) {
+		TabFolder tabFolder = new TabFolder(parent, style);
 		initializer.apply(tabFolder);
 		return tabFolder;
 	}
@@ -505,6 +550,27 @@ public class SWTExtensions {
 		Tree tree = new Tree(parent, SWT.BORDER);
 		initializer.apply(tree);
 		return tree;
+	}
+
+	public Tree newTree(Composite parent, int style,
+			final Procedure1<Tree> initializer) {
+		Tree tree = new Tree(parent, style);
+		initializer.apply(tree);
+		return tree;
+	}
+
+	public TreeItem newTreeItem(Tree tree,
+			final Procedure1<TreeItem> initializer) {
+		TreeItem item = new TreeItem(tree, SWT.DEFAULT);
+		initializer.apply(item);
+		return item;
+	}
+
+	public TreeItem newTreeItem(TreeItem parent,
+			final Procedure1<TreeItem> initializer) {
+		TreeItem item = new TreeItem(parent, SWT.DEFAULT);
+		initializer.apply(item);
+		return item;
 	}
 
 	public UIJob newUIJob(final Procedure0 work) {
