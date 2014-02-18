@@ -19,6 +19,13 @@ var ui = newComposite[
         horizontalSpan = 2
       ]
     ]
+    
+    newPushButton[
+      text = "push me"
+      onClick = [
+        println("Hello World!")
+      ]
+    ]
   ]
 ]
 ```
