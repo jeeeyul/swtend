@@ -2,8 +2,10 @@ package net.jeeeyul.swtend;
 
 import java.util.Iterator;
 
+import net.jeeeyul.swtend.internal.WidgetIterator;
 import net.jeeeyul.swtend.sam.Procedure0;
 import net.jeeeyul.swtend.sam.Procedure1;
+import net.jeeeyul.swtend.ui.HSB;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -406,7 +408,8 @@ public class SWTExtensions {
 
 	public GridData FILL_BOTH(final Procedure1<? super GridData> initializer) {
 		GridData gridData = new GridData(GridData.FILL_BOTH);
-		initializer.apply(gridData);
+		if (initializer != null)
+			initializer.apply(gridData);
 		return gridData;
 	}
 
@@ -417,7 +420,8 @@ public class SWTExtensions {
 
 	public GridData FILL_HORIZONTAL(final Procedure1<? super GridData> initializer) {
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		initializer.apply(gridData);
+		if (initializer != null)
+			initializer.apply(gridData);
 		return gridData;
 	}
 
@@ -525,75 +529,87 @@ public class SWTExtensions {
 	}
 
 	public <T extends Object> T init(T widget, Procedure1<T> initializer) {
-		initializer.apply(widget);
+		if (initializer != null)
+			initializer.apply(widget);
 		return widget;
 	}
 
 	public Button newButton(final Composite parent, int style, Procedure1<? super Button> initializer) {
 		Button button = new Button(parent, style);
-		initializer.apply(button);
+		if (initializer != null)
+			initializer.apply(button);
 		return button;
 	}
 
 	public Button newCheckbox(final Composite parent, final Procedure1<? super Button> initializer) {
 		Button button = new Button(parent, SWT.CHECK);
-		initializer.apply(button);
+		if (initializer != null)
+			initializer.apply(button);
 		return button;
 	}
 
 	public CLabel newCLabel(final Composite parent, final Procedure1<? super CLabel> initializer) {
 		CLabel label = new CLabel(parent, SWT.NORMAL);
-		initializer.apply(label);
+		if (initializer != null)
+			initializer.apply(label);
 		return label;
 	}
 
 	public Combo newCombo(final Composite parent, int style, final Procedure1<? super Combo> initializer) {
 		Combo combo = new Combo(parent, style);
-		initializer.apply(combo);
+		if (initializer != null)
+			initializer.apply(combo);
 		return combo;
 	}
 
 	public Composite newComposite(final Composite parent, int style, final Procedure1<? super Composite> initializer) {
 		Composite composite = new Composite(parent, style);
-		initializer.apply(composite);
+		if (initializer != null)
+			initializer.apply(composite);
 		return composite;
 	}
 
 	public Composite newComposite(final Composite parent, final Procedure1<? super Composite> initializer) {
 		Composite composite = new Composite(parent, SWT.NORMAL);
-		initializer.apply(composite);
+		if (initializer != null)
+			initializer.apply(composite);
 		return composite;
 	}
 
 	public Composite newComposite(final CTabItem ctabItem, final Procedure1<? super Composite> initializer) {
 		Composite composite = new Composite(ctabItem.getParent(), SWT.NORMAL);
-		initializer.apply(composite);
+		if (initializer != null)
+			initializer.apply(composite);
 		ctabItem.setControl(composite);
 		return composite;
 	}
 
 	public Composite newComposite(final TabItem tabItem, final Procedure1<? super Composite> initializer) {
 		Composite composite = new Composite(tabItem.getParent(), SWT.NORMAL);
-		initializer.apply(composite);
+		if (initializer != null)
+			initializer.apply(composite);
 		tabItem.setControl(composite);
 		return composite;
 	}
 
 	public CTabFolder newCTabFolder(Composite parent, int style, final Procedure1<? super CTabFolder> initializer) {
 		CTabFolder tabFolder = new CTabFolder(parent, style);
-		initializer.apply(tabFolder);
+		if (initializer != null)
+			initializer.apply(tabFolder);
 		return tabFolder;
 	}
 
 	public CTabFolder newCTabFolder(Composite parent, final Procedure1<? super CTabFolder> initializer) {
 		CTabFolder tabFolder = new CTabFolder(parent, SWT.NORMAL);
-		initializer.apply(tabFolder);
+		if (initializer != null)
+			initializer.apply(tabFolder);
 		return tabFolder;
 	}
 
 	public CTabItem newCTabItem(CTabFolder tabFolder, Procedure1<? super CTabItem> initializer) {
 		CTabItem item = new CTabItem(tabFolder, SWT.NORMAL);
-		initializer.apply(item);
+		if (initializer != null)
+			initializer.apply(item);
 		return item;
 	}
 
@@ -603,7 +619,8 @@ public class SWTExtensions {
 
 	public GridData newGridData(final Procedure1<? super GridData> initializer) {
 		GridData gridData = new GridData();
-		initializer.apply(gridData);
+		if (initializer != null)
+			initializer.apply(gridData);
 		return gridData;
 	}
 
@@ -613,90 +630,127 @@ public class SWTExtensions {
 
 	public GridLayout newGridLayout(Procedure1<GridLayout> initializer) {
 		GridLayout gridLayout = new GridLayout();
-		initializer.apply(gridLayout);
+		if (initializer != null)
+			initializer.apply(gridLayout);
 		return gridLayout;
 	}
 
 	public Group newGroup(final Composite parent, final Procedure1<? super Group> initializer) {
 		Group group = new Group(parent, SWT.NORMAL);
-		initializer.apply(group);
+		if (initializer != null)
+			initializer.apply(group);
 		return group;
 	}
 
 	public Label newHorizontalSeperator(final Composite parent, final Procedure1<? super Label> initializer) {
 		Label separator = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
-		initializer.apply(separator);
+		if (initializer != null)
+			initializer.apply(separator);
 		return separator;
 	}
 
 	public Label newLabel(final Composite parent, final Procedure1<? super Label> initializer) {
 		Label label = new Label(parent, SWT.NORMAL);
-		initializer.apply(label);
+		if (initializer != null)
+			initializer.apply(label);
 		return label;
 	}
 
 	public Link newLink(final Composite parent, final Procedure1<? super Link> initializer) {
 		Link link = new Link(parent, SWT.CHECK);
-		initializer.apply(link);
+		if (initializer != null)
+			initializer.apply(link);
 		return link;
 	}
 
 	public PageBook newPageBook(final Composite parent, final Procedure1<? super PageBook> initializer) {
 		PageBook pageBook = new PageBook(parent, SWT.NORMAL);
-		initializer.apply(pageBook);
+		if (initializer != null)
+			initializer.apply(pageBook);
 		return pageBook;
 	}
 
 	public Text newPasswordField(final Composite parent, final Procedure1<? super Text> initializer) {
 		Text _text = new Text(parent, SWT.BORDER | SWT.PASSWORD);
 		Text label = _text;
-		initializer.apply(label);
+		if (initializer != null)
+			initializer.apply(label);
 		return label;
 	}
 
 	public Button newPushButton(final Composite parent, final Procedure1<? super Button> initializer) {
 		Button _button = new Button(parent, SWT.PUSH);
 		Button label = _button;
-		initializer.apply(label);
+		if (initializer != null)
+			initializer.apply(label);
 		return label;
 	}
 
 	public Button newRadioButton(final Composite parent, final Procedure1<? super Button> initializer) {
 		Button _button = new Button(parent, SWT.RADIO);
 		Button label = _button;
-		initializer.apply(label);
+		if (initializer != null)
+			initializer.apply(label);
 		return label;
 	}
 
 	public Text newReadOnlyTextField(final Composite parent, final Procedure1<? super Text> initializer) {
 		Text _text = new Text(parent, SWT.BORDER | SWT.READ_ONLY);
 		Text label = _text;
-		initializer.apply(label);
+		if (initializer != null)
+			initializer.apply(label);
 		return label;
 	}
 
 	public TreeItem newRootItem(Tree tree, final Procedure1<TreeItem> initializer) {
 		TreeItem item = new TreeItem(tree, SWT.NORMAL);
-		initializer.apply(item);
+		if (initializer != null)
+			initializer.apply(item);
 		return item;
 	}
 
 	public Scale newScale(final Composite parent, final Procedure1<? super Scale> initializer) {
 		Scale scale = new Scale(parent, SWT.NORMAL);
-		initializer.apply(scale);
+		if (initializer != null)
+			initializer.apply(scale);
 		return scale;
 	}
 
 	public Text newSearchField(final Composite parent, final Procedure1<? super Text> initializer) {
 		Text _text = new Text(parent, SWT.BORDER | SWT.SEARCH);
 		Text label = _text;
-		initializer.apply(label);
+		if (initializer != null)
+			initializer.apply(label);
 		return label;
 	}
 
+	/**
+	 * 
+	 * @param parent
+	 * @param initializer
+	 * @return
+	 * 
+	 * @deprecated deprecated at 1.1.0 use
+	 *             {@link #newHorizontalSeparator(Composite, Procedure1)}
+	 *             instead.
+	 */
 	public Label newSeparator(final Composite parent, final Procedure1<? super Label> initializer) {
 		Label separator = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
-		initializer.apply(separator);
+		if (initializer != null)
+			initializer.apply(separator);
+		Layout layout = parent.getLayout();
+		if (layout instanceof GridLayout) {
+			GridLayout gridLayout = (GridLayout) layout;
+			separator.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, gridLayout.numColumns, 1));
+		}
+		return separator;
+	}
+
+	public Label newHorizontalSeparator(final Composite parent, final Procedure1<? super Label> initializer) {
+		Label separator = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
+		if (initializer != null)
+			initializer.apply(separator);
+
 		Layout layout = parent.getLayout();
 		if (layout instanceof GridLayout) {
 			GridLayout gridLayout = (GridLayout) layout;
@@ -707,115 +761,134 @@ public class SWTExtensions {
 
 	public Shell newShell(Procedure1<? super Shell> initializer) {
 		Shell shell = new Shell(getDisplay());
-		initializer.apply(shell);
+		if (initializer != null)
+			initializer.apply(shell);
 		return shell;
 	}
 
 	public TreeItem newSubItem(TreeItem parent, final Procedure1<TreeItem> initializer) {
 		TreeItem item = new TreeItem(parent, SWT.NORMAL);
-		initializer.apply(item);
+		if (initializer != null)
+			initializer.apply(item);
 		return item;
 	}
 
 	public TabFolder newTabFolder(Composite parent, int style, final Procedure1<? super TabFolder> initializer) {
 		TabFolder tabFolder = new TabFolder(parent, style);
-		initializer.apply(tabFolder);
+		if (initializer != null)
+			initializer.apply(tabFolder);
 		return tabFolder;
 	}
 
 	public TabFolder newTabFolder(Composite parent, final Procedure1<? super TabFolder> initializer) {
 		TabFolder tabFolder = new TabFolder(parent, SWT.NORMAL);
-		initializer.apply(tabFolder);
+		if (initializer != null)
+			initializer.apply(tabFolder);
 		return tabFolder;
 	}
 
 	public TabItem newTabItem(TabFolder tabFolder, Procedure1<? super TabItem> initializer) {
 		TabItem item = new TabItem(tabFolder, SWT.NORMAL);
-		initializer.apply(item);
+		if (initializer != null)
+			initializer.apply(item);
 		return item;
 	}
 
 	public Table newTable(Composite parent, final Procedure1<Table> initializer) {
 		Table table = new Table(parent, SWT.BORDER);
-		initializer.apply(table);
+		if (initializer != null)
+			initializer.apply(table);
 		return table;
 	}
 
 	public TableItem newTableItem(Table parent, final Procedure1<TableItem> initializer) {
 		TableItem tableItem = new TableItem(parent, SWT.NORMAL);
-		initializer.apply(tableItem);
+		if (initializer != null)
+			initializer.apply(tableItem);
 		return tableItem;
 	}
 
 	public Text newText(final Composite parent, int style, final Procedure1<? super Text> initializer) {
 		Text text = new Text(parent, style);
-		initializer.apply(text);
+		if (initializer != null)
+			initializer.apply(text);
 		return text;
 	}
 
 	public Text newTextArea(final Composite parent, final Procedure1<? super Text> initializer) {
 		Text text = new Text(parent, SWT.MULTI | SWT.BORDER);
-		initializer.apply(text);
+		if (initializer != null)
+			initializer.apply(text);
 		return text;
 	}
 
 	public Text newTextField(final Composite parent, int style, final Procedure1<? super Text> initializer) {
 		Text text = new Text(parent, style);
-		initializer.apply(text);
+		if (initializer != null)
+			initializer.apply(text);
 		return text;
 	}
 
 	public Text newTextField(final Composite parent, final Procedure1<? super Text> initializer) {
 		Text text = new Text(parent, SWT.BORDER);
-		initializer.apply(text);
+		if (initializer != null)
+			initializer.apply(text);
 		return text;
 	}
 
 	public ToolBar newToolBar(final Composite parent, int style, final Procedure1<? super ToolBar> initializer) {
 		ToolBar toolBar = new ToolBar(parent, style);
-		initializer.apply(toolBar);
+		if (initializer != null)
+			initializer.apply(toolBar);
 		return toolBar;
 	}
 
 	public ToolBar newToolBar(final Composite parent, final Procedure1<? super ToolBar> initializer) {
 		ToolBar toolBar = new ToolBar(parent, SWT.FLAT);
-		initializer.apply(toolBar);
+		if (initializer != null)
+			initializer.apply(toolBar);
 		return toolBar;
 	}
 
 	public ToolItem newToolItem(final ToolBar parent, int style, final Procedure1<? super ToolItem> initializer) {
 		ToolItem item = new ToolItem(parent, style);
-		initializer.apply(item);
+		if (initializer != null)
+			initializer.apply(item);
 		return item;
 	}
 
 	public ToolItem newToolItem(final ToolBar parent, final Procedure1<? super ToolItem> initializer) {
 		ToolItem item = new ToolItem(parent, SWT.FLAT);
-		initializer.apply(item);
+		if (initializer != null)
+			initializer.apply(item);
 		return item;
 	}
 
 	public Tree newTree(Composite parent, int style, final Procedure1<Tree> initializer) {
 		Tree tree = new Tree(parent, style);
-		initializer.apply(tree);
+		if (initializer != null)
+			initializer.apply(tree);
 		return tree;
 	}
 
 	public Tree newTree(Composite parent, final Procedure1<Tree> initializer) {
 		Tree tree = new Tree(parent, SWT.BORDER);
-		initializer.apply(tree);
+		if (initializer != null)
+			initializer.apply(tree);
 		return tree;
 	}
 
 	public TreeItem newTreeItem(Tree tree, final Procedure1<TreeItem> initializer) {
 		TreeItem item = new TreeItem(tree, SWT.DEFAULT);
-		initializer.apply(item);
+		if (initializer != null)
+			initializer.apply(item);
 		return item;
 	}
 
 	public TreeItem newTreeItem(TreeItem parent, final Procedure1<TreeItem> initializer) {
 		TreeItem item = new TreeItem(parent, SWT.DEFAULT);
-		initializer.apply(item);
+		if (initializer != null)
+			initializer.apply(item);
 		return item;
 	}
 
@@ -835,7 +908,8 @@ public class SWTExtensions {
 	public Label newVerticalSeperator(final Composite parent, final Procedure1<? super Label> initializer) {
 		Label _label = new Label(parent, SWT.SEPARATOR | SWT.VERTICAL);
 		Label label = _label;
-		initializer.apply(label);
+		if (initializer != null)
+			initializer.apply(label);
 		return label;
 	}
 
@@ -971,7 +1045,8 @@ public class SWTExtensions {
 	public Shell Shell(final Procedure1<? super Shell> initializer) {
 		Shell _shell = new Shell();
 		Shell s = _shell;
-		initializer.apply(s);
+		if (initializer != null)
+			initializer.apply(s);
 		return s;
 	}
 

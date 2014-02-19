@@ -1,4 +1,4 @@
-package net.jeeeyul.swtend;
+package net.jeeeyul.swtend.internal;
 
 import java.util.ArrayList;
 import java.util.Iterator;

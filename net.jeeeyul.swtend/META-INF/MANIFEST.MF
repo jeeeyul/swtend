@@ -8,6 +8,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime
 Bundle-ClassPath: .
 Export-Package: net.jeeeyul.swtend,
- net.jeeeyul.swtend.sam
+ net.jeeeyul.swtend.geometry,
+ net.jeeeyul.swtend.sam,
+ net.jeeeyul.swtend.ui
 Bundle-Activator: net.jeeeyul.swtend.Activator
 Bundle-ActivationPolicy: lazy

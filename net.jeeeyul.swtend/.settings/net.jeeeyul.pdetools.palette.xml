@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ASCII"?>
+<p:Palette xmlns:p="http://jeeeyul.net/pde-tools" fieldName="ICONS" folder="/net.jeeeyul.swtend/icons">
+  <imageFiles fieldName="PALETTE" file="/net.jeeeyul.swtend/icons/palette.gif"/>
+  <imageFiles fieldName="PIPETTE_MASK" file="/net.jeeeyul.swtend/icons/pipette-mask.png"/>
+  <imageFiles fieldName="PIPETTE" file="/net.jeeeyul.swtend/icons/pipette.png"/>
+</p:Palette>
