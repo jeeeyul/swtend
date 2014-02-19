@@ -62,7 +62,6 @@ import org.eclipse.ui.progress.UIJob;
 public class SWTExtensions {
 	private static final String KEY_AUTO_RELASE_SCHEDULED = "swtend-auto-relase-scheduled";
 	private static final String KEY_AUTO_RELASE_QUEUE = "swtend-auto-relase-queue";
-
 	private static Integer MENU_BAR_HEIGHT = null;
 
 	public static final SWTExtensions INSTANCE = new SWTExtensions();
@@ -82,17 +81,17 @@ public class SWTExtensions {
 		}
 	};
 
-	public <T extends Resource> T autoRelease(T resource) {
-		scheduleAutoRelease(resource);
-		return resource;
-	}
-
 	public <T extends Resource> T autoDispose(T resource) {
 		scheduleAutoRelease(resource);
 		return resource;
 	}
 
-	public void chainDispose(Widget widget, final Resource... resources) {
+	public <T extends Resource> T autoRelease(T resource) {
+		scheduleAutoRelease(resource);
+		return resource;
+	}
+
+	public <T extends Widget> T chainDispose(T widget, final Resource... resources) {
 		widget.addListener(SWT.Dispose, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
@@ -101,6 +100,8 @@ public class SWTExtensions {
 				}
 			}
 		});
+
+		return widget;
 	}
 
 	/**
@@ -415,7 +416,11 @@ public class SWTExtensions {
 	}
 
 	public boolean contains(Rectangle rect, Point point) {
-		return rect.x <= point.x && rect.y <= point.y && point.x <= rect.x + rect.width && point.y <= rect.y + rect.height;
+		return rect.x <= point.x && rect.y <= point.y && point.x < rect.x + rect.width && point.y < rect.y + rect.height;
+	}
+
+	public boolean contains(Rectangle me, Rectangle other) {
+		return me.x <= other.x && me.y <= other.y && (me.x + me.width) >= (other.x + other.width) && (me.y + me.height) >= (other.y + other.height);
 	}
 
 	/**
@@ -424,15 +429,6 @@ public class SWTExtensions {
 	 */
 	public Color darkGrayColor() {
 		return getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY);
-	}
-
-	public void shouldDisposeWith(final Resource resource, Widget widget) {
-		widget.addListener(SWT.Dispose, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				safeDispose(resource);
-			}
-		});
 	}
 
 	public GC drawImage(GC gc, Image image, Point location) {
@@ -492,6 +488,11 @@ public class SWTExtensions {
 		return gridData;
 	}
 
+	public GC fillOval(GC gc, Rectangle rectangle) {
+		gc.fillOval(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+		return gc;
+	}
+
 	public GC fillRoundRectangle(GC gc, Rectangle rectangle, int radius) {
 		gc.fillRoundRectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height, radius, radius);
 		return gc;
@@ -521,6 +522,10 @@ public class SWTExtensions {
 
 	public Point getBottomRight(Rectangle rectangle) {
 		return new Point(rectangle.x + rectangle.width, rectangle.y + rectangle.height);
+	}
+
+	public Point getCenter(Rectangle rectangle) {
+		return new Point(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2);
 	}
 
 	public Point getCopy(Point point) {
@@ -681,19 +686,6 @@ public class SWTExtensions {
 		return new Point(rectangle.x + rectangle.width / 2, rectangle.y);
 	}
 
-	public Point getCenter(Rectangle rectangle) {
-		return new Point(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2);
-	}
-
-	public Rectangle toRectangle(Point point) {
-		return new Rectangle(point.x, point.y, 0, 0);
-	}
-
-	public GC fillOval(GC gc, Rectangle rectangle) {
-		gc.fillOval(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-		return gc;
-	}
-
 	public Point getTopLeft(Rectangle rectangle) {
 		return new Point(rectangle.x, rectangle.y);
 	}
@@ -716,6 +708,22 @@ public class SWTExtensions {
 
 	public Rectangle getTranslated(Rectangle source, Point delta) {
 		return translate(getCopy(source), delta);
+	}
+
+	public Rectangle getUnionized(Rectangle me, int x, int y) {
+		return union(getCopy(me), x, y);
+	}
+
+	public Rectangle getUnionized(Rectangle me, int x, int y, int w, int h) {
+		return union(getCopy(me), x, y, w, h);
+	}
+
+	public Rectangle getUnionized(Rectangle me, Point point) {
+		return union(getCopy(me), point);
+	}
+
+	public Rectangle getUnionized(Rectangle me, Rectangle other) {
+		return union(getCopy(me), other);
 	}
 
 	public <T extends Object> T init(T widget, Procedure1<T> initializer) {
@@ -1224,6 +1232,12 @@ public class SWTExtensions {
 		getDisplay().asyncExec(autoRelease);
 	}
 
+	public Rectangle setLocation(Rectangle rectangle, int x, int y) {
+		rectangle.x = x;
+		rectangle.y = y;
+		return rectangle;
+	}
+
 	public Rectangle setLocation(Rectangle rectangle, Point location) {
 		rectangle.x = location.x;
 		rectangle.y = location.y;
@@ -1608,6 +1622,12 @@ public class SWTExtensions {
 		});
 	}
 
+	public Rectangle setSize(Rectangle rectangle, int width, int height) {
+		rectangle.width = width;
+		rectangle.height = height;
+		return rectangle;
+	}
+
 	public Rectangle setSize(Rectangle rectangle, Point size) {
 		rectangle.width = size.x;
 		rectangle.height = size.y;
@@ -1620,6 +1640,15 @@ public class SWTExtensions {
 		if (initializer != null)
 			initializer.apply(s);
 		return s;
+	}
+
+	public void shouldDisposeWith(final Resource resource, Widget widget) {
+		widget.addListener(SWT.Dispose, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				safeDispose(resource);
+			}
+		});
 	}
 
 	public Rectangle shrink(Rectangle rectangle, int amount) {
@@ -1669,6 +1698,10 @@ public class SWTExtensions {
 		return String.format("#%02x%02x%02x", rgb.red, rgb.green, rgb.blue);
 	}
 
+	public Rectangle toRectangle(Point point) {
+		return new Rectangle(point.x, point.y, 0, 0);
+	}
+
 	public Point translate(Point point, int dx, int dy) {
 		point.x += dx;
 		point.y += dy;
@@ -1688,4 +1721,49 @@ public class SWTExtensions {
 	public Rectangle translate(Rectangle rectangle, Point delta) {
 		return translate(rectangle, delta.x, delta.y);
 	}
+
+	public Rectangle union(Rectangle rectangle, int x, int y) {
+		if (x < rectangle.x) {
+			rectangle.width += rectangle.x - x;
+			rectangle.x = x;
+		} else {
+			int right = rectangle.x + rectangle.width;
+			if (x >= right) {
+				right = x + 1;
+				rectangle.width = right - rectangle.x;
+			}
+		}
+
+		if (y < rectangle.y) {
+			rectangle.height += rectangle.y - y;
+			rectangle.y = y;
+		} else {
+			int bottom = rectangle.y + rectangle.height;
+			if (y <= bottom) {
+				bottom = y + 1;
+				rectangle.height = bottom - rectangle.y;
+			}
+		}
+
+		return rectangle;
+	}
+
+	public Rectangle union(Rectangle me, int x, int y, int w, int h) {
+		int right = Math.max(me.x + me.width, x + w);
+		int bottom = Math.max(me.y + me.height, y + h);
+		me.x = Math.min(me.x, x);
+		me.y = Math.min(me.y, y);
+		me.width = right - me.x;
+		me.height = bottom - me.y;
+		return me;
+	}
+
+	public Rectangle union(Rectangle me, Point point) {
+		return union(me, point.x, point.y);
+	}
+
+	public Rectangle union(Rectangle me, Rectangle other) {
+		return union(me, other.x, other.y, other.width, other.height);
+	}
+
 }
