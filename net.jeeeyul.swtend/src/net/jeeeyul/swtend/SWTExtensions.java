@@ -396,7 +396,7 @@ public class SWTExtensions {
 		rectangle.height += height;
 		return rectangle;
 	}
-
+	
 	public Rectangle expand(Rectangle rectangle, Point delta) {
 		return expand(rectangle, delta.x, delta.y);
 	}
