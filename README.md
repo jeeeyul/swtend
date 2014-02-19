@@ -3,6 +3,7 @@ swtend
 
 xtend libraries for SWT
 
+### Builder Pattern to create SWT UI
 ```xtend
 var ui = newComposite[
   layout = newGridLayout[
@@ -29,4 +30,12 @@ var ui = newComposite[
     ]
   ]
 ]
+```
+### Geometry Extension
+```xtend
+  var rect = new Rectangle(0, 0, 10, 10) // SWT Rectangle
+  
+  rect.contains(5, 5)     // true
+  rect.copy()             // clone
+  rect.translate(new Point(10, 10))
 ```
