@@ -1,6 +1,6 @@
 ## SWTend
 
-[xtend](http://xtend-lang.org) libraries for SWT
+[xtend](http://xtend-lang.org) libraries for SWT, SWT + Xtend
 
 ### Builder Pattern to create SWT UI
 ```xtend
