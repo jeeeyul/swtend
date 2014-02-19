@@ -391,14 +391,28 @@ public class SWTExtensions {
 		gc.drawImage(image, sourceArea.x, sourceArea.y, sourceArea.width, sourceArea.height, targetArea.x, targetArea.y, targetArea.width, targetArea.height);
 	}
 
-	public Rectangle expand(Rectangle rectangle, int width, int height) {
-		rectangle.width += width;
-		rectangle.height += height;
+	public Rectangle expand(Rectangle rectangle, int amount) {
+		return expand(rectangle, amount, amount, amount, amount);
+	}
+
+	public Rectangle expand(Rectangle rectangle, int horizontal, int vertical) {
+		return expand(rectangle, horizontal, vertical, horizontal, vertical);
+	}
+
+	public Rectangle expand(Rectangle rectangle, int left, int top, int right, int bottom) {
+		rectangle.x -= left;
+		rectangle.y -= top;
+		rectangle.width += left + right;
+		rectangle.height += top + bottom;
 		return rectangle;
 	}
-	
+
 	public Rectangle expand(Rectangle rectangle, Point delta) {
 		return expand(rectangle, delta.x, delta.y);
+	}
+
+	public Rectangle expand(Rectangle rectangle, Rectangle inset) {
+		return expand(rectangle, inset.x, inset.y, inset.width, inset.height);
 	}
 
 	public GridData FILL_BOTH() {
@@ -434,6 +448,18 @@ public class SWTExtensions {
 		return new WidgetIterator(root, true);
 	}
 
+	public Point getBottom(Rectangle rectangle) {
+		return new Point(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height);
+	}
+
+	public Point getBottomLeft(Rectangle rectangle) {
+		return new Point(rectangle.x, rectangle.y + rectangle.height);
+	}
+
+	public Point getBottomRight(Rectangle rectangle) {
+		return new Point(rectangle.x + rectangle.width, rectangle.y + rectangle.height);
+	}
+
 	public Point getCopy(Point point) {
 		return new Point(point.x, point.y);
 	}
@@ -451,12 +477,24 @@ public class SWTExtensions {
 		return display;
 	}
 
-	public Rectangle getExpanded(Rectangle rect, int dx, int dy) {
-		return expand(getCopy(rect), dx, dy);
+	public Rectangle getExpanded(Rectangle rectangle, int amount) {
+		return expand(getCopy(rectangle), amount);
+	}
+
+	public Rectangle getExpanded(Rectangle rectangle, int horizontal, int vertical) {
+		return expand(getCopy(rectangle), horizontal, vertical);
+	}
+
+	public Rectangle getExpanded(Rectangle rectangle, int left, int top, int right, int bottom) {
+		return expand(getCopy(rectangle), left, top, right, bottom);
 	}
 
 	public Rectangle getExpanded(Rectangle rectangle, Point delta) {
-		return getExpanded(rectangle, delta.x, delta.y);
+		return expand(getCopy(rectangle), delta);
+	}
+
+	public Rectangle getExpanded(Rectangle rectangle, Rectangle insets) {
+		return expand(getCopy(rectangle), insets);
 	}
 
 	public ImageRegistry getImageRegistry() {
@@ -466,6 +504,10 @@ public class SWTExtensions {
 			Display.getDefault().setData("imageRegistry", result);
 		}
 		return result;
+	}
+
+	public Point getLeft(Rectangle rectangle) {
+		return new Point(rectangle.x, rectangle.y + rectangle.height / 2);
 	}
 
 	public Point getLocation(Rectangle rectangle) {
@@ -496,6 +538,18 @@ public class SWTExtensions {
 		return MENU_BAR_HEIGHT;
 	}
 
+	public Rectangle getResized(Rectangle rectangle, int widthDelta, int heightDelta) {
+		return resize(getCopy(rectangle), widthDelta, heightDelta);
+	}
+
+	public Rectangle getResized(Rectangle rectangle, Point sizeDelta) {
+		return getResized(rectangle, sizeDelta.x, sizeDelta.y);
+	}
+
+	public Point getRight(Rectangle rectangle) {
+		return new Point(rectangle.x + rectangle.width, rectangle.y + rectangle.height / 2);
+	}
+
 	public Point getScaled(Point p, double scale) {
 		return scale(getCopy(p), scale);
 	}
@@ -504,12 +558,44 @@ public class SWTExtensions {
 		return scale(getCopy(r), scale);
 	}
 
+	public Rectangle getShrinked(Rectangle rectangle, int amount) {
+		return shrink(getCopy(rectangle), amount);
+	}
+
+	public Rectangle getShrinked(Rectangle rectangle, int horizontal, int vertical) {
+		return shrink(getCopy(rectangle), horizontal, vertical);
+	}
+
+	public Rectangle getShrinked(Rectangle rectangle, int left, int top, int right, int bottom) {
+		return shrink(getCopy(rectangle), left, top, right, bottom);
+	}
+
+	public Rectangle getShrinked(Rectangle rectangle, Point delta) {
+		return shrink(getCopy(rectangle), delta);
+	}
+
+	public Rectangle getShrinked(Rectangle rectangle, Rectangle insets) {
+		return shrink(getCopy(rectangle), insets);
+	}
+
 	public Point getSize(ImageData imageData) {
 		return new Point(imageData.width, imageData.height);
 	}
 
 	public Point getSize(Rectangle rect) {
 		return new Point(rect.width, rect.height);
+	}
+
+	public Point getTop(Rectangle rectangle) {
+		return new Point(rectangle.x + rectangle.width / 2, rectangle.y);
+	}
+
+	public Point getTopLeft(Rectangle rectangle) {
+		return new Point(rectangle.x, rectangle.y);
+	}
+
+	public Point getTopRight(Rectangle rectangle) {
+		return new Point(rectangle.x + rectangle.width, rectangle.y);
 	}
 
 	public Point getTranslated(Point point, int dx, int dy) {
@@ -642,6 +728,19 @@ public class SWTExtensions {
 		return group;
 	}
 
+	public Label newHorizontalSeparator(final Composite parent, final Procedure1<? super Label> initializer) {
+		Label separator = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
+		if (initializer != null)
+			initializer.apply(separator);
+
+		Layout layout = parent.getLayout();
+		if (layout instanceof GridLayout) {
+			GridLayout gridLayout = (GridLayout) layout;
+			separator.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, gridLayout.numColumns, 1));
+		}
+		return separator;
+	}
+
 	public Label newHorizontalSeperator(final Composite parent, final Procedure1<? super Label> initializer) {
 		Label separator = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
 		if (initializer != null)
@@ -738,19 +837,6 @@ public class SWTExtensions {
 		Label separator = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
 		if (initializer != null)
 			initializer.apply(separator);
-		Layout layout = parent.getLayout();
-		if (layout instanceof GridLayout) {
-			GridLayout gridLayout = (GridLayout) layout;
-			separator.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, gridLayout.numColumns, 1));
-		}
-		return separator;
-	}
-
-	public Label newHorizontalSeparator(final Composite parent, final Procedure1<? super Label> initializer) {
-		Label separator = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
-		if (initializer != null)
-			initializer.apply(separator);
-
 		Layout layout = parent.getLayout();
 		if (layout instanceof GridLayout) {
 			GridLayout gridLayout = (GridLayout) layout;
@@ -921,6 +1007,16 @@ public class SWTExtensions {
 		return e1 | e2;
 	}
 
+	public Rectangle resize(Rectangle rectangle, int width, int height) {
+		rectangle.width += width;
+		rectangle.height += height;
+		return rectangle;
+	}
+
+	public Rectangle resize(Rectangle rectangle, Point delta) {
+		return resize(rectangle, delta.x, delta.y);
+	}
+
 	public void runLoop(final Shell s) {
 		while (!s.isDisposed()) {
 			if (!getDisplay().readAndDispatch()) {
@@ -1048,6 +1144,26 @@ public class SWTExtensions {
 		if (initializer != null)
 			initializer.apply(s);
 		return s;
+	}
+
+	public Rectangle shrink(Rectangle rectangle, int amount) {
+		return expand(rectangle, -amount);
+	}
+
+	public Rectangle shrink(Rectangle rectangle, int horizontal, int vertical) {
+		return expand(rectangle, -horizontal, -vertical);
+	}
+
+	public Rectangle shrink(Rectangle rectangle, int left, int top, int right, int bottom) {
+		return expand(rectangle, -left, -top, -right, -bottom);
+	}
+
+	public Rectangle shrink(Rectangle rectangle, Point delta) {
+		return expand(rectangle, -delta.x, -delta.y);
+	}
+
+	public Rectangle shrink(Rectangle rectangle, Rectangle inset) {
+		return expand(rectangle, -inset.x, -inset.y, -inset.width, -inset.height);
 	}
 
 	/**
