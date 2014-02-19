@@ -1,5 +1,6 @@
 package net.jeeeyul.swtend;
 
+import java.util.HashSet;
 import java.util.Iterator;
 
 import net.jeeeyul.swtend.internal.WidgetIterator;
@@ -20,6 +21,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Path;
+import org.eclipse.swt.graphics.Pattern;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
@@ -39,6 +42,7 @@ import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
@@ -49,15 +53,55 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.progress.UIJob;
 
 public class SWTExtensions {
+	private static final String KEY_AUTO_RELASE_SCHEDULED = "swtend-auto-relase-scheduled";
+	private static final String KEY_AUTO_RELASE_QUEUE = "swtend-auto-relase-queue";
+
 	private static Integer MENU_BAR_HEIGHT = null;
 
 	public static final SWTExtensions INSTANCE = new SWTExtensions();
+
+	private Runnable autoRelease = new Runnable() {
+		@Override
+		public void run() {
+			getDisplay().setData(KEY_AUTO_RELASE_SCHEDULED, Boolean.FALSE);
+
+			HashSet<Resource> queue = getAutoReleaseQueue();
+			Resource[] array = queue.toArray(new Resource[queue.size()]);
+			queue.clear();
+
+			for (Resource r : array) {
+				safeDispose(r);
+			}
+		}
+	};
+
+	public <T extends Resource> T autoRelease(T resource) {
+		scheduleAutoRelease(resource);
+		return resource;
+	}
+
+	public <T extends Resource> T autoDispose(T resource) {
+		scheduleAutoRelease(resource);
+		return resource;
+	}
+
+	public void chainDispose(Widget widget, final Resource... resources) {
+		widget.addListener(SWT.Dispose, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				for (Resource each : resources) {
+					safeDispose(each);
+				}
+			}
+		});
+	}
 
 	/**
 	 * @return a black {@link Color} object.
@@ -382,6 +426,15 @@ public class SWTExtensions {
 		return getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY);
 	}
 
+	public void shouldDisposeWith(final Resource resource, Widget widget) {
+		widget.addListener(SWT.Dispose, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				safeDispose(resource);
+			}
+		});
+	}
+
 	public GC drawImage(GC gc, Image image, Point location) {
 		gc.drawImage(image, location.x, location.y);
 		return gc;
@@ -448,6 +501,16 @@ public class SWTExtensions {
 		return new WidgetIterator(root, true);
 	}
 
+	private HashSet<Resource> getAutoReleaseQueue() {
+		@SuppressWarnings("unchecked")
+		HashSet<Resource> queue = (HashSet<Resource>) getDisplay().getData(KEY_AUTO_RELASE_QUEUE);
+		if (queue == null) {
+			queue = new HashSet<Resource>();
+			getDisplay().setData(KEY_AUTO_RELASE_QUEUE, queue);
+		}
+		return queue;
+	}
+
 	public Point getBottom(Rectangle rectangle) {
 		return new Point(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height);
 	}
@@ -495,6 +558,34 @@ public class SWTExtensions {
 
 	public Rectangle getExpanded(Rectangle rectangle, Rectangle insets) {
 		return expand(getCopy(rectangle), insets);
+	}
+
+	public Image getICON_CANCEL() {
+		return getDisplay().getSystemImage(SWT.ICON_CANCEL);
+	}
+
+	public Image getICON_ERROR() {
+		return getDisplay().getSystemImage(SWT.ICON_ERROR);
+	}
+
+	public Image getICON_INFORMATION() {
+		return getDisplay().getSystemImage(SWT.ICON_INFORMATION);
+	}
+
+	public Image getICON_QUESTION() {
+		return getDisplay().getSystemImage(SWT.ICON_QUESTION);
+	}
+
+	public Image getICON_SEARCH() {
+		return getDisplay().getSystemImage(SWT.ICON_SEARCH);
+	}
+
+	public Image getICON_WARNING() {
+		return getDisplay().getSystemImage(SWT.ICON_WARNING);
+	}
+
+	public Image getICON_WORKING() {
+		return getDisplay().getSystemImage(SWT.ICON_WORKING);
 	}
 
 	public ImageRegistry getImageRegistry() {
@@ -590,6 +681,19 @@ public class SWTExtensions {
 		return new Point(rectangle.x + rectangle.width / 2, rectangle.y);
 	}
 
+	public Point getCenter(Rectangle rectangle) {
+		return new Point(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2);
+	}
+
+	public Rectangle toRectangle(Point point) {
+		return new Rectangle(point.x, point.y, 0, 0);
+	}
+
+	public GC fillOval(GC gc, Rectangle rectangle) {
+		gc.fillOval(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+		return gc;
+	}
+
 	public Point getTopLeft(Rectangle rectangle) {
 		return new Point(rectangle.x, rectangle.y);
 	}
@@ -650,6 +754,7 @@ public class SWTExtensions {
 
 	public Composite newComposite(final Composite parent, int style, final Procedure1<? super Composite> initializer) {
 		Composite composite = new Composite(parent, style);
+		composite.setLayout(new FillLayout());
 		if (initializer != null)
 			initializer.apply(composite);
 		return composite;
@@ -657,6 +762,7 @@ public class SWTExtensions {
 
 	public Composite newComposite(final Composite parent, final Procedure1<? super Composite> initializer) {
 		Composite composite = new Composite(parent, SWT.NORMAL);
+		composite.setLayout(new FillLayout());
 		if (initializer != null)
 			initializer.apply(composite);
 		return composite;
@@ -664,6 +770,7 @@ public class SWTExtensions {
 
 	public Composite newComposite(final CTabItem ctabItem, final Procedure1<? super Composite> initializer) {
 		Composite composite = new Composite(ctabItem.getParent(), SWT.NORMAL);
+		composite.setLayout(new FillLayout());
 		if (initializer != null)
 			initializer.apply(composite);
 		ctabItem.setControl(composite);
@@ -672,6 +779,7 @@ public class SWTExtensions {
 
 	public Composite newComposite(final TabItem tabItem, final Procedure1<? super Composite> initializer) {
 		Composite composite = new Composite(tabItem.getParent(), SWT.NORMAL);
+		composite.setLayout(new FillLayout());
 		if (initializer != null)
 			initializer.apply(composite);
 		tabItem.setControl(composite);
@@ -701,6 +809,10 @@ public class SWTExtensions {
 
 	public FillLayout newFillLayout() {
 		return new FillLayout();
+	}
+
+	public Pattern newGradient(Point from, Point to, Color fromColor, Color toColor) {
+		return new Pattern(getDisplay(), from.x, from.y, to.x, to.y, fromColor, toColor);
 	}
 
 	public GridData newGridData(final Procedure1<? super GridData> initializer) {
@@ -808,6 +920,12 @@ public class SWTExtensions {
 		return item;
 	}
 
+	public Path newRoundRectanglePath(int x, int y, int width, int height, int radius) {
+		Path path = new Path(getDisplay());
+
+		return path;
+	}
+
 	public Scale newScale(final Composite parent, final Procedure1<? super Scale> initializer) {
 		Scale scale = new Scale(parent, SWT.NORMAL);
 		if (initializer != null)
@@ -845,8 +963,33 @@ public class SWTExtensions {
 		return separator;
 	}
 
+	public Shell newShell(int style, Procedure1<? super Shell> initializer) {
+		Shell shell = new Shell(getDisplay(), style);
+		shell.setLayout(new FillLayout());
+		if (initializer != null)
+			initializer.apply(shell);
+		return shell;
+	}
+
 	public Shell newShell(Procedure1<? super Shell> initializer) {
 		Shell shell = new Shell(getDisplay());
+		shell.setLayout(new FillLayout());
+		if (initializer != null)
+			initializer.apply(shell);
+		return shell;
+	}
+
+	public Shell newShell(Shell parentShell, int style, Procedure1<? super Shell> initializer) {
+		Shell shell = new Shell(parentShell, style);
+		shell.setLayout(new FillLayout());
+		if (initializer != null)
+			initializer.apply(shell);
+		return shell;
+	}
+
+	public Shell newShell(Shell parentShell, Procedure1<? super Shell> initializer) {
+		Shell shell = new Shell(parentShell);
+		shell.setLayout(new FillLayout());
 		if (initializer != null)
 			initializer.apply(shell);
 		return shell;
@@ -964,6 +1107,13 @@ public class SWTExtensions {
 		return tree;
 	}
 
+	public TreeColumn newTreeColumn(Tree tree, final Procedure1<TreeColumn> initializer) {
+		TreeColumn column = new TreeColumn(tree, SWT.DEFAULT);
+		if (initializer != null)
+			initializer.apply(column);
+		return column;
+	}
+
 	public TreeItem newTreeItem(Tree tree, final Procedure1<TreeItem> initializer) {
 		TreeItem item = new TreeItem(tree, SWT.DEFAULT);
 		if (initializer != null)
@@ -997,6 +1147,15 @@ public class SWTExtensions {
 		if (initializer != null)
 			initializer.apply(label);
 		return label;
+	}
+
+	public <T extends Widget> void onEvent(final T widget, int eventType, final Procedure1<Event> handler) {
+		widget.addListener(eventType, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				handler.apply(event);
+			}
+		});
 	}
 
 	public int operator_and(int e1, int e2) {
@@ -1054,10 +1213,39 @@ public class SWTExtensions {
 		});
 	}
 
+	private void scheduleAutoRelease(Resource r) {
+		getAutoReleaseQueue().add(r);
+
+		if (getDisplay().getData(KEY_AUTO_RELASE_SCHEDULED) == Boolean.TRUE) {
+			return;
+		}
+
+		getDisplay().setData(KEY_AUTO_RELASE_SCHEDULED, Boolean.TRUE);
+		getDisplay().asyncExec(autoRelease);
+	}
+
 	public Rectangle setLocation(Rectangle rectangle, Point location) {
 		rectangle.x = location.x;
 		rectangle.y = location.y;
 		return rectangle;
+	}
+
+	public <T extends Shell> void setOnActivate(final T control, final Procedure1<Event> handler) {
+		control.addListener(SWT.Activate, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				handler.apply(event);
+			}
+		});
+	}
+
+	public <T extends MenuItem> void setOnArm(final T control, final Procedure1<Event> handler) {
+		control.addListener(SWT.Arm, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				handler.apply(event);
+			}
+		});
 	}
 
 	public void setOnClick(final Control button, final Procedure1<Event> function) {
@@ -1069,11 +1257,92 @@ public class SWTExtensions {
 		});
 	}
 
-	public <T extends Widget> void setOnEvent(final T w, int eventType, final Procedure1<Event> handler) {
-		w.addListener(eventType, new Listener() {
+	public void setOnClose(final Shell control, final Procedure1<Event> function) {
+		control.addListener(SWT.Close, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
+			}
+		});
+	}
+
+	public void setOnCollapse(final Tree control, final Procedure1<Event> function) {
+		control.addListener(SWT.Collapse, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
+			}
+		});
+	}
+
+	public void setOnDeactivate(final Shell shell, final Procedure1<Event> handler) {
+		shell.addListener(SWT.Deactivate, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
 				handler.apply(event);
+			}
+		});
+	}
+
+	public void setOnDefaultSelection(final Control control, final Procedure1<Event> function) {
+		control.addListener(SWT.DefaultSelection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
+			}
+		});
+	}
+
+	public void setOnDeiconify(final Shell control, final Procedure1<Event> function) {
+		control.addListener(SWT.Deiconify, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
+			}
+		});
+	}
+
+	public void setOnDispose(final Control control, final Procedure1<Event> function) {
+		control.addListener(SWT.Dispose, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
+			}
+		});
+	}
+
+	public <T extends Control> void setOnDragDetect(final T control, final Procedure1<Event> handler) {
+		control.addListener(SWT.DragDetect, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				handler.apply(event);
+			}
+		});
+	}
+
+	public <T extends Control> void setOnEraseItem(final T control, final Procedure1<Event> handler) {
+		control.addListener(SWT.EraseItem, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				handler.apply(event);
+			}
+		});
+	}
+
+	public <T extends Widget> void setOnEvent(final T widget, int eventType, final Procedure1<Event> handler) {
+		widget.addListener(eventType, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				handler.apply(event);
+			}
+		});
+	}
+
+	public void setOnExpand(final Tree control, final Procedure1<Event> function) {
+		control.addListener(SWT.Expand, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
 			}
 		});
 	}
@@ -1087,6 +1356,15 @@ public class SWTExtensions {
 		});
 	}
 
+	public void setOnFocusIn(final Control control, final Procedure1<Event> function) {
+		control.addListener(SWT.FocusIn, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
+			}
+		});
+	}
+
 	public void setOnFocusOut(final Control control, final Procedure1<Event> handler) {
 		control.addListener(SWT.FocusOut, new Listener() {
 			@Override
@@ -1096,11 +1374,173 @@ public class SWTExtensions {
 		});
 	}
 
-	public <T extends Widget> void setOnModified(final T w, final Procedure1<T> handler) {
-		w.addListener(SWT.Modify, new Listener() {
+	public <T extends Control> void setOnHelp(final T control, final Procedure1<Event> handler) {
+		control.addListener(SWT.Help, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
-				handler.apply(w);
+				handler.apply(event);
+			}
+		});
+	}
+
+	public void setOnHide(final Shell control, final Procedure1<Event> function) {
+		control.addListener(SWT.Hide, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
+			}
+		});
+	}
+
+	public void setOnIconify(final Shell control, final Procedure1<Event> function) {
+		control.addListener(SWT.Iconify, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
+			}
+		});
+	}
+
+	public void setOnKeyDown(final Control button, final Procedure1<Event> function) {
+		button.addListener(SWT.KeyDown, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
+			}
+		});
+	}
+
+	public void setOnKeyUp(final Control button, final Procedure1<Event> function) {
+		button.addListener(SWT.KeyUp, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
+			}
+		});
+	}
+
+	public <T extends Control> void setOnMeasureItem(final T control, final Procedure1<Event> handler) {
+		control.addListener(SWT.MeasureItem, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				handler.apply(event);
+			}
+		});
+	}
+
+	public <T extends Control> void setOnModified(final T control, final Procedure1<Event> handler) {
+		control.addListener(SWT.Modify, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				handler.apply(event);
+			}
+		});
+	}
+
+	public <T extends Control> void setOnModify(final T control, final Procedure1<Event> handler) {
+		control.addListener(SWT.Modify, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				handler.apply(event);
+			}
+		});
+	}
+
+	public void setOnMouseDoubleClick(final Control button, final Procedure1<Event> function) {
+		button.addListener(SWT.MouseDoubleClick, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
+			}
+		});
+	}
+
+	public void setOnMouseDown(final Control button, final Procedure1<Event> function) {
+		button.addListener(SWT.MouseDown, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
+			}
+		});
+	}
+
+	public void setOnMouseEnter(final Control button, final Procedure1<Event> function) {
+		button.addListener(SWT.MouseEnter, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
+			}
+		});
+	}
+
+	public void setOnMouseExit(final Control button, final Procedure1<Event> function) {
+		button.addListener(SWT.MouseExit, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
+			}
+		});
+	}
+
+	public <T extends Control> void setOnMouseHorizontalWheel(final T control, final Procedure1<Event> handler) {
+		control.addListener(SWT.MouseHorizontalWheel, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				handler.apply(event);
+			}
+		});
+	}
+
+	public <T extends Control> void setOnMouseHover(final T control, final Procedure1<Event> handler) {
+		control.addListener(SWT.MouseHover, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				handler.apply(event);
+			}
+		});
+	}
+
+	public void setOnMouseMove(final Control button, final Procedure1<Event> function) {
+		button.addListener(SWT.MouseMove, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
+			}
+		});
+	}
+
+	public void setOnMouseUp(final Control button, final Procedure1<Event> function) {
+		button.addListener(SWT.MouseUp, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
+			}
+		});
+	}
+
+	public <T extends Control> void setOnMouseVerticalWheel(final T control, final Procedure1<Event> handler) {
+		control.addListener(SWT.MouseVerticalWheel, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				handler.apply(event);
+			}
+		});
+	}
+
+	public <T extends Control> void setOnMouseWheel(final T control, final Procedure1<Event> handler) {
+		control.addListener(SWT.MouseWheel, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				handler.apply(event);
+			}
+		});
+	}
+
+	public void setOnMove(final Control control, final Procedure1<Event> function) {
+		control.addListener(SWT.Move, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
 			}
 		});
 	}
@@ -1114,17 +1554,53 @@ public class SWTExtensions {
 		});
 	}
 
-	public void setOnResize(Control control, final Procedure1<Event> resizer) {
+	public <T extends Control> void setOnPaintItem(final T control, final Procedure1<Event> handler) {
+		control.addListener(SWT.PaintItem, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				handler.apply(event);
+			}
+		});
+	}
+
+	public void setOnResize(final Control control, final Procedure1<Event> function) {
 		control.addListener(SWT.Resize, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
-				resizer.apply(event);
+				function.apply(event);
 			}
 		});
 	}
 
 	public <T extends Widget> void setOnSelection(final T w, final Procedure1<Event> handler) {
 		w.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				handler.apply(event);
+			}
+		});
+	}
+
+	public void setOnShow(final Shell control, final Procedure1<Event> function) {
+		control.addListener(SWT.Show, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				function.apply(event);
+			}
+		});
+	}
+
+	public <T extends Control> void setOnTraverse(final T control, final Procedure1<Event> handler) {
+		control.addListener(SWT.Traverse, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				handler.apply(event);
+			}
+		});
+	}
+
+	public <T extends Control> void setOnVerify(final T control, final Procedure1<Event> handler) {
+		control.addListener(SWT.Verify, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
 				handler.apply(event);
