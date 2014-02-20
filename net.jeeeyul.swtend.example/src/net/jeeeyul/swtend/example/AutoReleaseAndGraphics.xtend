@@ -3,10 +3,8 @@ package net.jeeeyul.swtend.example
 import net.jeeeyul.swtend.SWTExtensions
 import org.eclipse.swt.graphics.Color
 import org.eclipse.swt.graphics.Point
-import org.eclipse.swt.widgets.Shell
 import org.eclipse.swt.graphics.Rectangle
-import org.eclipse.swt.graphics.Font
-import org.eclipse.swt.SWT
+import org.eclipse.swt.widgets.Shell
 
 class AutoReleaseAndGraphics {
 	extension SWTExtensions = SWTExtensions.INSTANCE
@@ -25,7 +23,7 @@ class AutoReleaseAndGraphics {
 				
 				// gradient and font be disposed next run loop
 				var gradient = newGradient(clientArea.top, clientArea.bottom, COLOR_RED, COLOR_YELLOW).autoRelease
-				val font = new Font(display, "Georgia", 80, SWT::NORMAL).autoRelease
+				val font = newFont("Georgia", 80).autoRelease
 				
 				// creating shape
 				val box = clientArea.shrink(50)

@@ -263,7 +263,7 @@ public class SWTExtensions {
 	public Color COLOR_GREEN() {
 		return getDisplay().getSystemColor(SWT.COLOR_GREEN);
 	}
-
+	
 	/**
 	 * 
 	 * @return info background {@link Color} object.
@@ -281,7 +281,8 @@ public class SWTExtensions {
 	public Color COLOR_INFO_FOREGROUND() {
 		return getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND);
 	}
-
+	
+	
 	/**
 	 * 
 	 * @return link foreground {@link Color} object.
@@ -291,6 +292,7 @@ public class SWTExtensions {
 		return getDisplay().getSystemColor(SWT.COLOR_LINK_FOREGROUND);
 	}
 
+
 	/**
 	 * 
 	 * @return list background {@link Color} object.
@@ -299,7 +301,7 @@ public class SWTExtensions {
 	public Color COLOR_LIST_BACKGROUND() {
 		return getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
 	}
-
+	
 	/**
 	 * 
 	 * @return list foreground {@link Color} object.
@@ -317,7 +319,8 @@ public class SWTExtensions {
 	public Color COLOR_MARGENTA() {
 		return getDisplay().getSystemColor(SWT.COLOR_MAGENTA);
 	}
-
+	
+	
 	/**
 	 * 
 	 * @return a red {@link Color} object.
@@ -1011,6 +1014,16 @@ public class SWTExtensions {
 		return new FillLayout();
 	}
 
+	public Font newFont(String fontName, int height) {
+		Font font = new Font(getDisplay(), fontName, height, SWT.NORMAL);
+		return font;
+	}
+
+	public Font newFont(String fontName, int height, int style) {
+		Font font = new Font(getDisplay(), fontName, height, style);
+		return font;
+	}
+
 	public Pattern newGradient(Point from, Point to, Color fromColor, Color toColor) {
 		return new Pattern(getDisplay(), from.x, from.y, to.x, to.y, fromColor, toColor);
 	}
@@ -1553,6 +1566,38 @@ public class SWTExtensions {
 		getDisplay().asyncExec(autoRelease);
 	}
 
+	public Rectangle setBottom(Rectangle me, int bottom) {
+		me.height = bottom - me.y;
+		return me;
+	}
+
+	public Rectangle setBottomLeft(Rectangle me, int x, int y) {
+		setLeft(me, x);
+		setBottom(me, y);
+		return me;
+	}
+
+	public Rectangle setBottomLeft(Rectangle me, Point bottomLeft){
+		return setBottomLeft(me, bottomLeft.x, bottomLeft.y);
+	}
+
+	public Rectangle setBottomRight(Rectangle me, int x, int y) {
+		setRight(me, x);
+		setBottom(me, y);
+		return me;
+	}
+
+	public Rectangle setBottomRight(Rectangle me, Point bottomRight){
+		return setBottomRight(me, bottomRight.x, bottomRight.y);
+	}
+
+	public Rectangle setLeft(Rectangle me, int left) {
+		int right = me.x + me.width;
+		me.x = left;
+		me.width = right - me.x;
+		return me;
+	}
+
 	public Rectangle setLocation(Rectangle rectangle, int x, int y) {
 		rectangle.x = x;
 		rectangle.y = y;
@@ -1943,6 +1988,11 @@ public class SWTExtensions {
 		});
 	}
 
+	public Rectangle setRight(Rectangle me, int right) {
+		me.width = right - me.x;
+		return me;
+	}
+
 	public Rectangle setSize(Rectangle rectangle, int width, int height) {
 		rectangle.width = width;
 		rectangle.height = height;
@@ -1953,6 +2003,33 @@ public class SWTExtensions {
 		rectangle.width = size.x;
 		rectangle.height = size.y;
 		return rectangle;
+	}
+
+	public Rectangle setTop(Rectangle me, int top) {
+		int bottom = me.y + me.height;
+		me.y = top;
+		me.height = bottom - top;
+		return me;
+	}
+
+	public Rectangle setTopLeft(Rectangle me, int x, int y) {
+		setLeft(me, x);
+		setTop(me, y);
+		return me;
+	}
+
+	public Rectangle setTopLeft(Rectangle me, Point topLeft){
+		return setTopLeft(me, topLeft.x, topLeft.y);
+	}
+
+	public Rectangle setTopRight(Rectangle me, int x, int y) {
+		setRight(me, x);
+		setTop(me, y);
+		return me;
+	}
+
+	public Rectangle setTopRight(Rectangle me, Point topRight){
+		return setTopRight(me, topRight.x, topRight.y);
 	}
 
 	public Shell Shell(final Procedure1<? super Shell> initializer) {
