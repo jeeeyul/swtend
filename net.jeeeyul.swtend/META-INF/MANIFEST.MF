@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SWTend
-Bundle-SymbolicName: net.jeeeyul.swtend;singleton:=true
+Bundle-SymbolicName: net.jeeeyul.swtend
 Bundle-Version: 1.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.ui,
@@ -11,6 +11,4 @@ Export-Package: net.jeeeyul.swtend,
  net.jeeeyul.swtend.geometry,
  net.jeeeyul.swtend.sam,
  net.jeeeyul.swtend.ui
-Bundle-Activator: net.jeeeyul.swtend.SWTendCore
-Bundle-ActivationPolicy: lazy
 Bundle-Vendor: jeeeyul@gmail.com

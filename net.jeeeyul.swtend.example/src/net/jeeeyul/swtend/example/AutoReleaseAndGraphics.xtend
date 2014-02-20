@@ -3,6 +3,10 @@ package net.jeeeyul.swtend.example
 import net.jeeeyul.swtend.SWTExtensions
 import org.eclipse.swt.graphics.Color
 import org.eclipse.swt.graphics.Point
+import org.eclipse.swt.widgets.Shell
+import org.eclipse.swt.graphics.Rectangle
+import org.eclipse.swt.graphics.Font
+import org.eclipse.swt.SWT
 
 class AutoReleaseAndGraphics {
 	extension SWTExtensions = SWTExtensions.INSTANCE
@@ -14,32 +18,55 @@ class AutoReleaseAndGraphics {
 	def run() {
 		val Color green = new Color(display, 0, 255, 0);
 
-		var shell = newShell[
+		val shell = newShell[
 			size = new Point(400, 300)
-			onPaint = [ e |
-				// red, blue, gradient will be disposed in next run loop
-				var red = new Color(display, 255, 0, 0).autoRelease
-				var blue = new Color(display, 0, 0, 255).autoRelease
-				var gradient = newGradient(clientArea.top, clientArea.bottom, red, blue).autoRelease
+			onPaint = [ 
+				var extension Shell = it.widget as Shell
 				
+				// gradient and font be disposed next run loop
+				var gradient = newGradient(clientArea.top, clientArea.bottom, COLOR_RED, COLOR_YELLOW).autoRelease
+				val font = new Font(display, "Georgia", 80, SWT::NORMAL).autoRelease
 				
-				// draw gradient
-				e.gc.backgroundPattern = gradient
-				e.gc.fillRoundRectangle(clientArea.getShrinked(10), 20)
-
-				//draw green ball
-				var circle = clientArea.center.toRectangle.expand(20)
-				e.gc.background = green				
-				e.gc.fillOval(circle)
+				// creating shape
+				val box = clientArea.shrink(50)
+				var path = newPath[
+					// path will be disposed next run loop
+					autoRelease()
+					
+					// round shapes
+					addRoundRectangle(box, 10)
+					addRoundRectangle(box.shrink(10), 5)
+					
+					// text
+					var text = "Eclipse"
+					var textSize = text.computeTextExtent(font)
+					var textRect = new Rectangle(0, 0, textSize.x, textSize.y)
+					textRect.relocateCenterWith(box)
+					addString("Eclipse", textRect.topLeft, font)
+				]
+				
+				// rotate context
+				gc.transform = newTransform[
+					autoRelease() // transform will be disposed next loop
+					translate(box.center);
+					rotate(-8)
+					translate(box.center.negated)
+				]
+				
+				gc.lineWidth = 1
+				gc.foreground = COLOR_MARGENTA
+				gc.background = COLOR_YELLOW
+				gc.backgroundPattern = gradient
+				gc.fillPath(path)
+				gc.drawPath(path)
 			]
 		]
-		
+
 		// green will be dispose when shell is disposed.
 		green.shouldDisposeWith(shell)
-		
 		shell.open()
 		shell.runLoop()
-		
+
 		println(green.disposed)
 	}
 

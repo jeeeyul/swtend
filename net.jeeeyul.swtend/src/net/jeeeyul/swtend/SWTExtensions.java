@@ -18,6 +18,7 @@ import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -27,6 +28,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Resource;
+import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -80,6 +82,55 @@ public class SWTExtensions {
 			}
 		}
 	};
+
+	private GC sharedGC;
+
+	public Path addArc(Path path, Rectangle box, int startAngle, int angle) {
+		path.addArc(box.x, box.y, box.width, box.height, startAngle, angle);
+		return path;
+	}
+
+	public Path addRectangle(Path path, Rectangle rectangle) {
+		path.addRectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+		return path;
+	}
+
+	public Path addRoundRectangle(Path path, Rectangle rectangle, int radius) {
+		Rectangle box = new Rectangle(0, 0, radius * 2, radius * 2);
+		relocateTopRightWith(box, rectangle);
+
+		moveTo(path, getTopRight(rectangle));
+		addArc(path, box, 0, 90);
+
+		relocateTopLeftWith(box, rectangle);
+		lineTo(path, getTop(box));
+		addArc(path, box, 90, 90);
+
+		relocateBottomLeftWith(box, rectangle);
+		lineTo(path, getLeft(box));
+		addArc(path, box, 180, 90);
+
+		relocateBottomRightWith(box, rectangle);
+		lineTo(path, getBottom(box));
+		addArc(path, box, 270, 90);
+		lineTo(path, translate(getTopRight(rectangle), 0, radius));
+
+		return path;
+	}
+
+	public Path addString(Path me, String text, Point location, Font font) {
+		me.addString(text, location.x, location.y, font);
+		return me;
+	}
+
+	public void asyncExec(final Procedure1<Void> procedure) {
+		getDisplay().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				procedure.apply(null);
+			}
+		});
+	}
 
 	public <T extends Resource> T autoDispose(T resource) {
 		scheduleAutoRelease(resource);
@@ -411,6 +462,18 @@ public class SWTExtensions {
 		return getDisplay().getSystemColor(SWT.COLOR_YELLOW);
 	}
 
+	public Point computeTextExtent(String text, Font font) {
+		GC gc = getSharedGC();
+		gc.setFont(font);
+		return gc.textExtent(text);
+	}
+
+	public Point computeTextExtent(String text, Font font, int flags) {
+		GC gc = getSharedGC();
+		gc.setFont(font);
+		return gc.textExtent(text, flags);
+	}
+
 	public boolean contains(Point size, Point targetSize) {
 		return size.x >= targetSize.x && size.y >= targetSize.y;
 	}
@@ -421,6 +484,11 @@ public class SWTExtensions {
 
 	public boolean contains(Rectangle me, Rectangle other) {
 		return me.x <= other.x && me.y <= other.y && (me.x + me.width) >= (other.x + other.width) && (me.y + me.height) >= (other.y + other.height);
+	}
+
+	public Path cubicTo(Path path, Point c1, Point c2, Point destination) {
+		path.cubicTo(c1.x, c1.y, c2.x, c2.y, destination.x, destination.y);
+		return path;
 	}
 
 	/**
@@ -545,6 +613,10 @@ public class SWTExtensions {
 		return display;
 	}
 
+	public double getDistanceTo(Point me, Point to) {
+		return Math.sqrt(Math.pow(to.x - me.x, 2) + Math.pow(to.y - me.y, 2));
+	}
+
 	public Rectangle getExpanded(Rectangle rectangle, int amount) {
 		return expand(getCopy(rectangle), amount);
 	}
@@ -634,6 +706,90 @@ public class SWTExtensions {
 		return MENU_BAR_HEIGHT;
 	}
 
+	public Point getNegated(Point me) {
+		return negate(getCopy(me));
+	}
+
+	public Rectangle getRelocatedBottomLeftWith(Rectangle me, Point BottomLeft) {
+		return relocateBottomLeftWith(getCopy(me), BottomLeft);
+	}
+
+	public Rectangle getRelocatedBottomLeftWith(Rectangle me, Rectangle offset) {
+		return relocateBottomLeftWith(getCopy(me), offset);
+	}
+
+	public Rectangle getRelocatedBottomRightWith(Rectangle me, Point BottomRight) {
+		return relocateBottomRightWith(getCopy(me), BottomRight);
+	}
+
+	public Rectangle getRelocatedBottomRightWith(Rectangle me, Rectangle offset) {
+		return relocateBottomRightWith(getCopy(me), offset);
+	}
+
+	public Rectangle getRelocatedBottomTo(Rectangle me, Rectangle offset) {
+		return relocateBottomWith(getCopy(me), offset);
+	}
+
+	public Rectangle getRelocatedBottomWith(Rectangle me, Point Bottom) {
+		return relocateBottomWith(getCopy(me), Bottom);
+	}
+
+	public Rectangle getRelocatedBottomWith(Rectangle me, Rectangle offset) {
+		return relocateBottomWith(getCopy(me), offset);
+	}
+
+	public Rectangle getRelocatedCenterWith(Rectangle me, Point Center) {
+		return relocateCenterWith(getCopy(me), Center);
+	}
+
+	public Rectangle getRelocatedCenterWith(Rectangle me, Rectangle offset) {
+		return relocateCenterWith(getCopy(me), offset);
+	}
+
+	public Rectangle getRelocatedCetnerWith(Rectangle me, Rectangle offset) {
+		return relocateCenterWith(getCopy(me), offset);
+	}
+
+	public Rectangle getRelocatedLeftWith(Rectangle me, Point Left) {
+		return relocateLeftWith(getCopy(me), Left);
+	}
+
+	public Rectangle getRelocatedLeftWith(Rectangle me, Rectangle offset) {
+		return relocateLeftWith(getCopy(me), offset);
+	}
+
+	public Rectangle getRelocatedRightWith(Rectangle me, Point right) {
+		return relocateRightWith(getCopy(me), right);
+	}
+
+	public Rectangle getRelocatedRightWith(Rectangle me, Rectangle offset) {
+		return relocateRightWith(getCopy(me), offset);
+	}
+
+	public Rectangle getRelocatedTopLeftWith(Rectangle me, Point topLeft) {
+		return relocateTopLeftWith(getCopy(me), topLeft);
+	}
+
+	public Rectangle getRelocatedTopLeftWith(Rectangle me, Rectangle offset) {
+		return relocateTopLeftWith(getCopy(me), offset);
+	}
+
+	public Rectangle getRelocatedTopRightWith(Rectangle me, Point topRight) {
+		return relocateTopRightWith(getCopy(me), topRight);
+	}
+
+	public Rectangle getRelocatedTopRightWith(Rectangle me, Rectangle offset) {
+		return relocateTopRightWith(getCopy(me), offset);
+	}
+
+	public Rectangle getRelocatedTopWith(Rectangle me, Point topLeft) {
+		return relocateTopWith(getCopy(me), topLeft);
+	}
+
+	public Rectangle getRelocatedTopWith(Rectangle me, Rectangle offset) {
+		return relocateTopWith(getCopy(me), offset);
+	}
+
 	public Rectangle getResized(Rectangle rectangle, int widthDelta, int heightDelta) {
 		return resize(getCopy(rectangle), widthDelta, heightDelta);
 	}
@@ -652,6 +808,13 @@ public class SWTExtensions {
 
 	public Rectangle getScaled(Rectangle r, double scale) {
 		return scale(getCopy(r), scale);
+	}
+
+	public GC getSharedGC() {
+		if (sharedGC == null || sharedGC.isDisposed()) {
+			sharedGC = new GC(getDisplay());
+		}
+		return sharedGC;
 	}
 
 	public Rectangle getShrinked(Rectangle rectangle, int amount) {
@@ -710,6 +873,14 @@ public class SWTExtensions {
 		return translate(getCopy(source), delta);
 	}
 
+	public Point getTransposed(Point me) {
+		return new Point(me.y, me.x);
+	}
+
+	public Rectangle getTransposed(Rectangle me) {
+		return new Rectangle(me.y, me.x, me.height, me.width);
+	}
+
 	public Rectangle getUnionized(Rectangle me, int x, int y) {
 		return union(getCopy(me), x, y);
 	}
@@ -730,6 +901,27 @@ public class SWTExtensions {
 		if (initializer != null)
 			initializer.apply(widget);
 		return widget;
+	}
+
+	public Path lineTo(Path path, Point location) {
+		path.lineTo(location.x, location.y);
+		return path;
+	}
+
+	/**
+	 * 
+	 * @param path
+	 * @param location
+	 * @since 1.2.0
+	 * @return current context.
+	 */
+	public Path moveTo(Path path, Point location) {
+		path.moveTo(location.x, location.y);
+		return path;
+	}
+
+	public Point negate(Point point) {
+		return new Point(-point.x, -point.y);
 	}
 
 	public Button newButton(final Composite parent, int style, Procedure1<? super Button> initializer) {
@@ -823,6 +1015,10 @@ public class SWTExtensions {
 		return new Pattern(getDisplay(), from.x, from.y, to.x, to.y, fromColor, toColor);
 	}
 
+	public Pattern newGradient(Point from, Point to, Color fromColor, int fromAlpha, Color toColor, int toAlpha) {
+		return new Pattern(getDisplay(), from.x, from.y, to.x, to.y, fromColor, fromAlpha, toColor, toAlpha);
+	}
+
 	public GridData newGridData(final Procedure1<? super GridData> initializer) {
 		GridData gridData = new GridData();
 		if (initializer != null)
@@ -895,6 +1091,14 @@ public class SWTExtensions {
 		if (initializer != null)
 			initializer.apply(label);
 		return label;
+	}
+
+	public Path newPath(Procedure1<Path> initializer) {
+		Path path = new Path(getDisplay());
+		if (initializer != null) {
+			initializer.apply(path);
+		}
+		return path;
 	}
 
 	public Button newPushButton(final Composite parent, final Procedure1<? super Button> initializer) {
@@ -1073,6 +1277,15 @@ public class SWTExtensions {
 		return text;
 	}
 
+	public Thread newThread(final Procedure1<Thread> runnable) {
+		return new Thread(new Runnable() {
+			@Override
+			public void run() {
+				runnable.apply(Thread.currentThread());
+			}
+		});
+	}
+
 	public ToolBar newToolBar(final Composite parent, int style, final Procedure1<? super ToolBar> initializer) {
 		ToolBar toolBar = new ToolBar(parent, style);
 		if (initializer != null)
@@ -1099,6 +1312,14 @@ public class SWTExtensions {
 		if (initializer != null)
 			initializer.apply(item);
 		return item;
+	}
+
+	public Transform newTransform(Procedure1<Transform> initializer) {
+		Transform transform = new Transform(getDisplay());
+		if (initializer != null) {
+			initializer.apply(transform);
+		}
+		return transform;
 	}
 
 	public Tree newTree(Composite parent, int style, final Procedure1<Tree> initializer) {
@@ -1174,6 +1395,101 @@ public class SWTExtensions {
 		return e1 | e2;
 	}
 
+	public Path quadTo(Path path, Point c, Point destination) {
+		path.quadTo(c.x, c.y, destination.x, destination.y);
+		return path;
+	}
+
+	public Rectangle relocateBottomLeftWith(Rectangle me, Point bottomLeft) {
+		me.x = bottomLeft.x;
+		me.y = bottomLeft.y - me.height;
+		return me;
+	}
+
+	public Rectangle relocateBottomLeftWith(Rectangle me, Rectangle offset) {
+		return relocateBottomLeftWith(me, getBottomLeft(offset));
+	}
+
+	public Rectangle relocateBottomRightWith(Rectangle me, Point bottomRight) {
+		me.x = bottomRight.x - me.width;
+		me.y = bottomRight.y - me.height;
+		return me;
+	}
+
+	public Rectangle relocateBottomRightWith(Rectangle me, Rectangle offset) {
+		return relocateBottomRightWith(me, getBottomRight(offset));
+	}
+
+	public Rectangle relocateBottomWith(Rectangle me, Point bottom) {
+		me.x = bottom.x - me.width / 2;
+		me.y = bottom.y - me.height;
+		return me;
+	}
+
+	public Rectangle relocateBottomWith(Rectangle me, Rectangle offset) {
+		return relocateBottomWith(me, getBottom(offset));
+	}
+
+	public Rectangle relocateCenterWith(Rectangle me, Point center) {
+		me.x = center.x - me.width / 2;
+		me.y = center.y - me.height / 2;
+		return me;
+	}
+
+	public Rectangle relocateCenterWith(Rectangle me, Rectangle other) {
+		return relocateCenterWith(me, getCenter(other));
+	}
+
+	public Rectangle relocateLeftWith(Rectangle me, Point left) {
+		me.x = left.x;
+		me.y = left.y - me.height / 2;
+		return me;
+	}
+
+	public Rectangle relocateLeftWith(Rectangle me, Rectangle offset) {
+		return relocateLeftWith(me, getLeft(offset));
+	}
+
+	public Rectangle relocateRightWith(Rectangle me, Point right) {
+		me.x = right.x - me.width;
+		me.y = right.y - me.height / 2;
+		return me;
+	}
+
+	public Rectangle relocateRightWith(Rectangle me, Rectangle offset) {
+		return relocateRightWith(me, getRight(offset));
+	}
+
+	public Rectangle relocateTopLeftWith(Rectangle me, Point topLeft) {
+		me.x = topLeft.x;
+		me.y = topLeft.y;
+		return me;
+	}
+
+	public Rectangle relocateTopLeftWith(Rectangle me, Rectangle offset) {
+		return relocateTopLeftWith(me, getTopLeft(offset));
+	}
+
+	public Rectangle relocateTopRightWith(Rectangle me, Point topRight) {
+		me.x = topRight.x - me.width;
+		me.y = topRight.y;
+		return me;
+	}
+
+	public Rectangle relocateTopRightWith(Rectangle me, Rectangle offset) {
+		return relocateTopRightWith(me, getTopRight(offset));
+	}
+
+	public Rectangle relocateTopWith(Rectangle me, Point top) {
+		me.x = top.x - me.width / 2;
+		me.y = top.y;
+		return me;
+	}
+
+	public Rectangle relocateTopWith(Rectangle me, Rectangle offset) {
+		return relocateTopWith(me, getTop(offset));
+	}
+
 	public Rectangle resize(Rectangle rectangle, int width, int height) {
 		rectangle.width += width;
 		rectangle.height += height;
@@ -1210,6 +1526,11 @@ public class SWTExtensions {
 		p.width *= scale;
 		p.height *= scale;
 		return p;
+	}
+
+	public Transform scale(Transform me, float scale) {
+		me.scale(scale, scale);
+		return me;
 	}
 
 	public void schedule(final Procedure1<Display> p) {
@@ -1671,6 +1992,15 @@ public class SWTExtensions {
 		return expand(rectangle, -inset.x, -inset.y, -inset.width, -inset.height);
 	}
 
+	public void syncExec(final Procedure1<Void> procedure) {
+		getDisplay().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				procedure.apply(null);
+			}
+		});
+	}
+
 	/**
 	 * Converts {@link Color} object to {@link HSB} Object.
 	 * 
@@ -1722,6 +2052,27 @@ public class SWTExtensions {
 		return translate(rectangle, delta.x, delta.y);
 	}
 
+	public Transform translate(Transform me, Point location) {
+		me.translate(location.x, location.y);
+		return me;
+	}
+
+	public Point transpose(Point me) {
+		Point copy = getCopy(me);
+		me.x = copy.y;
+		me.y = copy.x;
+		return me;
+	}
+
+	public Rectangle transpose(Rectangle me) {
+		Rectangle copy = getCopy(me);
+		me.x = copy.y;
+		me.y = copy.x;
+		me.width = copy.height;
+		me.height = copy.width;
+		return me;
+	}
+
 	public Rectangle union(Rectangle rectangle, int x, int y) {
 		if (x < rectangle.x) {
 			rectangle.width += rectangle.x - x;
@@ -1765,5 +2116,4 @@ public class SWTExtensions {
 	public Rectangle union(Rectangle me, Rectangle other) {
 		return union(me, other.x, other.y, other.width, other.height);
 	}
-
 }
