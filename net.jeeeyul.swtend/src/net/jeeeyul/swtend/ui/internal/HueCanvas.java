@@ -126,6 +126,9 @@ public class HueCanvas extends Canvas {
 	}
 
 	private void doNotifySelection() {
+		if(isDisposed()){
+			return;
+		}
 		Event e = new Event();
 		e.widget = this;
 		notifyListeners(SWT.Selection, e);
