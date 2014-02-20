@@ -13,3 +13,4 @@ Export-Package: net.jeeeyul.swtend,
  net.jeeeyul.swtend.ui
 Bundle-Activator: net.jeeeyul.swtend.SWTendCore
 Bundle-ActivationPolicy: lazy
+Bundle-Vendor: jeeeyul@gmail.com
