@@ -43,3 +43,21 @@ var ui = newComposite[
 ### Custom Controls
 * ColorPicker
 * ColorWell
+
+
+### Auto Dispose
+```xtend
+var shell = ...
+var Image img = ...
+
+// img will be disposed when shell is disposed
+img.shouldDisposeWith(shell)
+// same with "shell.chainDispose(img);"
+
+shell.onPaint = [
+  // red will be disposed next event loop
+  var red = new Color(display, 255, 0, 0).autoDispose()
+  
+  gc.background = red;
+  gc.fillRectangle(shell.clientArea)
+]
