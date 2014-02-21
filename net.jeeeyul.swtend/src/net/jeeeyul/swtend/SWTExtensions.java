@@ -28,6 +28,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Resource;
+import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -508,6 +509,64 @@ public class SWTExtensions {
 		gc.drawImage(image, sourceArea.x, sourceArea.y, sourceArea.width, sourceArea.height, targetArea.x, targetArea.y, targetArea.width, targetArea.height);
 	}
 
+	public GC drawOval(GC gc, Rectangle rectangle) {
+		gc.drawOval(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+		return gc;
+	}
+
+	public GC drawRoundRectangle(GC gc, Rectangle rectangle, int radius) {
+		gc.drawRoundRectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height, radius, radius);
+		return gc;
+	}
+
+	public void drawString(GC gc, String string, Point location) {
+		gc.drawString(string, location.x, location.y, true);
+	}
+
+	public GC drawTestGrid(GC gc, Rectangle bounds, int gridSize, Color gridColor, int gridAlpha) {
+		gc.setForeground(gridColor);
+		gc.setLineStyle(SWT.LINE_SOLID);
+		gc.setLineWidth(1);
+		gc.setAlpha(gridAlpha);
+		for (int x = bounds.x; x < bounds.x + bounds.width; x += gridSize) {
+			gc.drawLine(x, bounds.y, x, bounds.y + bounds.height);
+		}
+
+		for (int y = bounds.y; y < bounds.y + bounds.height; y += gridSize) {
+			gc.drawLine(bounds.x, y, bounds.x + bounds.width, y);
+		}
+
+		return gc;
+	}
+
+	public GC drawTestSize(GC gc, Rectangle bounds, int horizontalAlign, int verticalAlign, Color textColor, int textAlpha) {
+
+		gc.setForeground(textColor);
+		gc.setAlpha(textAlpha);
+		String text = bounds.width + "x" + bounds.height;
+		Rectangle textArea = newRectangle(new Point(0, 0), gc.textExtent(text));
+
+		if ((horizontalAlign & SWT.LEFT) != 0) {
+			textArea.x = bounds.x;
+		} else if ((horizontalAlign & SWT.CENTER) != 0) {
+			textArea.x = bounds.x + (bounds.width - textArea.width) / 2;
+		} else if ((horizontalAlign & SWT.RIGHT) != 0) {
+			textArea.x = bounds.x + bounds.width - textArea.width;
+		}
+
+		if ((verticalAlign & SWT.TOP) != 0) {
+			textArea.y = bounds.y;
+		} else if ((verticalAlign & SWT.CENTER) != 0) {
+			textArea.y = bounds.y + (bounds.height - textArea.height) / 2;
+		} else if ((verticalAlign & SWT.BOTTOM) != 0) {
+			textArea.y = bounds.y + bounds.height - textArea.height;
+		}
+
+		drawString(gc, text, getTopLeft(textArea));
+
+		return gc;
+	}
+
 	public Rectangle expand(Rectangle rectangle, int amount) {
 		return expand(rectangle, amount, amount, amount, amount);
 	}
@@ -530,6 +589,36 @@ public class SWTExtensions {
 
 	public Rectangle expand(Rectangle rectangle, Rectangle inset) {
 		return expand(rectangle, inset.x, inset.y, inset.width, inset.height);
+	}
+
+	public GC fill(GC gc, Rectangle rectangle) {
+		gc.fillRectangle(rectangle);
+		return gc;
+	}
+	
+	public GC fill(GC gc, Path path) {
+		gc.fillPath(path);
+		return gc;
+	}
+	
+	public GC fill(GC gc, int[] pointArray){
+		gc.fillPolygon(pointArray);
+		return gc;
+	}
+	
+	public GC draw(GC gc, Rectangle rectangle){
+		gc.drawRectangle(rectangle);
+		return gc;
+	}
+	
+	public GC draw(GC gc, Path path){
+		gc.drawPath(path);
+		return gc;
+	}
+	
+	public GC draw(GC gc, int[] pointArray){
+		gc.drawPolygon(pointArray);
+		return gc;
 	}
 
 	public GridData FILL_BOTH() {
@@ -561,18 +650,8 @@ public class SWTExtensions {
 		return gc;
 	}
 
-	public GC drawOval(GC gc, Rectangle rectangle) {
-		gc.drawOval(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-		return gc;
-	}
-
 	public GC fillRoundRectangle(GC gc, Rectangle rectangle, int radius) {
 		gc.fillRoundRectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height, radius, radius);
-		return gc;
-	}
-	
-	public GC drawRoundRectangle(GC gc, Rectangle rectangle, int radius) {
-		gc.drawRoundRectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height, radius, radius);
 		return gc;
 	}
 
@@ -600,6 +679,10 @@ public class SWTExtensions {
 
 	public Point getBottomRight(Rectangle rectangle) {
 		return new Point(rectangle.x + rectangle.width, rectangle.y + rectangle.height);
+	}
+
+	public Rectangle getBounds(Event e) {
+		return new Rectangle(e.x, e.y, e.width, e.height);
 	}
 
 	public Point getCenter(Rectangle rectangle) {
@@ -647,31 +730,31 @@ public class SWTExtensions {
 		return expand(getCopy(rectangle), insets);
 	}
 
-	public Image getICON_CANCEL() {
+	public Image ICON_CANCEL() {
 		return getDisplay().getSystemImage(SWT.ICON_CANCEL);
 	}
 
-	public Image getICON_ERROR() {
+	public Image ICON_ERROR() {
 		return getDisplay().getSystemImage(SWT.ICON_ERROR);
 	}
 
-	public Image getICON_INFORMATION() {
+	public Image ICON_INFORMATION() {
 		return getDisplay().getSystemImage(SWT.ICON_INFORMATION);
 	}
 
-	public Image getICON_QUESTION() {
+	public Image ICON_QUESTION() {
 		return getDisplay().getSystemImage(SWT.ICON_QUESTION);
 	}
 
-	public Image getICON_SEARCH() {
+	public Image ICON_SEARCH() {
 		return getDisplay().getSystemImage(SWT.ICON_SEARCH);
 	}
 
-	public Image getICON_WARNING() {
+	public Image ICON_WARNING() {
 		return getDisplay().getSystemImage(SWT.ICON_WARNING);
 	}
 
-	public Image getICON_WORKING() {
+	public Image ICON_WORKING() {
 		return getDisplay().getSystemImage(SWT.ICON_WORKING);
 	}
 
@@ -686,6 +769,10 @@ public class SWTExtensions {
 
 	public Point getLeft(Rectangle rectangle) {
 		return new Point(rectangle.x, rectangle.y + rectangle.height / 2);
+	}
+
+	public Point getLocation(Event e) {
+		return new Point(e.x, e.y);
 	}
 
 	public Point getLocation(Rectangle rectangle) {
@@ -845,6 +932,10 @@ public class SWTExtensions {
 
 	public Rectangle getShrinked(Rectangle rectangle, Rectangle insets) {
 		return shrink(getCopy(rectangle), insets);
+	}
+
+	public Point getSize(Event e) {
+		return new Point(e.width, e.height);
 	}
 
 	public Point getSize(ImageData imageData) {
@@ -1084,6 +1175,14 @@ public class SWTExtensions {
 		return separator;
 	}
 
+	public Rectangle newInsets(int insets) {
+		return new Rectangle(insets, insets, insets, insets);
+	}
+
+	public Rectangle newInsets(int left, int top, int right, int bottom) {
+		return new Rectangle(left, top, right, bottom);
+	}
+
 	public Label newLabel(final Composite parent, final Procedure1<? super Label> initializer) {
 		Label label = new Label(parent, SWT.NORMAL);
 		if (initializer != null)
@@ -1143,6 +1242,18 @@ public class SWTExtensions {
 		if (initializer != null)
 			initializer.apply(label);
 		return label;
+	}
+	
+	public Rectangle newRectangle(){
+		return new Rectangle(0, 0, 0, 0);
+	}
+
+	public Rectangle newRectangle(Point location, Point size) {
+		return new Rectangle(location.x, location.y, size.x, size.y);
+	}
+	
+	public Rectangle newRectangleWithSize( Point size) {
+		return new Rectangle(0, 0, size.x, size.y);
 	}
 
 	public TreeItem newRootItem(Tree tree, final Procedure1<TreeItem> initializer) {
@@ -1225,6 +1336,10 @@ public class SWTExtensions {
 		if (initializer != null)
 			initializer.apply(shell);
 		return shell;
+	}
+
+	public Point newSize(int width, int height) {
+		return new Point(width, height);
 	}
 
 	public TreeItem newSubItem(TreeItem parent, final Procedure1<TreeItem> initializer) {
@@ -1521,12 +1636,28 @@ public class SWTExtensions {
 	}
 
 	public void runLoop(final Shell s) {
+		if(s.isDisposed()){
+			return;
+		}
 		while (!s.isDisposed()) {
 			if (!getDisplay().readAndDispatch()) {
 				getDisplay().sleep();
 			}
 		}
 	}
+	
+	public void openAndRunLoop(final Shell s) {
+		if(s.isDisposed()){
+			return;
+		}
+		s.open();
+		while (!s.isDisposed()) {
+			if (!getDisplay().readAndDispatch()) {
+				getDisplay().sleep();
+			}
+		}
+	}
+
 
 	public void safeDispose(Resource resource) {
 		if (resource != null && !resource.isDisposed()) {
@@ -1806,13 +1937,8 @@ public class SWTExtensions {
 		});
 	}
 
-	public <T extends Control> void setOnMeasureItem(final T control, final Procedure1<Event> handler) {
-		control.addListener(SWT.MeasureItem, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public <T extends Control> void setOnMeasureItem(final T control, Listener handler) {
+		control.addListener(SWT.MeasureItem, handler);
 	}
 
 	public <T extends Control> void setOnModified(final T control, final Procedure1<Event> handler) {
@@ -1932,31 +2058,16 @@ public class SWTExtensions {
 		});
 	}
 
-	public void setOnPaint(Control control, final Procedure1<Event> renderer) {
-		control.addListener(SWT.Paint, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				renderer.apply(event);
-			}
-		});
+	public void setOnPaint(Control control, Listener renderer) {
+		control.addListener(SWT.Paint, renderer);
 	}
 
-	public <T extends Control> void setOnPaintItem(final T control, final Procedure1<Event> handler) {
-		control.addListener(SWT.PaintItem, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public <T extends Control> void setOnPaintItem(final T control, Listener handler) {
+		control.addListener(SWT.PaintItem, handler);
 	}
 
-	public void setOnResize(final Control control, final Procedure1<Event> function) {
-		control.addListener(SWT.Resize, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnResize(final Control control, Listener listener) {
+		control.addListener(SWT.Resize, listener);
 	}
 
 	public <T extends Widget> void setOnSelection(final T w, final Procedure1<Event> handler) {
@@ -1968,13 +2079,8 @@ public class SWTExtensions {
 		});
 	}
 
-	public void setOnShow(final Shell control, final Procedure1<Event> function) {
-		control.addListener(SWT.Show, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnShow(final Shell shell, Listener listener) {
+		shell.addListener(SWT.Show, listener);
 	}
 
 	public <T extends Control> void setOnTraverse(final T control, final Procedure1<Event> handler) {
@@ -2056,6 +2162,41 @@ public class SWTExtensions {
 		});
 	}
 
+	public <T extends Control> T showTestGrid(T control) {
+		return showTestGrid(control, 10, COLOR_RED(), 100);
+	}
+
+	public <T extends Control> T showTestGrid(final T control, final int gridSize, final Color color, final int alpha) {
+		control.addListener(SWT.Paint, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				Rectangle relativeBounds = relocateTopLeftWith(control.getBounds(), new Point(0, 0));
+				drawTestGrid(event.gc, relativeBounds, gridSize, color, alpha);
+			}
+		});
+
+		return control;
+	}
+
+	public <T extends Control> T showTestSize(final T control, final int horizontal, final int vertical, final Color color, final int alpha) {
+		control.addListener(SWT.Paint, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				Rectangle relativeBounds = relocateTopLeftWith(control.getBounds(), new Point(0, 0));
+				drawTestSize(event.gc, relativeBounds, horizontal, vertical, color, alpha);
+			}
+		});
+		return control;
+	}
+
+	public <T extends Control> T showTestSize(final T control, final Color color, final int alpha) {
+		return showTestSize(control, SWT.CENTER, SWT.CENTER, color, alpha);
+	}
+
+	public <T extends Control> T showTestSize(final T control) {
+		return showTestSize(control, SWT.CENTER, SWT.CENTER, COLOR_RED(), 255);
+	}
+
 	public Rectangle shrink(Rectangle rectangle, int amount) {
 		return expand(rectangle, -amount);
 	}
@@ -2116,18 +2257,10 @@ public class SWTExtensions {
 		return new Rectangle(point.x, point.y, 0, 0);
 	}
 
-	public Rectangle newRectangle(Point location, Point size) {
-		return new Rectangle(location.x, location.y, size.x, size.y);
-	}
-
 	public Point translate(Point point, int dx, int dy) {
 		point.x += dx;
 		point.y += dy;
 		return point;
-	}
-
-	public void drawString(GC gc, String string, Point location) {
-		gc.drawString(string, location.x, location.y);
 	}
 
 	public Point translate(Point point, Point delta) {
@@ -2201,11 +2334,44 @@ public class SWTExtensions {
 		return me;
 	}
 
+	public boolean hasFlags(int flags, int... mask) {
+		for (int each : mask) {
+			if ((flags & each) == 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public Rectangle union(Rectangle me, Point point) {
 		return union(me, point.x, point.y);
 	}
 
 	public Rectangle union(Rectangle me, Rectangle other) {
 		return union(me, other.x, other.y, other.width, other.height);
+	}
+
+	public String shortenText(GC gc, String text, int width, String ellipses) {
+		return shortenText(gc, text, width, ellipses, SWT.DRAW_TRANSPARENT | SWT.DRAW_MNEMONIC);
+	}
+
+	public String shortenText(GC gc, String text, int width, String ellipses, int flags) {
+		if (gc.textExtent(text, flags).x <= width)
+			return text;
+		int ellipseWidth = gc.textExtent(ellipses, flags).x;
+		int length = text.length();
+		TextLayout layout = new TextLayout(getDisplay());
+		layout.setText(text);
+		int end = layout.getPreviousOffset(length, SWT.MOVEMENT_CLUSTER);
+		while (end > 0) {
+			text = text.substring(0, end);
+			int l = gc.textExtent(text, flags).x;
+			if (l + ellipseWidth <= width) {
+				break;
+			}
+			end = layout.getPreviousOffset(end, SWT.MOVEMENT_CLUSTER);
+		}
+		layout.dispose();
+		return end == 0 ? text.substring(0, 1) : text + ellipses;
 	}
 }

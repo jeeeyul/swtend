@@ -54,5 +54,4 @@ class TreeUI {
 		shell.open()
 		shell.runLoop()
 	}
-
 }

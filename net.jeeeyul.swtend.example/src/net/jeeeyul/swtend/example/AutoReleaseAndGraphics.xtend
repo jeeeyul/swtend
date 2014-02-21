@@ -15,7 +15,7 @@ class AutoReleaseAndGraphics {
 
 	def run() {
 		val Color green = new Color(display, 0, 255, 0);
-
+		
 		val shell = newShell[
 			size = new Point(400, 300)
 			onPaint = [ 
@@ -62,6 +62,7 @@ class AutoReleaseAndGraphics {
 
 		// green will be dispose when shell is disposed.
 		green.shouldDisposeWith(shell)
+		
 		shell.open()
 		shell.runLoop()
 
