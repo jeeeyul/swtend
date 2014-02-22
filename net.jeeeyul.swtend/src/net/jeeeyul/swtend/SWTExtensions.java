@@ -34,6 +34,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -1051,6 +1052,14 @@ public class SWTExtensions {
 		if (initializer != null)
 			initializer.apply(combo);
 		return combo;
+	}
+	
+	public Canvas newCanvas(final Composite parent, Procedure1<Canvas> initializer){
+		Canvas canvas = new Canvas(parent, SWT.DOUBLE_BUFFERED);
+		if(initializer != null){
+			initializer.apply(canvas);
+		}
+		return canvas;
 	}
 
 	public Composite newComposite(final Composite parent, int style, final Procedure1<? super Composite> initializer) {
