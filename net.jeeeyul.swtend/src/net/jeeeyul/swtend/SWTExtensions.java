@@ -506,6 +506,33 @@ public class SWTExtensions {
 		return gc;
 	}
 
+	public GC draw(GC gc, Point... polygon) {
+		int[] array = toIntArray(polygon);
+		gc.drawPolygon(array);
+		return gc;
+	}
+
+	public GC drawLine(GC gc, Point... polygon) {
+		int[] array = toIntArray(polygon);
+		gc.drawPolyline(array);
+		return gc;
+	}
+
+	public GC fill(GC gc, Point... polygon) {
+		gc.fillPolygon(toIntArray(polygon));
+		return gc;
+	}
+
+	private int[] toIntArray(Point... polygon) {
+		int[] array = new int[polygon.length * 2];
+		int index = 0;
+		for (Point each : polygon) {
+			array[index++] = each.x;
+			array[index++] = each.y;
+		}
+		return array;
+	}
+
 	public void drawImage(GC gc, Image image, Rectangle sourceArea, Rectangle targetArea) {
 		gc.drawImage(image, sourceArea.x, sourceArea.y, sourceArea.width, sourceArea.height, targetArea.x, targetArea.y, targetArea.width, targetArea.height);
 	}
@@ -596,28 +623,28 @@ public class SWTExtensions {
 		gc.fillRectangle(rectangle);
 		return gc;
 	}
-	
+
 	public GC fill(GC gc, Path path) {
 		gc.fillPath(path);
 		return gc;
 	}
-	
-	public GC fill(GC gc, int[] pointArray){
+
+	public GC fill(GC gc, int[] pointArray) {
 		gc.fillPolygon(pointArray);
 		return gc;
 	}
-	
-	public GC draw(GC gc, Rectangle rectangle){
+
+	public GC draw(GC gc, Rectangle rectangle) {
 		gc.drawRectangle(rectangle);
 		return gc;
 	}
-	
-	public GC draw(GC gc, Path path){
+
+	public GC draw(GC gc, Path path) {
 		gc.drawPath(path);
 		return gc;
 	}
-	
-	public GC draw(GC gc, int[] pointArray){
+
+	public GC draw(GC gc, int[] pointArray) {
 		gc.drawPolygon(pointArray);
 		return gc;
 	}
@@ -1053,10 +1080,10 @@ public class SWTExtensions {
 			initializer.apply(combo);
 		return combo;
 	}
-	
-	public Canvas newCanvas(final Composite parent, Procedure1<Canvas> initializer){
+
+	public Canvas newCanvas(final Composite parent, Procedure1<Canvas> initializer) {
 		Canvas canvas = new Canvas(parent, SWT.DOUBLE_BUFFERED);
-		if(initializer != null){
+		if (initializer != null) {
 			initializer.apply(canvas);
 		}
 		return canvas;
@@ -1252,16 +1279,16 @@ public class SWTExtensions {
 			initializer.apply(label);
 		return label;
 	}
-	
-	public Rectangle newRectangle(){
+
+	public Rectangle newRectangle() {
 		return new Rectangle(0, 0, 0, 0);
 	}
 
 	public Rectangle newRectangle(Point location, Point size) {
 		return new Rectangle(location.x, location.y, size.x, size.y);
 	}
-	
-	public Rectangle newRectangleWithSize( Point size) {
+
+	public Rectangle newRectangleWithSize(Point size) {
 		return new Rectangle(0, 0, size.x, size.y);
 	}
 
@@ -1645,7 +1672,7 @@ public class SWTExtensions {
 	}
 
 	public void runLoop(final Shell s) {
-		if(s.isDisposed()){
+		if (s.isDisposed()) {
 			return;
 		}
 		while (!s.isDisposed()) {
@@ -1654,9 +1681,9 @@ public class SWTExtensions {
 			}
 		}
 	}
-	
+
 	public void openAndRunLoop(final Shell s) {
-		if(s.isDisposed()){
+		if (s.isDisposed()) {
 			return;
 		}
 		s.open();
@@ -1666,7 +1693,6 @@ public class SWTExtensions {
 			}
 		}
 	}
-
 
 	public void safeDispose(Resource resource) {
 		if (resource != null && !resource.isDisposed()) {
