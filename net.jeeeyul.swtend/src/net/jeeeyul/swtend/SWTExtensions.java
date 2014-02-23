@@ -2409,4 +2409,15 @@ public class SWTExtensions {
 		layout.dispose();
 		return end == 0 ? text.substring(0, 1) : text + ellipses;
 	}
+
+	public GC withClip(GC gc, Rectangle clip, Procedure1<GC> block) {
+		Rectangle oldClip = gc.getClipping();
+		if (block != null) {
+			gc.setClipping(clip);
+			block.apply(gc);
+		}
+
+		gc.setClipping(oldClip);
+		return gc;
+	}
 }
