@@ -2420,4 +2420,19 @@ public class SWTExtensions {
 		gc.setClipping(oldClip);
 		return gc;
 	}
+	
+	public GC withClip(GC gc, Path clip, Procedure1<GC> block) {
+		Rectangle oldClip = gc.getClipping();
+		if (block != null) {
+			gc.setClipping(clip);
+			block.apply(gc);
+		}
+
+		gc.setClipping(oldClip);
+		return gc;
+	}
+	
+	public Color toColor(HSB hsb){
+		return autoRelease(new Color(getDisplay(), hsb.toRGB()));
+	}
 }
