@@ -48,7 +48,12 @@ public class HSB {
 	}
 
 	public HSB(float[] hsb) {
-		this(hsb[0], hsb[1], hsb[2]);
+		if (hsb == null || hsb.length < 3) {
+			throw new IllegalArgumentException();
+		}
+		this.hue = hsb[0];
+		this.saturation = hsb[1];
+		this.brightness = hsb[2];
 	}
 
 	public HSB(int red, int green, int blue) {
@@ -71,17 +76,13 @@ public class HSB {
 			rgb.green = Integer.parseInt(htmlCode.substring(2, 4), 16);
 			rgb.blue = Integer.parseInt(htmlCode.substring(4, 6), 16);
 		} else if (htmlCode.matches("[0-9a-fA-F]{3}")) {
-			rgb.red = Integer.parseInt(
-					htmlCode.substring(0, 1) + htmlCode.substring(0, 1), 16);
-			rgb.green = Integer.parseInt(
-					htmlCode.substring(1, 2) + htmlCode.substring(1, 2), 16);
-			rgb.blue = Integer.parseInt(
-					htmlCode.substring(2, 3) + htmlCode.substring(2, 3), 16);
+			rgb.red = Integer.parseInt(htmlCode.substring(0, 1) + htmlCode.substring(0, 1), 16);
+			rgb.green = Integer.parseInt(htmlCode.substring(1, 2) + htmlCode.substring(1, 2), 16);
+			rgb.blue = Integer.parseInt(htmlCode.substring(2, 3) + htmlCode.substring(2, 3), 16);
 		}
 
 		else {
-			throw new UnsupportedOperationException(htmlCode
-					+ " is not supported color code.");
+			throw new UnsupportedOperationException(htmlCode + " is not supported color code.");
 		}
 
 		float[] hsb = rgb.getHSB();
@@ -102,8 +103,7 @@ public class HSB {
 	public boolean equals(Object obj) {
 		if (obj instanceof HSB) {
 			HSB other = (HSB) obj;
-			return this.hue == other.hue && this.saturation == other.saturation
-					&& this.brightness == other.brightness;
+			return this.hue == other.hue && this.saturation == other.saturation && this.brightness == other.brightness;
 		}
 		return super.equals(obj);
 	}
@@ -126,12 +126,9 @@ public class HSB {
 		RGB otherRGB = color.toRGB();
 		RGB newRGB = new RGB(0, 0, 0);
 
-		newRGB.red = (int) (thisRGB.red * (1f - strength) + otherRGB.red
-				* strength);
-		newRGB.green = (int) (thisRGB.green * (1f - strength) + otherRGB.green
-				* strength);
-		newRGB.blue = (int) (thisRGB.blue * (1f - strength) + otherRGB.blue
-				* strength);
+		newRGB.red = (int) (thisRGB.red * (1f - strength) + otherRGB.red * strength);
+		newRGB.green = (int) (thisRGB.green * (1f - strength) + otherRGB.green * strength);
+		newRGB.blue = (int) (thisRGB.blue * (1f - strength) + otherRGB.blue * strength);
 
 		float[] hsb = newRGB.getHSB();
 
@@ -147,8 +144,7 @@ public class HSB {
 	}
 
 	public String serialize() {
-		return String.format(Locale.ENGLISH, "%f|%f|%f", hue, saturation,
-				brightness);
+		return String.format(Locale.ENGLISH, "%f|%f|%f", hue, saturation, brightness);
 	}
 
 	public float[] toArray() {

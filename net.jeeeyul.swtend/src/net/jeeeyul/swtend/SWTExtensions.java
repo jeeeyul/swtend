@@ -501,8 +501,13 @@ public class SWTExtensions {
 		return getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY);
 	}
 
-	public GC drawImage(GC gc, Image image, Point location) {
-		gc.drawImage(image, location.x, location.y);
+	public GC draw(GC gc, int[] pointArray) {
+		gc.drawPolygon(pointArray);
+		return gc;
+	}
+
+	public GC draw(GC gc, Path path) {
+		gc.drawPath(path);
 		return gc;
 	}
 
@@ -512,29 +517,24 @@ public class SWTExtensions {
 		return gc;
 	}
 
-	public GC drawLine(GC gc, Point... polygon) {
-		int[] array = toIntArray(polygon);
-		gc.drawPolyline(array);
+	public GC draw(GC gc, Rectangle rectangle) {
+		gc.drawRectangle(rectangle);
 		return gc;
 	}
 
-	public GC fill(GC gc, Point... polygon) {
-		gc.fillPolygon(toIntArray(polygon));
+	public GC drawImage(GC gc, Image image, Point location) {
+		gc.drawImage(image, location.x, location.y);
 		return gc;
-	}
-
-	private int[] toIntArray(Point... polygon) {
-		int[] array = new int[polygon.length * 2];
-		int index = 0;
-		for (Point each : polygon) {
-			array[index++] = each.x;
-			array[index++] = each.y;
-		}
-		return array;
 	}
 
 	public void drawImage(GC gc, Image image, Rectangle sourceArea, Rectangle targetArea) {
 		gc.drawImage(image, sourceArea.x, sourceArea.y, sourceArea.width, sourceArea.height, targetArea.x, targetArea.y, targetArea.width, targetArea.height);
+	}
+
+	public GC drawLine(GC gc, Point... polygon) {
+		int[] array = toIntArray(polygon);
+		gc.drawPolyline(array);
+		return gc;
 	}
 
 	public GC drawOval(GC gc, Rectangle rectangle) {
@@ -619,8 +619,8 @@ public class SWTExtensions {
 		return expand(rectangle, inset.x, inset.y, inset.width, inset.height);
 	}
 
-	public GC fill(GC gc, Rectangle rectangle) {
-		gc.fillRectangle(rectangle);
+	public GC fill(GC gc, int[] pointArray) {
+		gc.fillPolygon(pointArray);
 		return gc;
 	}
 
@@ -629,23 +629,13 @@ public class SWTExtensions {
 		return gc;
 	}
 
-	public GC fill(GC gc, int[] pointArray) {
-		gc.fillPolygon(pointArray);
+	public GC fill(GC gc, Point... polygon) {
+		gc.fillPolygon(toIntArray(polygon));
 		return gc;
 	}
 
-	public GC draw(GC gc, Rectangle rectangle) {
-		gc.drawRectangle(rectangle);
-		return gc;
-	}
-
-	public GC draw(GC gc, Path path) {
-		gc.drawPath(path);
-		return gc;
-	}
-
-	public GC draw(GC gc, int[] pointArray) {
-		gc.drawPolygon(pointArray);
+	public GC fill(GC gc, Rectangle rectangle) {
+		gc.fillRectangle(rectangle);
 		return gc;
 	}
 
@@ -756,34 +746,6 @@ public class SWTExtensions {
 
 	public Rectangle getExpanded(Rectangle rectangle, Rectangle insets) {
 		return expand(getCopy(rectangle), insets);
-	}
-
-	public Image ICON_CANCEL() {
-		return getDisplay().getSystemImage(SWT.ICON_CANCEL);
-	}
-
-	public Image ICON_ERROR() {
-		return getDisplay().getSystemImage(SWT.ICON_ERROR);
-	}
-
-	public Image ICON_INFORMATION() {
-		return getDisplay().getSystemImage(SWT.ICON_INFORMATION);
-	}
-
-	public Image ICON_QUESTION() {
-		return getDisplay().getSystemImage(SWT.ICON_QUESTION);
-	}
-
-	public Image ICON_SEARCH() {
-		return getDisplay().getSystemImage(SWT.ICON_SEARCH);
-	}
-
-	public Image ICON_WARNING() {
-		return getDisplay().getSystemImage(SWT.ICON_WARNING);
-	}
-
-	public Image ICON_WORKING() {
-		return getDisplay().getSystemImage(SWT.ICON_WORKING);
 	}
 
 	public ImageRegistry getImageRegistry() {
@@ -1026,6 +988,43 @@ public class SWTExtensions {
 		return union(getCopy(me), other);
 	}
 
+	public boolean hasFlags(int flags, int... mask) {
+		for (int each : mask) {
+			if ((flags & each) == 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public Image ICON_CANCEL() {
+		return getDisplay().getSystemImage(SWT.ICON_CANCEL);
+	}
+
+	public Image ICON_ERROR() {
+		return getDisplay().getSystemImage(SWT.ICON_ERROR);
+	}
+
+	public Image ICON_INFORMATION() {
+		return getDisplay().getSystemImage(SWT.ICON_INFORMATION);
+	}
+
+	public Image ICON_QUESTION() {
+		return getDisplay().getSystemImage(SWT.ICON_QUESTION);
+	}
+
+	public Image ICON_SEARCH() {
+		return getDisplay().getSystemImage(SWT.ICON_SEARCH);
+	}
+
+	public Image ICON_WARNING() {
+		return getDisplay().getSystemImage(SWT.ICON_WARNING);
+	}
+
+	public Image ICON_WORKING() {
+		return getDisplay().getSystemImage(SWT.ICON_WORKING);
+	}
+
 	public <T extends Object> T init(T widget, Procedure1<T> initializer) {
 		if (initializer != null)
 			initializer.apply(widget);
@@ -1060,6 +1059,14 @@ public class SWTExtensions {
 		return button;
 	}
 
+	public Canvas newCanvas(final Composite parent, Procedure1<Canvas> initializer) {
+		Canvas canvas = new Canvas(parent, SWT.DOUBLE_BUFFERED);
+		if (initializer != null) {
+			initializer.apply(canvas);
+		}
+		return canvas;
+	}
+
 	public Button newCheckbox(final Composite parent, final Procedure1<? super Button> initializer) {
 		Button button = new Button(parent, SWT.CHECK);
 		if (initializer != null)
@@ -1079,14 +1086,6 @@ public class SWTExtensions {
 		if (initializer != null)
 			initializer.apply(combo);
 		return combo;
-	}
-
-	public Canvas newCanvas(final Composite parent, Procedure1<Canvas> initializer) {
-		Canvas canvas = new Canvas(parent, SWT.DOUBLE_BUFFERED);
-		if (initializer != null) {
-			initializer.apply(canvas);
-		}
-		return canvas;
 	}
 
 	public Composite newComposite(final Composite parent, int style, final Procedure1<? super Composite> initializer) {
@@ -1558,6 +1557,18 @@ public class SWTExtensions {
 		});
 	}
 
+	public void openAndRunLoop(final Shell s) {
+		if (s.isDisposed()) {
+			return;
+		}
+		s.open();
+		while (!s.isDisposed()) {
+			if (!getDisplay().readAndDispatch()) {
+				getDisplay().sleep();
+			}
+		}
+	}
+
 	public int operator_and(int e1, int e2) {
 		return e1 & e2;
 	}
@@ -1675,18 +1686,6 @@ public class SWTExtensions {
 		if (s.isDisposed()) {
 			return;
 		}
-		while (!s.isDisposed()) {
-			if (!getDisplay().readAndDispatch()) {
-				getDisplay().sleep();
-			}
-		}
-	}
-
-	public void openAndRunLoop(final Shell s) {
-		if (s.isDisposed()) {
-			return;
-		}
-		s.open();
 		while (!s.isDisposed()) {
 			if (!getDisplay().readAndDispatch()) {
 				getDisplay().sleep();
@@ -2188,6 +2187,30 @@ public class SWTExtensions {
 		return s;
 	}
 
+	public String shortenText(GC gc, String text, int width, String ellipses) {
+		return shortenText(gc, text, width, ellipses, SWT.DRAW_TRANSPARENT | SWT.DRAW_MNEMONIC);
+	}
+
+	public String shortenText(GC gc, String text, int width, String ellipses, int flags) {
+		if (gc.textExtent(text, flags).x <= width)
+			return text;
+		int ellipseWidth = gc.textExtent(ellipses, flags).x;
+		int length = text.length();
+		TextLayout layout = new TextLayout(getDisplay());
+		layout.setText(text);
+		int end = layout.getPreviousOffset(length, SWT.MOVEMENT_CLUSTER);
+		while (end > 0) {
+			text = text.substring(0, end);
+			int l = gc.textExtent(text, flags).x;
+			if (l + ellipseWidth <= width) {
+				break;
+			}
+			end = layout.getPreviousOffset(end, SWT.MOVEMENT_CLUSTER);
+		}
+		layout.dispose();
+		return end == 0 ? text.substring(0, 1) : text + ellipses;
+	}
+
 	public void shouldDisposeWith(final Resource resource, Widget widget) {
 		widget.addListener(SWT.Dispose, new Listener() {
 			@Override
@@ -2213,6 +2236,14 @@ public class SWTExtensions {
 		return control;
 	}
 
+	public <T extends Control> T showTestSize(final T control) {
+		return showTestSize(control, SWT.CENTER, SWT.CENTER, COLOR_RED(), 255);
+	}
+
+	public <T extends Control> T showTestSize(final T control, final Color color, final int alpha) {
+		return showTestSize(control, SWT.CENTER, SWT.CENTER, color, alpha);
+	}
+
 	public <T extends Control> T showTestSize(final T control, final int horizontal, final int vertical, final Color color, final int alpha) {
 		control.addListener(SWT.Paint, new Listener() {
 			@Override
@@ -2222,14 +2253,6 @@ public class SWTExtensions {
 			}
 		});
 		return control;
-	}
-
-	public <T extends Control> T showTestSize(final T control, final Color color, final int alpha) {
-		return showTestSize(control, SWT.CENTER, SWT.CENTER, color, alpha);
-	}
-
-	public <T extends Control> T showTestSize(final T control) {
-		return showTestSize(control, SWT.CENTER, SWT.CENTER, COLOR_RED(), 255);
 	}
 
 	public Rectangle shrink(Rectangle rectangle, int amount) {
@@ -2261,6 +2284,10 @@ public class SWTExtensions {
 		});
 	}
 
+	public Color toColor(HSB hsb) {
+		return autoRelease(new Color(getDisplay(), hsb.toRGB()));
+	}
+
 	/**
 	 * Converts {@link Color} object to {@link HSB} Object.
 	 * 
@@ -2286,6 +2313,16 @@ public class SWTExtensions {
 
 	public String toHTMLCode(RGB rgb) {
 		return String.format("#%02x%02x%02x", rgb.red, rgb.green, rgb.blue);
+	}
+
+	private int[] toIntArray(Point... polygon) {
+		int[] array = new int[polygon.length * 2];
+		int index = 0;
+		for (Point each : polygon) {
+			array[index++] = each.x;
+			array[index++] = each.y;
+		}
+		return array;
 	}
 
 	public Rectangle toRectangle(Point point) {
@@ -2369,15 +2406,6 @@ public class SWTExtensions {
 		return me;
 	}
 
-	public boolean hasFlags(int flags, int... mask) {
-		for (int each : mask) {
-			if ((flags & each) == 0) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	public Rectangle union(Rectangle me, Point point) {
 		return union(me, point.x, point.y);
 	}
@@ -2386,28 +2414,15 @@ public class SWTExtensions {
 		return union(me, other.x, other.y, other.width, other.height);
 	}
 
-	public String shortenText(GC gc, String text, int width, String ellipses) {
-		return shortenText(gc, text, width, ellipses, SWT.DRAW_TRANSPARENT | SWT.DRAW_MNEMONIC);
-	}
-
-	public String shortenText(GC gc, String text, int width, String ellipses, int flags) {
-		if (gc.textExtent(text, flags).x <= width)
-			return text;
-		int ellipseWidth = gc.textExtent(ellipses, flags).x;
-		int length = text.length();
-		TextLayout layout = new TextLayout(getDisplay());
-		layout.setText(text);
-		int end = layout.getPreviousOffset(length, SWT.MOVEMENT_CLUSTER);
-		while (end > 0) {
-			text = text.substring(0, end);
-			int l = gc.textExtent(text, flags).x;
-			if (l + ellipseWidth <= width) {
-				break;
-			}
-			end = layout.getPreviousOffset(end, SWT.MOVEMENT_CLUSTER);
+	public GC withClip(GC gc, Path clip, Procedure1<GC> block) {
+		Rectangle oldClip = gc.getClipping();
+		if (block != null) {
+			gc.setClipping(clip);
+			block.apply(gc);
 		}
-		layout.dispose();
-		return end == 0 ? text.substring(0, 1) : text + ellipses;
+
+		gc.setClipping(oldClip);
+		return gc;
 	}
 
 	public GC withClip(GC gc, Rectangle clip, Procedure1<GC> block) {
@@ -2419,20 +2434,5 @@ public class SWTExtensions {
 
 		gc.setClipping(oldClip);
 		return gc;
-	}
-	
-	public GC withClip(GC gc, Path clip, Procedure1<GC> block) {
-		Rectangle oldClip = gc.getClipping();
-		if (block != null) {
-			gc.setClipping(clip);
-			block.apply(gc);
-		}
-
-		gc.setClipping(oldClip);
-		return gc;
-	}
-	
-	public Color toColor(HSB hsb){
-		return autoRelease(new Color(getDisplay(), hsb.toRGB()));
 	}
 }
