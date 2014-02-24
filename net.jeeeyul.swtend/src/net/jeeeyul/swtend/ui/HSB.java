@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 import org.eclipse.swt.graphics.RGB;
 
-public class HSB {
+public class HSB extends LightWeightResource {
 	public static HSB deserialize(String literal) {
 		HSB result = new HSB();
 

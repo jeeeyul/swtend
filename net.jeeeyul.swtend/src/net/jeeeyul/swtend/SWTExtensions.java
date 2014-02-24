@@ -480,8 +480,12 @@ public class SWTExtensions {
 		return size.x >= targetSize.x && size.y >= targetSize.y;
 	}
 
+	public boolean contains(Rectangle rect, int x, int y) {
+		return rect.x <= x && rect.y <= y && x < rect.x + rect.width && y < rect.y + rect.height;
+	}
+
 	public boolean contains(Rectangle rect, Point point) {
-		return rect.x <= point.x && rect.y <= point.y && point.x < rect.x + rect.width && point.y < rect.y + rect.height;
+		return contains(rect, point.x, point.y);
 	}
 
 	public boolean contains(Rectangle me, Rectangle other) {
@@ -661,6 +665,34 @@ public class SWTExtensions {
 		if (initializer != null)
 			initializer.apply(gridData);
 		return gridData;
+	}
+
+	public GC fillGradientRectangle(GC gc, Rectangle bounds, Color[] colors, int[] percents, boolean vertical) {
+		int offset = vertical ? bounds.y : bounds.x;
+		int gradientSize = 0;
+
+		Color lastColor = colors[colors.length - 1];
+		gc.setBackground(lastColor);
+		gc.fillRectangle(bounds);
+
+		for (int i = 1; i < colors.length; i++) {
+			Color from = colors[i - 1];
+			Color to = colors[i];
+
+			gradientSize = bounds.height * percents[i - 1] / 100 - (offset - bounds.y);
+
+			gc.setForeground(from);
+			gc.setBackground(to);
+
+			if (vertical) {
+				gc.fillGradientRectangle(bounds.x, offset, bounds.width, gradientSize, true);
+			} else {
+				gc.fillGradientRectangle(offset, bounds.y, gradientSize, bounds.height, false);
+			}
+			offset += gradientSize;
+		}
+
+		return gc;
 	}
 
 	public GC fillOval(GC gc, Rectangle rectangle) {
@@ -2284,8 +2316,13 @@ public class SWTExtensions {
 		});
 	}
 
-	public Color toColor(HSB hsb) {
-		return autoRelease(new Color(getDisplay(), hsb.toRGB()));
+	public Color toAutoReleaseColor(HSB hsb) {
+		Color color = hsb.getData("-swt-extension-color-instance");
+		if(color == null || color.isDisposed()){
+			color = autoRelease(new Color(getDisplay(), hsb.toRGB()));
+			hsb.setData("-swt-extension-color-instance", color);
+		}
+		return color;
 	}
 
 	/**
