@@ -13,6 +13,7 @@ public class HSB extends LightWeightResource {
 	public static final HSB RED = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_RED).getRGB());
 	public static final HSB DARK_GRAY = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY).getRGB());
 	public static final HSB DARK_RED = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED).getRGB());
+	public static final HSB WIDGET_BACKGROUND = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).getRGB());
 
 	public static HSB deserialize(String literal) {
 		HSB result = new HSB();

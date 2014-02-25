@@ -9,12 +9,24 @@ import org.eclipse.swt.graphics.Resource;
 public class NinePatch extends Resource {
 	private Image image;
 	private Rectangle centerArea;
-	private Rectangle imageBounds;
 
+	private Rectangle imageBounds;
 	public NinePatch(Image image, Rectangle centerArea) {
 		this.image = image;
 		this.centerArea = centerArea;
 		imageBounds = image.getBounds();
+	}
+
+	@Override
+	public void dispose() {
+		image.dispose();
+		super.dispose();
+	}
+
+	private void drawPart(GC gc, Rectangle src, Rectangle dest) {
+		if (isPositiveArea(src) && isPositiveArea(dest)) {
+			gc.drawImage(image, src.x, src.y, src.width, src.height, dest.x, dest.y, dest.width, dest.height);
+		}
 	}
 
 	public void fill(GC gc, Rectangle dest) {
@@ -93,27 +105,17 @@ public class NinePatch extends Resource {
 		return r;
 	}
 
-	private void drawPart(GC gc, Rectangle src, Rectangle dest) {
-		if (isPositiveArea(src) && isPositiveArea(dest)) {
-			gc.drawImage(image, src.x, src.y, src.width, src.height, dest.x, dest.y, dest.width, dest.height);
-		} else {
-			System.out.println("err");
-		}
-	}
-
-	private boolean isPositiveArea(Rectangle rect) {
-		return rect.width > 0 && rect.height > 0;
-	}
-
-	@Override
-	public void dispose() {
-		image.dispose();
-		super.dispose();
+	public Image getImage() {
+		return image;
 	}
 
 	@Override
 	public boolean isDisposed() {
 		return image.isDisposed();
+	}
+
+	private boolean isPositiveArea(Rectangle rect) {
+		return rect.width > 0 && rect.height > 0;
 	}
 
 }
