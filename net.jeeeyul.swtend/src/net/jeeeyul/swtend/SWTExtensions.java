@@ -1760,7 +1760,12 @@ public class SWTExtensions {
 	}
 
 	private void scheduleAutoRelease(Resource r) {
-		getAutoReleaseQueue().add(r);
+		HashSet<Resource> queue = getAutoReleaseQueue();
+		if (queue.contains(r)) {
+			return;
+		}
+
+		queue.add(r);
 
 		if (getDisplay().getData(KEY_AUTO_RELASE_SCHEDULED) == Boolean.TRUE) {
 			return;
@@ -2318,7 +2323,7 @@ public class SWTExtensions {
 
 	public Color toAutoReleaseColor(HSB hsb) {
 		Color color = hsb.getData("-swt-extension-color-instance");
-		if(color == null || color.isDisposed()){
+		if (color == null || color.isDisposed()) {
 			color = autoRelease(new Color(getDisplay(), hsb.toRGB()));
 			hsb.setData("-swt-extension-color-instance", color);
 		}
