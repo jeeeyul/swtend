@@ -695,6 +695,41 @@ public class SWTExtensions {
 		return gc;
 	}
 
+	public GC drawGradientPath(GC gc, Path path, Color[] colors, int[] percents, boolean vertical) {
+		Rectangle oldClip = gc.getClipping();
+
+		float[] fBounds = new float[4];
+		path.getBounds(fBounds);
+		Rectangle bounds = new Rectangle((int) fBounds[0], (int) fBounds[1], (int) fBounds[2] + 1, (int) fBounds[3] + 1);
+		int offset = vertical ? bounds.y : bounds.x;
+		int gradientSize = 0;
+
+		for (int i = 1; i < colors.length; i++) {
+			Color from = colors[i - 1];
+			Color to = colors[i];
+
+			gradientSize = bounds.height * percents[i - 1] / 100 - (offset - bounds.y);
+
+			if (vertical) {
+				gc.setClipping(bounds.x, offset, bounds.width, gradientSize);
+				Pattern pattern = new Pattern(getDisplay(), bounds.x, offset, bounds.x, offset + gradientSize, from, to);
+				gc.setForegroundPattern(pattern);
+				gc.drawPath(path);
+			} else {
+				gc.setClipping(offset, bounds.y, gradientSize, bounds.height);
+				Pattern pattern = new Pattern(getDisplay(), offset, bounds.y, offset + gradientSize, bounds.y, from, to);
+				gc.setForegroundPattern(pattern);
+				gc.drawPath(path);
+
+			}
+			offset += gradientSize;
+		}
+
+		gc.setClipping(oldClip);
+
+		return gc;
+	}
+
 	public GC fillOval(GC gc, Rectangle rectangle) {
 		gc.fillOval(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 		return gc;
@@ -1321,6 +1356,10 @@ public class SWTExtensions {
 
 	public Rectangle newRectangleWithSize(Point size) {
 		return new Rectangle(0, 0, size.x, size.y);
+	}
+	
+	public Rectangle newRectangleWithSize(int size) {
+		return new Rectangle(0, 0, size, size);
 	}
 
 	public TreeItem newRootItem(Tree tree, final Procedure1<TreeItem> initializer) {
@@ -2328,6 +2367,15 @@ public class SWTExtensions {
 			hsb.setData("-swt-extension-color-instance", color);
 		}
 		return color;
+	}
+	
+	public Color[] toAutoReleaseColor(HSB[] hsb) {
+		Color[] result = new Color[hsb.length];
+		for(int i=0; i<hsb.length; i++){
+			result[i] = toAutoReleaseColor(hsb[i]);
+		}
+		
+		return result;
 	}
 
 	/**
