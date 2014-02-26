@@ -11,6 +11,7 @@ public class NinePatch extends Resource {
 	private Rectangle centerArea;
 
 	private Rectangle imageBounds;
+
 	public NinePatch(Image image, Rectangle centerArea) {
 		this.image = image;
 		this.centerArea = centerArea;
@@ -79,7 +80,7 @@ public class NinePatch extends Resource {
 
 		else if ((hFlag & SWT.CENTER) != 0) {
 			r.x = offset.x + centerArea.x;
-			r.width = offset.width - (imageBounds.width - centerArea.width - centerArea.x);
+			r.width = offset.width - (imageBounds.width - centerArea.width);
 		}
 
 		else if ((hFlag & SWT.RIGHT) != 0) {
