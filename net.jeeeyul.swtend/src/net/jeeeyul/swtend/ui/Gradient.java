@@ -13,6 +13,9 @@ public class Gradient extends LightWeightResource implements List<ColorStop> {
 		data.add(new ColorStop(start, 0));
 		data.add(new ColorStop(end, 100));
 	}
+	
+	public Gradient() {
+	}
 
 	public boolean add(ColorStop arg0) {
 		return data.add(arg0);

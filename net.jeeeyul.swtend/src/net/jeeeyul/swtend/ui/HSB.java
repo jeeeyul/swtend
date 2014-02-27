@@ -22,13 +22,14 @@ public class HSB extends LightWeightResource {
 		Scanner scanner = null;
 		try {
 			scanner = new Scanner(literal);
-			scanner.useDelimiter("\\|");
+			scanner.useDelimiter("\\s*,\\s*");
 			scanner.useLocale(Locale.US);
 
 			result.hue = scanner.nextFloat();
 			result.saturation = scanner.nextFloat();
 			result.brightness = scanner.nextFloat();
 		} catch (Exception e) {
+			e.printStackTrace();
 			result = new HSB(0f, 1f, 1f);
 		} finally {
 			if (scanner != null) {
@@ -40,7 +41,10 @@ public class HSB extends LightWeightResource {
 
 	public static void main(String[] args) {
 		HSB hsb = new HSB(0, 1f, 1f);
+		System.out.println(hsb.serialize());
+		System.out.println(HSB.deserialize(hsb.serialize()));
 		System.out.println(hsb.toHTMLCode());
+		System.out.println(HSB.deserialize("1,0.3,0.2"));
 	}
 
 	public float hue;
@@ -154,7 +158,7 @@ public class HSB extends LightWeightResource {
 	}
 
 	public String serialize() {
-		return String.format(Locale.ENGLISH, "%f|%f|%f", hue, saturation, brightness);
+		return String.format(Locale.ENGLISH, "%f, %f, %f", hue, saturation, brightness);
 	}
 
 	public float[] toArray() {
@@ -172,6 +176,6 @@ public class HSB extends LightWeightResource {
 
 	@Override
 	public String toString() {
-		return String.format("%f|%f|%f", hue, saturation, brightness);
+		return "HSB [hue=" + hue + ", saturation=" + saturation + ", brightness=" + brightness + "]";
 	}
 }
