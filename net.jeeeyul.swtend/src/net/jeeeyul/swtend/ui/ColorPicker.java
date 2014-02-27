@@ -9,11 +9,12 @@ import net.jeeeyul.swtend.ui.internal.HueCanvas;
 import net.jeeeyul.swtend.ui.internal.HueScale;
 import net.jeeeyul.swtend.ui.internal.Palette;
 import net.jeeeyul.swtend.ui.internal.PipetteTool;
-import net.jeeeyul.swtend.ui.internal.SharedImages;
 import net.jeeeyul.swtend.ui.internal.UserHomePalette;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -47,8 +48,9 @@ public class ColorPicker extends Dialog {
 	private ColorFieldSet fieldSet;
 	private ToolItem pipette;
 	private TabFolder tabFolder;
-
 	private Palette recentPalette;
+
+	private Image pipetteImage;
 
 	public ColorPicker() {
 		this(Display.getDefault().getActiveShell());
@@ -115,7 +117,7 @@ public class ColorPicker extends Dialog {
 		ToolBar toolBar = new ToolBar(bottom, SWT.FLAT);
 
 		pipette = new ToolItem(toolBar, SWT.PUSH);
-		pipette.setImage(SharedImages.getImage(SharedImages.PIPETTE));
+		pipette.setImage(getPipetteImage());
 		pipette.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
@@ -145,7 +147,7 @@ public class ColorPicker extends Dialog {
 		createRecentTab();
 
 		getShell().setText("Color Picker");
-		getShell().setImage(SharedImages.getImage(SharedImages.PALETTE));
+		getShell().setImage(getPipetteImage());
 		update();
 
 		hueCanvas.setFocus();
@@ -185,6 +187,21 @@ public class ColorPicker extends Dialog {
 		return continuosSelectionHandler;
 	}
 
+	private Image getPipetteImage() {
+		if (pipetteImage == null || pipetteImage.isDisposed()) {
+			pipetteImage = new Image(Display.getDefault(), new ImageData(getClass().getResourceAsStream("internal/pipette.png")));
+		}
+		return pipetteImage;
+	}
+
+	@Override
+	public boolean close() {
+		if (pipetteImage != null && !pipetteImage.isDisposed()) {
+			pipetteImage.dispose();
+		}
+		return super.close();
+	}
+
 	private Palette getRecentPalette() {
 		if (recentPalette == null) {
 			recentPalette = new UserHomePalette(".swtend-colorpicker-recent");
@@ -209,12 +226,36 @@ public class ColorPicker extends Dialog {
 		return lockHue;
 	}
 
+	@Override
+	protected void okPressed() {
+		saveRecentColors();
+		super.okPressed();
+	}
+
 	private void openPipetteMode() {
 		HSB result = new PipetteTool(getShell()).open();
 		if (result != null) {
 			hueScale.setSelection(result.hue);
 		}
 		hueCanvas.setSelection(result.toArray());
+	}
+
+	private void saveRecentColors() {
+		List<HSB> recentColors = getRecentPalette().getColors();
+		if (recentColors.contains(selection)) {
+			recentColors.remove(selection);
+		}
+
+		recentColors.add(0, selection);
+
+		if (recentColors.size() > RECENT_MAX_SIZE) {
+			List<HSB> aliveList = new ArrayList<HSB>(recentColors.subList(0, RECENT_MAX_SIZE));
+			recentColors.clear();
+			System.out.println(aliveList);
+			recentColors.addAll(aliveList);
+		}
+
+		getRecentPalette().save();
 	}
 
 	public void setContinuosSelectionHandler(Procedure1<HSB> continuosSelectionHandler) {
@@ -241,30 +282,6 @@ public class ColorPicker extends Dialog {
 		hueScale.setEnabled(!lockHue);
 		pipette.setEnabled(!lockHue);
 		fieldSet.setSelection(selection);
-	}
-
-	@Override
-	protected void okPressed() {
-		saveRecentColors();
-		super.okPressed();
-	}
-
-	private void saveRecentColors() {
-		List<HSB> recentColors = getRecentPalette().getColors();
-		if (recentColors.contains(selection)) {
-			recentColors.remove(selection);
-		}
-
-		recentColors.add(0, selection);
-
-		if (recentColors.size() > RECENT_MAX_SIZE) {
-			List<HSB> aliveList = new ArrayList<HSB>(recentColors.subList(0, RECENT_MAX_SIZE));
-			recentColors.clear();
-			System.out.println(aliveList);
-			recentColors.addAll(aliveList);
-		}
-
-		getRecentPalette().save();
 	}
 
 }

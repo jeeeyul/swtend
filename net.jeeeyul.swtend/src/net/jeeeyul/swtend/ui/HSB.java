@@ -44,7 +44,7 @@ public class HSB extends LightWeightResource {
 		System.out.println(hsb.serialize());
 		System.out.println(HSB.deserialize(hsb.serialize()));
 		System.out.println(hsb.toHTMLCode());
-		System.out.println(HSB.deserialize("1,0.3,0.2"));
+		System.out.println(HSB.deserialize("49.611309, 0.5, 0.7"));
 	}
 
 	public float hue;

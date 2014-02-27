@@ -2,6 +2,8 @@ package net.jeeeyul.swtend.ui;
 
 import java.awt.Point;
 
+import net.jeeeyul.swtend.SWTExtensions;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -31,29 +33,47 @@ public class GradientEditItem extends Item {
 		ColorStop colorStop = (ColorStop) getData();
 		Color color = new Color(getDisplay(), colorStop.color.toRGB());
 
-		Path path = new Path(getDisplay());
+		Path path = createPath(0);
+		Path fillPath = createPath(2);
 
-		path.moveTo(bounds.x, bounds.y);
-		path.lineTo(bounds.x + bounds.width, bounds.y);
-		path.lineTo(bounds.x + bounds.width, bounds.y + bounds.height - 5);
-		path.lineTo(bounds.x + bounds.width / 2, bounds.y + bounds.height);
-		path.lineTo(bounds.x, bounds.y + bounds.height - 5);
-		path.close();
+		if ((state & SWT.SELECTED) != 0) {
+			if (parent.isFocusControl()) {
+				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION));
+			} else {
+				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+			}
+		} else if ((state & SWT.HOT) != 0) {
+			gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
+		} else {
+			gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+		}
+		gc.fillPath(path);
 
 		gc.setBackground(color);
-		gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_BORDER));
-		gc.fillPath(path);
-		gc.setLineWidth(1);
-		if ((state & SWT.SELECTED) != 0) {
-			gc.setLineWidth(2);
-			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION));
-		} else if ((state & SWT.HOT) != 0) {
-			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_RED));
-		}
+		gc.fillPath(fillPath);
+
+		gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
+		gc.drawPath(fillPath);
+
+		gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW));
 		gc.drawPath(path);
+
 		path.dispose();
+		fillPath.dispose();
 		color.dispose();
 
+	}
+
+	protected Path createPath(int inset) {
+		Path path = new Path(getDisplay());
+		Rectangle box = SWTExtensions.INSTANCE.getShrinked(bounds, inset);
+		path.moveTo(box.x, box.y);
+		path.lineTo(box.x + box.width, box.y);
+		path.lineTo(box.x + box.width, box.y + box.height - 5);
+		path.lineTo(box.x + box.width / 2, box.y + box.height - inset);
+		path.lineTo(box.x, box.y + box.height - 5);
+		path.close();
+		return path;
 	}
 
 }

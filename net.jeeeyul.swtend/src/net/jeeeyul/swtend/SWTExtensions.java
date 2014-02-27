@@ -139,9 +139,23 @@ public class SWTExtensions {
 		return resource;
 	}
 
+	public <T extends Resource> T[] autoDispose(T... resources) {
+		for (T r : resources) {
+			autoDispose(r);
+		}
+		return resources;
+	}
+
 	public <T extends Resource> T autoRelease(T resource) {
 		scheduleAutoRelease(resource);
 		return resource;
+	}
+
+	public <T extends Resource> T[] autoRelease(T... resources) {
+		for (T r : resources) {
+			autoRelease(r);
+		}
+		return resources;
 	}
 
 	public <T extends Widget> T chainDispose(T widget, final Resource... resources) {
@@ -1357,7 +1371,7 @@ public class SWTExtensions {
 	public Rectangle newRectangleWithSize(Point size) {
 		return new Rectangle(0, 0, size.x, size.y);
 	}
-	
+
 	public Rectangle newRectangleWithSize(int size) {
 		return new Rectangle(0, 0, size, size);
 	}
@@ -1764,9 +1778,15 @@ public class SWTExtensions {
 		}
 	}
 
-	public void safeDispose(Resource resource) {
-		if (resource != null && !resource.isDisposed()) {
-			resource.dispose();
+	public void safeDispose(Resource... resource) {
+		for (Resource r : resource) {
+			safeDispose(r);
+		}
+	}
+
+	public void safeDispose(Resource r) {
+		if (r != null && !r.isDisposed()) {
+			r.dispose();
 		}
 	}
 
@@ -2368,13 +2388,26 @@ public class SWTExtensions {
 		}
 		return color;
 	}
-	
+
+	public Color createColor(HSB hsb) {
+		return new Color(getDisplay(), hsb.toRGB());
+	}
+
+	public Color[] createColors(HSB[] hsb) {
+		Color[] result = new Color[hsb.length];
+		for (int i = 0; i < hsb.length; i++) {
+			result[i] = createColor(hsb[i]);
+		}
+
+		return result;
+	}
+
 	public Color[] toAutoReleaseColor(HSB[] hsb) {
 		Color[] result = new Color[hsb.length];
-		for(int i=0; i<hsb.length; i++){
+		for (int i = 0; i < hsb.length; i++) {
 			result[i] = toAutoReleaseColor(hsb[i]);
 		}
-		
+
 		return result;
 	}
 

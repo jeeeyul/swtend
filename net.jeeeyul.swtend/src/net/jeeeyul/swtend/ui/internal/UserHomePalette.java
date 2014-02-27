@@ -23,7 +23,7 @@ public class UserHomePalette implements Palette {
 			try {
 				fis = new FileInputStream(file);
 				String content = StringUtil.read(fis, "UTF-8");
-				String[] segmemts = content.split("[\r\n\\s]+");
+				String[] segmemts = content.split("\\s*[\r\n]+\\s*");
 				for (String each : segmemts) {
 					each = each.trim();
 					if (each.length() == 0) {
