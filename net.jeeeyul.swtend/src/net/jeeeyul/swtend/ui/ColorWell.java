@@ -103,12 +103,19 @@ public class ColorWell extends Canvas {
 	}
 
 	public void setSelection(HSB selection, boolean notify) {
+		if (selection == null) {
+			throw new IllegalArgumentException();
+		}
+		if (this.selection == selection || this.selection.equals(selection)) {
+			return;
+		}
+
 		this.selection = selection;
 		redraw();
 		if (notify) {
 			Event event = new Event();
 			event.widget = this;
-			notifyListeners(SWT.Selection, event);
+			notifyListeners(SWT.Modify, event);
 		}
 	}
 
