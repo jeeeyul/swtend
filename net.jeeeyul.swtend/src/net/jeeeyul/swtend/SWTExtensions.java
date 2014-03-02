@@ -685,14 +685,9 @@ public class SWTExtensions {
 		int offset = vertical ? bounds.y : bounds.x;
 		int gradientSize = 0;
 
-		Color lastColor = colors[colors.length - 1];
-		gc.setBackground(lastColor);
-		gc.fillRectangle(bounds);
-
 		for (int i = 1; i < colors.length; i++) {
 			Color from = colors[i - 1];
 			Color to = colors[i];
-
 			gradientSize = bounds.height * percents[i - 1] / 100 - (offset - bounds.y);
 
 			gc.setForeground(from);
