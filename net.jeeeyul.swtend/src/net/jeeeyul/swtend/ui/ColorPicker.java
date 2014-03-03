@@ -251,7 +251,6 @@ public class ColorPicker extends Dialog {
 		if (recentColors.size() > RECENT_MAX_SIZE) {
 			List<HSB> aliveList = new ArrayList<HSB>(recentColors.subList(0, RECENT_MAX_SIZE));
 			recentColors.clear();
-			System.out.println(aliveList);
 			recentColors.addAll(aliveList);
 		}
 

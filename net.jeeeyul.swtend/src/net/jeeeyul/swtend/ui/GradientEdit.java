@@ -42,6 +42,7 @@ public class GradientEdit extends Canvas {
 
 	private Point preferredSize = new Point(100, 25);
 	private Gradient selection;
+
 	private boolean itemsInvaldate = false;
 	private Point dragBegin = null;
 	private boolean lockOrder = false;
@@ -277,18 +278,23 @@ public class GradientEdit extends Canvas {
 			newBounds.x = Math.min(getBarArea().x - GradientEditItem.SIZE.x / 2 + getBarArea().width, newBounds.x);
 			selectedItem.bounds = newBounds;
 			ColorStop colorStop = (ColorStop) selectedItem.getData();
+
+			colorStop.percent = (int) (((newBounds.x - getBarArea().x + GradientEditItem.SIZE.x / 2) / (double) getBarArea().width) * 100 + .5);
 			if (lockOrder) {
 				int index = selection.indexOf(colorStop);
 				if (index > 0) {
 					GradientEditItem prevItem = getItemFor(selection.get(index - 1));
+					ColorStop prevStop = (ColorStop) prevItem.getData();
 					newBounds.x = Math.max(prevItem.bounds.x, newBounds.x);
+					colorStop.percent = Math.max(prevStop.percent, colorStop.percent);
 				}
 				if (index < items.size() - 1) {
 					GradientEditItem nextItem = getItemFor(selection.get(index + 1));
+					ColorStop nextStop = (ColorStop) nextItem.getData();
 					newBounds.x = Math.min(nextItem.bounds.x, newBounds.x);
+					colorStop.percent = Math.min(nextStop.percent, colorStop.percent);
 				}
 			}
-			colorStop.percent = (int) (((newBounds.x - getBarArea().x + GradientEditItem.SIZE.x / 2) / (double) getBarArea().width) * 100 + .5);
 
 			if (!lockOrder) {
 				sort();
@@ -505,6 +511,10 @@ public class GradientEdit extends Canvas {
 		if (notify) {
 			notifyListeners(SWT.Selection, new Event());
 		}
+	}
+
+	public void setSelection(Gradient selection) {
+		setSelection(selection, false);
 	}
 
 	private void sort() {

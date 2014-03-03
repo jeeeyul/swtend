@@ -1814,6 +1814,10 @@ public class SWTExtensions {
 	}
 
 	private void scheduleAutoRelease(Resource r) {
+		if (r == null || r.isDisposed()) {
+			return;
+		}
+
 		HashSet<Resource> queue = getAutoReleaseQueue();
 		if (queue.contains(r)) {
 			return;
@@ -2417,6 +2421,14 @@ public class SWTExtensions {
 		return new HSB(color.getRGB());
 	}
 
+	public HSB[] toHSBArray(Color[] colors) {
+		HSB[] result = new HSB[colors.length];
+		for (int i = 0; i < colors.length; i++) {
+			result[i] = new HSB(colors[i].getRGB());
+		}
+		return result;
+	}
+
 	/**
 	 * Converts {@link RGB} object to {@link HSB} object.
 	 * 
@@ -2552,5 +2564,19 @@ public class SWTExtensions {
 
 		gc.setClipping(oldClip);
 		return gc;
+	}
+
+	public boolean isEmpty(Point point) {
+		return point.x == 0 && point.y == 0;
+	}
+
+	public UIJob newDeferredJob(String name, final Procedure1<Display> procedure) {
+		return new UIJob(getDisplay(), name) {
+			@Override
+			public IStatus runInUIThread(IProgressMonitor monitor) {
+				procedure.apply(getDisplay());
+				return Status.OK_STATUS;
+			}
+		};
 	}
 }
