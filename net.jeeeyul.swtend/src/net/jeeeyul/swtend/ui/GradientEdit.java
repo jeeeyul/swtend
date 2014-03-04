@@ -40,6 +40,8 @@ public class GradientEdit extends Canvas {
 		}
 	}
 
+	private static Gradient clipboard;
+
 	private Point preferredSize = new Point(100, 25);
 	private Gradient selection;
 
@@ -58,6 +60,10 @@ public class GradientEdit extends Canvas {
 	private Point menuLocation;
 	private MenuItem editMenuItem;
 
+	private MenuItem copyMenu;
+
+	private MenuItem pasteMenu;
+
 	public GradientEdit(Composite parent) {
 		super(parent, SWT.DOUBLE_BUFFERED);
 
@@ -67,6 +73,8 @@ public class GradientEdit extends Canvas {
 		Gradient gradient = new Gradient(new HSB(255, 255, 255), new HSB(255, 0, 0));
 		gradient.add(1, new ColorStop(new HSB(255, 255, 0), 50));
 		setSelection(gradient, false);
+
+		updateMenuEnabilities();
 	}
 
 	@Override
@@ -122,6 +130,34 @@ public class GradientEdit extends Canvas {
 			@Override
 			public void handleEvent(Event event) {
 				editItem(selectedItem);
+			}
+		});
+
+		new MenuItem(menu, SWT.SEPARATOR);
+		copyMenu = new MenuItem(menu, SWT.PUSH);
+		copyMenu.setText("Copy Gradient");
+		copyMenu.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				clipboard = selection.getCopy();
+			}
+		});
+
+		pasteMenu = new MenuItem(menu, SWT.PUSH);
+		pasteMenu.setText("Paste Gradient");
+		pasteMenu.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				setSelection(clipboard.getCopy(), true);
+			}
+		});
+
+		menu.addListener(SWT.Show, new Listener() {
+
+			@Override
+			public void handleEvent(Event event) {
+				updateMenuEnabilities();
+
 			}
 		});
 	}
@@ -268,6 +304,7 @@ public class GradientEdit extends Canvas {
 		addMenuItem.setEnabled(selectedItem == null);
 		removeMenuItem.setEnabled(selectedItem != null && items.size() > 2);
 		editMenuItem.setEnabled(selectedItem != null);
+		pasteMenu.setEnabled(clipboard != null);
 	}
 
 	private void handleMouseMove(Event event) {
@@ -496,7 +533,6 @@ public class GradientEdit extends Canvas {
 			items.add(selectedItem);
 		}
 
-		updateMenuEnabilities();
 		redraw();
 	}
 
@@ -509,7 +545,7 @@ public class GradientEdit extends Canvas {
 		rebuildItems();
 
 		if (notify) {
-			notifyListeners(SWT.Selection, new Event());
+			notifyListeners(SWT.Modify, new Event());
 		}
 	}
 

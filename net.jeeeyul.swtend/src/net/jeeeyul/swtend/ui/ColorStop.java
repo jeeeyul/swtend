@@ -8,4 +8,8 @@ public class ColorStop {
 		this.percent = percent;
 		this.color = color;
 	}
+
+	public ColorStop getCopy() {
+		return new ColorStop(this.color.getCopy(), this.percent);
+	}
 }

@@ -13,7 +13,7 @@ public class Gradient extends LightWeightResource implements List<ColorStop> {
 		data.add(new ColorStop(start, 0));
 		data.add(new ColorStop(end, 100));
 	}
-	
+
 	public Gradient() {
 	}
 
@@ -160,4 +160,28 @@ public class Gradient extends LightWeightResource implements List<ColorStop> {
 		return colorNameBuffer.toString() + " " + percentBuffer.toString();
 	}
 
+	public Gradient getCopy() {
+		Gradient result = new Gradient();
+		for (ColorStop each : this) {
+			result.add(each.getCopy());
+		}
+		return result;
+	}
+
+	public HSB getAverageColor() {
+		if (size() == 0) {
+			throw new IllegalStateException();
+		}
+
+		float hue = 0f;
+		float saturation = 0f;
+		float brightness = 0f;
+		for (ColorStop each : this) {
+			hue += each.color.hue;
+			saturation += each.color.saturation;
+			brightness += each.color.brightness;
+		}
+		float size = (float) size();
+		return new HSB(hue / size, saturation / size, brightness / size);
+	}
 }
