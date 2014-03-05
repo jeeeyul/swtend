@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import net.jeeeyul.swtend.internal.WidgetIterator;
-import net.jeeeyul.swtend.sam.Procedure0;
 import net.jeeeyul.swtend.sam.Procedure1;
 import net.jeeeyul.swtend.ui.HSB;
 
@@ -1514,12 +1513,12 @@ public class SWTExtensions {
 	}
 
 	public Text newTextArea(final Composite parent, final Procedure1<? super Text> initializer) {
-		Text text = new Text(parent, SWT.MULTI | SWT.BORDER);
+		Text text = new Text(parent, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 		if (initializer != null)
 			initializer.apply(text);
 		return text;
 	}
-
+	
 	public Text newTextField(final Composite parent, int style, final Procedure1<? super Text> initializer) {
 		Text text = new Text(parent, style);
 		if (initializer != null)
@@ -1614,11 +1613,11 @@ public class SWTExtensions {
 		return item;
 	}
 
-	public UIJob newUIJob(final Procedure0 work) {
-		UIJob uiJob = new UIJob("job") {
+	public UIJob newUIJob(final Procedure1<Void> work) {
+		UIJob uiJob = new UIJob(getDisplay(), "Unnamed Job") {
 			@Override
 			public IStatus runInUIThread(IProgressMonitor monitor) {
-				work.apply();
+				work.apply(null);
 				return Status.OK_STATUS;
 			}
 		};
