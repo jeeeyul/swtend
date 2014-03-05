@@ -1259,6 +1259,13 @@ public class SWTExtensions {
 		return gridLayout;
 	}
 
+	public FillLayout newFillLayout(Procedure1<FillLayout> initializer) {
+		FillLayout FillLayout = new FillLayout();
+		if (initializer != null)
+			initializer.apply(FillLayout);
+		return FillLayout;
+	}
+
 	public Group newGroup(final Composite parent, final Procedure1<? super Group> initializer) {
 		Group group = new Group(parent, SWT.NORMAL);
 		if (initializer != null)
