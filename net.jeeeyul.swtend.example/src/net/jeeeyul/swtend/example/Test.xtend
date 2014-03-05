@@ -1,7 +1,6 @@
 package net.jeeeyul.swtend.example
 
 import net.jeeeyul.swtend.SWTExtensions
-import org.eclipse.swt.SWT
 import org.eclipse.swt.graphics.Rectangle
 
 class Test {
@@ -9,31 +8,12 @@ class Test {
 		val extension SWTExtensions = SWTExtensions.INSTANCE
 
 		newShell[
-			backgroundMode = SWT.INHERIT_FORCE
-			backgroundImage = ICON_QUESTION
-			newCTabFolder[
-				minimizeVisible = true
-				topRight = newToolBar(SWT.FLAT) [
-					background = null
-					newToolItem[
-						text = "aaa"
-					]
+			onPaint = [
+				var path = newTemporaryPath[
+					addRoundRectangle(new Rectangle(10, 10, 100, 100), 20)
 				]
-				newToolBar(SWT.FLAT) [
-					background = null
-					newToolItem[
-						text = "bbb"
-					]
-					bounds = new Rectangle(100, 0, 100, 20)
-				]
-				newCTabItem[
-					text = "A Tab Item"
-					newComposite[
-						newPushButton[
-							text = "A Tab Item"
-						]
-					]
-				]
+				gc.foreground = COLOR_MARGENTA
+				gc.drawGradientPath(path, #[COLOR_WHITE, COLOR_RED, COLOR_RED], #[40, 100], true)
 			]
 		].openAndRunLoop()
 	}

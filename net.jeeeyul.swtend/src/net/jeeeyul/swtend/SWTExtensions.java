@@ -505,6 +505,19 @@ public class SWTExtensions {
 		return me.x <= other.x && me.y <= other.y && (me.x + me.width) >= (other.x + other.width) && (me.y + me.height) >= (other.y + other.height);
 	}
 
+	public Color createColor(HSB hsb) {
+		return new Color(getDisplay(), hsb.toRGB());
+	}
+
+	public Color[] createColors(HSB[] hsb) {
+		Color[] result = new Color[hsb.length];
+		for (int i = 0; i < hsb.length; i++) {
+			result[i] = createColor(hsb[i]);
+		}
+
+		return result;
+	}
+
 	public Path cubicTo(Path path, Point c1, Point c2, Point destination) {
 		path.cubicTo(c1.x, c1.y, c2.x, c2.y, destination.x, destination.y);
 		return path;
@@ -536,6 +549,43 @@ public class SWTExtensions {
 
 	public GC draw(GC gc, Rectangle rectangle) {
 		gc.drawRectangle(rectangle);
+		return gc;
+	}
+
+	public GC drawGradientPath(GC gc, Path path, Color[] colors, int[] percents, boolean vertical) {
+		Rectangle oldClip = gc.getClipping();
+
+		float[] fBounds = new float[4];
+		path.getBounds(fBounds);
+		Rectangle bounds = new Rectangle((int) fBounds[0], (int) fBounds[1], (int) fBounds[2] + 1, (int) fBounds[3] + 1);
+		int offset = vertical ? bounds.y : bounds.x;
+		int gradientSize = 0;
+		for (int i = 1; i < colors.length; i++) {
+			Color from = colors[i - 1];
+			Color to = colors[i];
+			if (vertical) {
+				gradientSize = bounds.y + bounds.height * percents[i - 1] / 100 - offset;
+			} else {
+				gradientSize = bounds.x + bounds.width * percents[i - 1] / 100 - offset;
+			}
+
+			if (vertical) {
+				gc.setClipping(bounds.x, offset, bounds.width, gradientSize);
+				gc.setForeground(COLOR_CYAN());
+				Pattern pattern = new Pattern(getDisplay(), bounds.x, offset - 1, bounds.x, offset + gradientSize, from, to);
+				gc.setForegroundPattern(pattern);
+				gc.drawPath(path);
+			} else {
+				gc.setClipping(offset, bounds.y, gradientSize, bounds.height);
+				Pattern pattern = new Pattern(getDisplay(), offset - 1, bounds.y, offset + gradientSize, bounds.y, from, to);
+				gc.setForegroundPattern(pattern);
+				gc.drawPath(path);
+			}
+			offset += gradientSize;
+		}
+
+		gc.setClipping(oldClip);
+
 		return gc;
 	}
 
@@ -703,41 +753,6 @@ public class SWTExtensions {
 		return gc;
 	}
 
-	public GC drawGradientPath(GC gc, Path path, Color[] colors, int[] percents, boolean vertical) {
-		Rectangle oldClip = gc.getClipping();
-
-		float[] fBounds = new float[4];
-		path.getBounds(fBounds);
-		Rectangle bounds = new Rectangle((int) fBounds[0], (int) fBounds[1], (int) fBounds[2] + 1, (int) fBounds[3] + 1);
-		int offset = vertical ? bounds.y : bounds.x;
-		int gradientSize = 0;
-
-		for (int i = 1; i < colors.length; i++) {
-			Color from = colors[i - 1];
-			Color to = colors[i];
-
-			gradientSize = bounds.height * percents[i - 1] / 100 - (offset - bounds.y);
-
-			if (vertical) {
-				gc.setClipping(bounds.x, offset, bounds.width, gradientSize);
-				Pattern pattern = new Pattern(getDisplay(), bounds.x, offset, bounds.x, offset + gradientSize, from, to);
-				gc.setForegroundPattern(pattern);
-				gc.drawPath(path);
-			} else {
-				gc.setClipping(offset, bounds.y, gradientSize, bounds.height);
-				Pattern pattern = new Pattern(getDisplay(), offset, bounds.y, offset + gradientSize, bounds.y, from, to);
-				gc.setForegroundPattern(pattern);
-				gc.drawPath(path);
-
-			}
-			offset += gradientSize;
-		}
-
-		gc.setClipping(oldClip);
-
-		return gc;
-	}
-
 	public GC fillOval(GC gc, Rectangle rectangle) {
 		gc.fillOval(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 		return gc;
@@ -834,10 +849,6 @@ public class SWTExtensions {
 
 	public Point getLeft(Rectangle rectangle) {
 		return new Point(rectangle.x, rectangle.y + rectangle.height / 2);
-	}
-
-	public Point pointAt(Rectangle bounds, double xRatio, double yRatio) {
-		return new Point((int) (bounds.x + bounds.width * xRatio), (int) (bounds.y + bounds.height * yRatio));
 	}
 
 	public Point getLocation(Event e) {
@@ -1110,6 +1121,10 @@ public class SWTExtensions {
 		return widget;
 	}
 
+	public boolean isEmpty(Point point) {
+		return point.x == 0 && point.y == 0;
+	}
+
 	public Path lineTo(Path path, Point location) {
 		path.lineTo(location.x, location.y);
 		return path;
@@ -1222,8 +1237,25 @@ public class SWTExtensions {
 		return item;
 	}
 
+	public UIJob newDeferredJob(String name, final Procedure1<Display> procedure) {
+		return new UIJob(getDisplay(), name) {
+			@Override
+			public IStatus runInUIThread(IProgressMonitor monitor) {
+				procedure.apply(getDisplay());
+				return Status.OK_STATUS;
+			}
+		};
+	}
+
 	public FillLayout newFillLayout() {
 		return new FillLayout();
+	}
+
+	public FillLayout newFillLayout(Procedure1<FillLayout> initializer) {
+		FillLayout FillLayout = new FillLayout();
+		if (initializer != null)
+			initializer.apply(FillLayout);
+		return FillLayout;
 	}
 
 	public Font newFont(String fontName, int height) {
@@ -1260,13 +1292,6 @@ public class SWTExtensions {
 		if (initializer != null)
 			initializer.apply(gridLayout);
 		return gridLayout;
-	}
-
-	public FillLayout newFillLayout(Procedure1<FillLayout> initializer) {
-		FillLayout FillLayout = new FillLayout();
-		if (initializer != null)
-			initializer.apply(FillLayout);
-		return FillLayout;
 	}
 
 	public Group newGroup(final Composite parent, final Procedure1<? super Group> initializer) {
@@ -1341,12 +1366,6 @@ public class SWTExtensions {
 		return path;
 	}
 
-	public Path newTemporaryPath(Procedure1<Path> initializer) {
-		Path result = newPath(initializer);
-		autoRelease(result);
-		return result;
-	}
-
 	public Button newPushButton(final Composite parent, final Procedure1<? super Button> initializer) {
 		Button _button = new Button(parent, SWT.PUSH);
 		Button label = _button;
@@ -1379,12 +1398,12 @@ public class SWTExtensions {
 		return new Rectangle(location.x, location.y, size.x, size.y);
 	}
 
-	public Rectangle newRectangleWithSize(Point size) {
-		return new Rectangle(0, 0, size.x, size.y);
-	}
-
 	public Rectangle newRectangleWithSize(int size) {
 		return new Rectangle(0, 0, size, size);
+	}
+
+	public Rectangle newRectangleWithSize(Point size) {
+		return new Rectangle(0, 0, size.x, size.y);
 	}
 
 	public TreeItem newRootItem(Tree tree, final Procedure1<TreeItem> initializer) {
@@ -1513,6 +1532,12 @@ public class SWTExtensions {
 		if (initializer != null)
 			initializer.apply(tableItem);
 		return tableItem;
+	}
+
+	public Path newTemporaryPath(Procedure1<Path> initializer) {
+		Path result = newPath(initializer);
+		autoRelease(result);
+		return result;
 	}
 
 	public Text newText(final Composite parent, int style, final Procedure1<? super Text> initializer) {
@@ -1671,6 +1696,10 @@ public class SWTExtensions {
 
 	public int operator_or(int e1, int e2) {
 		return e1 | e2;
+	}
+
+	public Point pointAt(Rectangle bounds, double xRatio, double yRatio) {
+		return new Point((int) (bounds.x + bounds.width * xRatio), (int) (bounds.y + bounds.height * yRatio));
 	}
 
 	public Path quadTo(Path path, Point c, Point destination) {
@@ -2406,19 +2435,6 @@ public class SWTExtensions {
 		return color;
 	}
 
-	public Color createColor(HSB hsb) {
-		return new Color(getDisplay(), hsb.toRGB());
-	}
-
-	public Color[] createColors(HSB[] hsb) {
-		Color[] result = new Color[hsb.length];
-		for (int i = 0; i < hsb.length; i++) {
-			result[i] = createColor(hsb[i]);
-		}
-
-		return result;
-	}
-
 	public Color[] toAutoReleaseColor(HSB[] hsb) {
 		Color[] result = new Color[hsb.length];
 		for (int i = 0; i < hsb.length; i++) {
@@ -2439,14 +2455,6 @@ public class SWTExtensions {
 		return new HSB(color.getRGB());
 	}
 
-	public HSB[] toHSBArray(Color[] colors) {
-		HSB[] result = new HSB[colors.length];
-		for (int i = 0; i < colors.length; i++) {
-			result[i] = new HSB(colors[i].getRGB());
-		}
-		return result;
-	}
-
 	/**
 	 * Converts {@link RGB} object to {@link HSB} object.
 	 * 
@@ -2457,6 +2465,14 @@ public class SWTExtensions {
 	 */
 	public HSB toHSB(RGB rgb) {
 		return new HSB(rgb);
+	}
+
+	public HSB[] toHSBArray(Color[] colors) {
+		HSB[] result = new HSB[colors.length];
+		for (int i = 0; i < colors.length; i++) {
+			result[i] = new HSB(colors[i].getRGB());
+		}
+		return result;
 	}
 
 	public String toHTMLCode(RGB rgb) {
@@ -2582,19 +2598,5 @@ public class SWTExtensions {
 
 		gc.setClipping(oldClip);
 		return gc;
-	}
-
-	public boolean isEmpty(Point point) {
-		return point.x == 0 && point.y == 0;
-	}
-
-	public UIJob newDeferredJob(String name, final Procedure1<Display> procedure) {
-		return new UIJob(getDisplay(), name) {
-			@Override
-			public IStatus runInUIThread(IProgressMonitor monitor) {
-				procedure.apply(getDisplay());
-				return Status.OK_STATUS;
-			}
-		};
 	}
 }
