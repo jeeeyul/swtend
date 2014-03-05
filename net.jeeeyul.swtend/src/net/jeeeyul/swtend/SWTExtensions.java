@@ -836,6 +836,10 @@ public class SWTExtensions {
 		return new Point(rectangle.x, rectangle.y + rectangle.height / 2);
 	}
 
+	public Point pointAt(Rectangle bounds, double xRatio, double yRatio) {
+		return new Point((int) (bounds.x + bounds.width * xRatio), (int) (bounds.y + bounds.height * yRatio));
+	}
+
 	public Point getLocation(Event e) {
 		return new Point(e.x, e.y);
 	}
@@ -1337,6 +1341,12 @@ public class SWTExtensions {
 		return path;
 	}
 
+	public Path newTemporaryPath(Procedure1<Path> initializer) {
+		Path result = newPath(initializer);
+		autoRelease(result);
+		return result;
+	}
+
 	public Button newPushButton(final Composite parent, final Procedure1<? super Button> initializer) {
 		Button _button = new Button(parent, SWT.PUSH);
 		Button label = _button;
@@ -1518,7 +1528,7 @@ public class SWTExtensions {
 			initializer.apply(text);
 		return text;
 	}
-	
+
 	public Text newTextField(final Composite parent, int style, final Procedure1<? super Text> initializer) {
 		Text text = new Text(parent, style);
 		if (initializer != null)
@@ -2312,13 +2322,15 @@ public class SWTExtensions {
 		return end == 0 ? text.substring(0, 1) : text + ellipses;
 	}
 
-	public void shouldDisposeWith(final Resource resource, Widget widget) {
+	public <T extends Resource> T shouldDisposeWith(final T resource, Widget widget) {
 		widget.addListener(SWT.Dispose, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
 				safeDispose(resource);
 			}
 		});
+
+		return resource;
 	}
 
 	public <T extends Control> T showTestGrid(T control) {
