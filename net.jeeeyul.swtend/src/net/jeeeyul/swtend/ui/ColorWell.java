@@ -62,7 +62,15 @@ public class ColorWell extends Canvas {
 			@Override
 			public void handleEvent(Event event) {
 				if (state == PRESSED) {
-					notifyListeners(SWT.Selection, new Event());
+					getDisplay().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							if (isDisposed()) {
+								return;
+							}
+							notifyListeners(SWT.Selection, new Event());
+						}
+					});
 				}
 				if (event.button == 1) {
 					setState(NONE);
