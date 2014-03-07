@@ -25,6 +25,8 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
 public class GradientEdit extends Canvas {
+	private static Gradient clipboard;
+
 	public static void main(String[] args) {
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display);
@@ -39,8 +41,6 @@ public class GradientEdit extends Canvas {
 			}
 		}
 	}
-
-	private static Gradient clipboard;
 
 	private Point preferredSize = new Point(100, 25);
 	private Gradient selection;
@@ -61,8 +61,9 @@ public class GradientEdit extends Canvas {
 	private MenuItem editMenuItem;
 
 	private MenuItem copyMenu;
-
 	private MenuItem pasteMenu;
+
+	private boolean dispatchModifyEventScheduled = false;
 
 	public GradientEdit(Composite parent) {
 		super(parent, SWT.DOUBLE_BUFFERED);
@@ -75,16 +76,6 @@ public class GradientEdit extends Canvas {
 		setSelection(gradient, false);
 
 		updateMenuEnabilities();
-	}
-
-	@Override
-	public boolean setFocus() {
-		return forceFocus();
-	}
-
-	@Override
-	public boolean isFocusControl() {
-		return super.isFocusControl();
 	}
 
 	@Override
@@ -157,17 +148,28 @@ public class GradientEdit extends Canvas {
 			@Override
 			public void handleEvent(Event event) {
 				updateMenuEnabilities();
-
 			}
 		});
 	}
 
-	private void removeSelectedItem() {
-		if (selectedItem != null && items.size() > 2) {
-			selection.remove(selectedItem.getData());
-			rebuildItems();
-			notifyListeners(SWT.Modify, new Event());
+	private void dispathModifyEvent() {
+		if (dispatchModifyEventScheduled == true) {
+			return;
 		}
+		dispatchModifyEventScheduled = true;
+
+		getDisplay().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				dispatchModifyEventScheduled = false;
+				if (isDisposed()) {
+					return;
+				}
+
+				notifyListeners(SWT.Modify, new Event());
+			}
+		});
+
 	}
 
 	private void draw(GC gc) {
@@ -211,6 +213,31 @@ public class GradientEdit extends Canvas {
 		gc.drawLine(barArea.x + barArea.width, barArea.y, barArea.x + barArea.width, barArea.y + barArea.height);
 	}
 
+	protected void editItem(GradientEditItem item) {
+		final ColorStop colorStop = (ColorStop) item.getData();
+		HSB original = colorStop.color;
+
+		final ColorPicker picker = new ColorPicker(getShell());
+		picker.setSelection(colorStop.color);
+
+		picker.setContinuosSelectionHandler(new Procedure1<HSB>() {
+			@Override
+			public void apply(HSB t) {
+				colorStop.color = picker.getSelection();
+				redraw();
+				dispathModifyEvent();
+			}
+		});
+
+		if (picker.open() == IDialogConstants.OK_ID) {
+			colorStop.color = picker.getSelection();
+		} else {
+			colorStop.color = original;
+		}
+		redraw();
+		dispathModifyEvent();
+	}
+
 	private Rectangle getBarArea() {
 		return SWTExtensions.INSTANCE.shrink(getClientArea(), 0, 15, 0, 0);
 	}
@@ -252,39 +279,23 @@ public class GradientEdit extends Canvas {
 	}
 
 	private void handleDoubleClick(Event event) {
-		GradientEditItem item = getItemAt(event);
+		final GradientEditItem item = getItemAt(event);
 		if (item != null) {
-			editItem(item);
+			getDisplay().asyncExec(new Runnable() {
+
+				@Override
+				public void run() {
+					if (!isDisposed()) {
+						editItem(item);
+					}
+
+				}
+			});
 		}
 
 		else {
 			insertNewColorStop(event.x);
 		}
-	}
-
-	protected void editItem(GradientEditItem item) {
-		final ColorStop colorStop = (ColorStop) item.getData();
-		HSB original = colorStop.color;
-
-		final ColorPicker picker = new ColorPicker(getShell());
-		picker.setSelection(colorStop.color);
-
-		picker.setContinuosSelectionHandler(new Procedure1<HSB>() {
-			@Override
-			public void apply(HSB t) {
-				colorStop.color = picker.getSelection();
-				redraw();
-				notifyListeners(SWT.Modify, new Event());
-			}
-		});
-
-		if (picker.open() == IDialogConstants.OK_ID) {
-			colorStop.color = picker.getSelection();
-		} else {
-			colorStop.color = original;
-		}
-		redraw();
-		notifyListeners(SWT.Modify, new Event());
 	}
 
 	private void handleMouseDown(Event event) {
@@ -298,13 +309,6 @@ public class GradientEdit extends Canvas {
 				state = 1;
 			}
 		}
-	}
-
-	private void updateMenuEnabilities() {
-		addMenuItem.setEnabled(selectedItem == null);
-		removeMenuItem.setEnabled(selectedItem != null && items.size() > 2);
-		editMenuItem.setEnabled(selectedItem != null);
-		pasteMenu.setEnabled(clipboard != null);
 	}
 
 	private void handleMouseMove(Event event) {
@@ -337,9 +341,8 @@ public class GradientEdit extends Canvas {
 				sort();
 			}
 
-			notifyListeners(SWT.Modify, new Event());
-
 			redraw();
+			dispathModifyEvent();
 		}
 
 		else if (state == 0) {
@@ -354,7 +357,7 @@ public class GradientEdit extends Canvas {
 			dragBeginBounds = null;
 			state = 0;
 			layoutItems();
-			notifyListeners(SWT.Modify, new Event());
+			dispathModifyEvent();
 		}
 	}
 
@@ -464,7 +467,12 @@ public class GradientEdit extends Canvas {
 		setSelectedItem(newItem);
 		layoutItems();
 
-		notifyListeners(SWT.Modify, new Event());
+		dispathModifyEvent();
+	}
+
+	@Override
+	public boolean isFocusControl() {
+		return super.isFocusControl();
 	}
 
 	public boolean isLockOrder() {
@@ -495,6 +503,19 @@ public class GradientEdit extends Canvas {
 		}
 
 		layoutItems();
+	}
+
+	private void removeSelectedItem() {
+		if (selectedItem != null && items.size() > 2) {
+			selection.remove(selectedItem.getData());
+			rebuildItems();
+			dispathModifyEvent();
+		}
+	}
+
+	@Override
+	public boolean setFocus() {
+		return forceFocus();
 	}
 
 	private void setHotItem(GradientEditItem target) {
@@ -536,6 +557,10 @@ public class GradientEdit extends Canvas {
 		redraw();
 	}
 
+	public void setSelection(Gradient selection) {
+		setSelection(selection, false);
+	}
+
 	public void setSelection(Gradient selection, boolean notify) {
 		if (this.selection == selection) {
 			return;
@@ -545,12 +570,8 @@ public class GradientEdit extends Canvas {
 		rebuildItems();
 
 		if (notify) {
-			notifyListeners(SWT.Modify, new Event());
+			dispathModifyEvent();
 		}
-	}
-
-	public void setSelection(Gradient selection) {
-		setSelection(selection, false);
 	}
 
 	private void sort() {
@@ -569,6 +590,13 @@ public class GradientEdit extends Canvas {
 		result = Math.max(result, 0);
 		result = Math.min(result, 100);
 		return result;
+	}
+
+	private void updateMenuEnabilities() {
+		addMenuItem.setEnabled(selectedItem == null);
+		removeMenuItem.setEnabled(selectedItem != null && items.size() > 2);
+		editMenuItem.setEnabled(selectedItem != null);
+		pasteMenu.setEnabled(clipboard != null);
 	}
 
 }

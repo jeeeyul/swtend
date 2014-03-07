@@ -85,6 +85,7 @@ public class SWTExtensions {
 	};
 
 	private GC sharedGC;
+	private String osName;
 
 	public Path addArc(Path path, Rectangle box, int startAngle, int angle) {
 		path.addArc(box.x, box.y, box.width, box.height, startAngle, angle);
@@ -552,12 +553,29 @@ public class SWTExtensions {
 		return gc;
 	}
 
+	private Rectangle getOSPathBoundsFix() {
+		String osName = getOS();
+		if (osName.startsWith("Windows")) {
+			return newInsets(0, 0, 3, 2);
+		} else {
+			return newInsets(0, 0, 1, 1);
+		}
+	}
+
+	private String getOS() {
+		if (osName == null) {
+			osName = System.getProperty("os.name");
+		}
+		return osName;
+	}
+
 	public GC drawGradientPath(GC gc, Path path, Color[] colors, int[] percents, boolean vertical) {
 		Rectangle oldClip = gc.getClipping();
 
 		float[] fBounds = new float[4];
 		path.getBounds(fBounds);
-		Rectangle bounds = new Rectangle((int) fBounds[0], (int) fBounds[1], (int) fBounds[2] + 1, (int) fBounds[3] + 1);
+		Rectangle bounds = new Rectangle((int) fBounds[0], (int) fBounds[1], (int) fBounds[2], (int) fBounds[3]);
+		bounds = expand(bounds, getOSPathBoundsFix());
 		int offset = vertical ? bounds.y : bounds.x;
 		int gradientSize = 0;
 		for (int i = 1; i < colors.length; i++) {
