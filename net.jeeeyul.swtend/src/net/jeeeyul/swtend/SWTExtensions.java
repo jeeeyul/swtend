@@ -2599,4 +2599,11 @@ public class SWTExtensions {
 		gc.setClipping(oldClip);
 		return gc;
 	}
+
+	public Listener attachTo(Listener listener, int eventType, Widget... widgets) {
+		for (Widget w : widgets) {
+			w.addListener(eventType, listener);
+		}
+		return listener;
+	}
 }

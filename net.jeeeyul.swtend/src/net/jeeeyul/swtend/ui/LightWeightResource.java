@@ -3,7 +3,7 @@ package net.jeeeyul.swtend.ui;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LightWeightResource {
+public abstract class LightWeightResource {
 	private Map<String, Object> dataMap;
 	private Object data;
 
@@ -33,5 +33,4 @@ public class LightWeightResource {
 	public void setData(String key, Object data) {
 		getDataMap().put(key, data);
 	}
-
 }
