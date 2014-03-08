@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
@@ -2605,6 +2606,14 @@ public class SWTExtensions {
 
 		gc.setClipping(oldClip);
 		return gc;
+	}
+
+	public Spinner newSpinner(Composite parent, Procedure1<Spinner> initializer) {
+		Spinner spinner = new Spinner(parent, SWT.BORDER);
+		if (initializer != null) {
+			initializer.apply(spinner);
+		}
+		return spinner;
 	}
 
 	public GC withClip(GC gc, Rectangle clip, Procedure1<GC> block) {
