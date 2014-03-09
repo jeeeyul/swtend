@@ -281,6 +281,7 @@ public class GradientEdit extends Canvas {
 	private void handleDoubleClick(Event event) {
 		final GradientEditItem item = getItemAt(event);
 		if (item != null) {
+			state = 0;
 			getDisplay().asyncExec(new Runnable() {
 
 				@Override
