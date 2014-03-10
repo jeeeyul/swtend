@@ -52,7 +52,7 @@ class AutoReleaseAndGraphics {
 				]
 				
 				gc.lineWidth = 1
-				gc.foreground = COLOR_MARGENTA
+				gc.foreground = COLOR_MAGENTA
 				gc.background = COLOR_YELLOW
 				gc.backgroundPattern = gradient
 				gc.fillPath(path)

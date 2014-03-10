@@ -135,6 +135,13 @@ public class SWTExtensions {
 		});
 	}
 
+	public Listener attachTo(Listener listener, int eventType, Widget... widgets) {
+		for (Widget w : widgets) {
+			w.addListener(eventType, listener);
+		}
+		return listener;
+	}
+
 	public <T extends Resource> T autoDispose(T resource) {
 		scheduleAutoRelease(resource);
 		return resource;
@@ -331,7 +338,7 @@ public class SWTExtensions {
 	 * @return a magenta {@link Color} object.
 	 * @since 1.1.0
 	 */
-	public Color COLOR_MARGENTA() {
+	public Color COLOR_MAGENTA() {
 		return getDisplay().getSystemColor(SWT.COLOR_MAGENTA);
 	}
 
@@ -552,22 +559,6 @@ public class SWTExtensions {
 	public GC draw(GC gc, Rectangle rectangle) {
 		gc.drawRectangle(rectangle);
 		return gc;
-	}
-
-	private Rectangle getOSPathBoundsFix() {
-		String osName = getOS();
-		if (osName.startsWith("Windows")) {
-			return newInsets(0, 0, 3, 2);
-		} else {
-			return newInsets(0, 0, 1, 1);
-		}
-	}
-
-	private String getOS() {
-		if (osName == null) {
-			osName = System.getProperty("os.name");
-		}
-		return osName;
 	}
 
 	public GC drawGradientPath(GC gc, Path path, Color[] colors, int[] percents, boolean vertical) {
@@ -857,6 +848,10 @@ public class SWTExtensions {
 		return expand(getCopy(rectangle), insets);
 	}
 
+	public int getHeight(Point size) {
+		return size.y;
+	}
+
 	public ImageRegistry getImageRegistry() {
 		ImageRegistry result = (ImageRegistry) Display.getDefault().getData("imageRegistry");
 		if (result == null) {
@@ -904,6 +899,22 @@ public class SWTExtensions {
 
 	public Point getNegated(Point me) {
 		return negate(getCopy(me));
+	}
+
+	private String getOS() {
+		if (osName == null) {
+			osName = System.getProperty("os.name");
+		}
+		return osName;
+	}
+
+	private Rectangle getOSPathBoundsFix() {
+		String osName = getOS();
+		if (osName.startsWith("Windows")) {
+			return newInsets(0, 0, 3, 2);
+		} else {
+			return newInsets(0, 0, 1, 1);
+		}
 	}
 
 	public Rectangle getRelocatedBottomLeftWith(Rectangle me, Point BottomLeft) {
@@ -1097,6 +1108,10 @@ public class SWTExtensions {
 		return union(getCopy(me), other);
 	}
 
+	public int getWidth(Point size) {
+		return size.x;
+	}
+
 	public boolean hasFlags(int flags, int... mask) {
 		for (int each : mask) {
 			if ((flags & each) == 0) {
@@ -1192,6 +1207,14 @@ public class SWTExtensions {
 		if (initializer != null)
 			initializer.apply(label);
 		return label;
+	}
+
+	public Color newColor(HSB hsb) {
+		return new Color(getDisplay(), hsb.toRGB());
+	}
+
+	public Color newColor(RGB rgb) {
+		return new Color(getDisplay(), rgb);
 	}
 
 	public Combo newCombo(final Composite parent, int style, final Procedure1<? super Combo> initializer) {
@@ -1413,6 +1436,10 @@ public class SWTExtensions {
 		return new Rectangle(0, 0, 0, 0);
 	}
 
+	public Rectangle newRectangle(int x, int y, int width, int height) {
+		return new Rectangle(x, y, width, height);
+	}
+
 	public Rectangle newRectangle(Point location, Point size) {
 		return new Rectangle(location.x, location.y, size.x, size.y);
 	}
@@ -1511,6 +1538,20 @@ public class SWTExtensions {
 		return new Point(width, height);
 	}
 
+	public Spinner newSpinner(Composite parent, Procedure1<Spinner> initializer) {
+		Spinner spinner = new Spinner(parent, SWT.BORDER);
+		if (initializer != null) {
+			initializer.apply(spinner);
+		}
+		return spinner;
+	}
+
+	/**
+	 * @deprecated use {@link #newTreeItem(TreeItem, Procedure1)} instead.
+	 * @param parent
+	 * @param initializer
+	 * @return
+	 */
 	public TreeItem newSubItem(TreeItem parent, final Procedure1<TreeItem> initializer) {
 		TreeItem item = new TreeItem(parent, SWT.NORMAL);
 		if (initializer != null)
@@ -1551,6 +1592,14 @@ public class SWTExtensions {
 		if (initializer != null)
 			initializer.apply(tableItem);
 		return tableItem;
+	}
+
+	public Color newTemporaryColor(HSB hsb) {
+		return autoDispose(newColor(hsb));
+	}
+
+	public Color newTemporaryColor(RGB rgb) {
+		return autoRelease(newColor(rgb));
 	}
 
 	public Path newTemporaryPath(Procedure1<Path> initializer) {
@@ -1920,6 +1969,11 @@ public class SWTExtensions {
 
 	public Rectangle setBottomRight(Rectangle me, Point bottomRight) {
 		return setBottomRight(me, bottomRight.x, bottomRight.y);
+	}
+
+	public int setHeight(Point size, int height) {
+		size.y = height;
+		return height;
 	}
 
 	public Rectangle setLeft(Rectangle me, int left) {
@@ -2338,6 +2392,11 @@ public class SWTExtensions {
 		return setTopRight(me, topRight.x, topRight.y);
 	}
 
+	public int setWidth(Point size, int width) {
+		size.x = width;
+		return width;
+	}
+
 	public Shell Shell(final Procedure1<? super Shell> initializer) {
 		Shell _shell = new Shell();
 		Shell s = _shell;
@@ -2512,6 +2571,24 @@ public class SWTExtensions {
 		return new Rectangle(point.x, point.y, 0, 0);
 	}
 
+	public Color toTemporaryColor(HSB hsb) {
+		Color color = hsb.getData("-swt-extension-color-instance");
+		if (color == null || color.isDisposed()) {
+			color = autoRelease(new Color(getDisplay(), hsb.toRGB()));
+			hsb.setData("-swt-extension-color-instance", color);
+		}
+		return color;
+	}
+
+	public Color[] toTemporaryColors(HSB[] hsb) {
+		Color[] result = new Color[hsb.length];
+		for (int i = 0; i < hsb.length; i++) {
+			result[i] = toAutoReleaseColor(hsb[i]);
+		}
+
+		return result;
+	}
+
 	public Point translate(Point point, int dx, int dy) {
 		point.x += dx;
 		point.y += dy;
@@ -2608,14 +2685,6 @@ public class SWTExtensions {
 		return gc;
 	}
 
-	public Spinner newSpinner(Composite parent, Procedure1<Spinner> initializer) {
-		Spinner spinner = new Spinner(parent, SWT.BORDER);
-		if (initializer != null) {
-			initializer.apply(spinner);
-		}
-		return spinner;
-	}
-
 	public GC withClip(GC gc, Rectangle clip, Procedure1<GC> block) {
 		Rectangle oldClip = gc.getClipping();
 		if (block != null) {
@@ -2625,12 +2694,5 @@ public class SWTExtensions {
 
 		gc.setClipping(oldClip);
 		return gc;
-	}
-
-	public Listener attachTo(Listener listener, int eventType, Widget... widgets) {
-		for (Widget w : widgets) {
-			w.addListener(eventType, listener);
-		}
-		return listener;
 	}
 }

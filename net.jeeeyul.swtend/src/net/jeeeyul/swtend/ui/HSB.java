@@ -9,12 +9,20 @@ import org.eclipse.swt.widgets.Display;
 
 public class HSB extends LightWeightResource {
 	public static final HSB BLACK = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_BLACK).getRGB());
-	public static final HSB GRAY = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
-	public static final HSB RED = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_RED).getRGB());
 	public static final HSB BLUE = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_BLUE).getRGB());
+	public static final HSB CYAN = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_CYAN).getRGB());
+	public static final HSB DARK_BLUE = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE).getRGB());
 	public static final HSB DARK_GRAY = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY).getRGB());
+	public static final HSB DARK_GREEN = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
+	public static final HSB DARK_MAGENTA = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA).getRGB());
 	public static final HSB DARK_RED = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED).getRGB());
-	public static final HSB WIDGET_BACKGROUND = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).getRGB());
+	public static final HSB DARK_YELLOW = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW).getRGB());
+	public static final HSB GRAY = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
+	public static final HSB GREEN = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_GREEN).getRGB());
+	public static final HSB MAGENTA = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_MAGENTA).getRGB());
+	public static final HSB RED = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_RED).getRGB());
+	public static final HSB WHITE = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_WHITE).getRGB());
+	public static final HSB YELLOW = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_YELLOW).getRGB());
 
 	public static HSB deserialize(String literal) {
 		HSB result = new HSB();
