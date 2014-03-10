@@ -3,13 +3,17 @@ package net.jeeeyul.swtend.ui;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Resource;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 
 public class NinePatch extends Resource {
 	private Image image;
 	private Rectangle centerArea;
-
 	private Rectangle imageBounds;
 
 	public NinePatch(Image image, Rectangle centerArea) {
@@ -117,6 +121,29 @@ public class NinePatch extends Resource {
 
 	private boolean isPositiveArea(Rectangle rect) {
 		return rect.width > 0 && rect.height > 0;
+	}
+
+	public static void main(String[] args) {
+		Display display = Display.getDefault();
+		Image testImage = new Image(display, new ImageData(NinePatch.class.getResourceAsStream("patch-test.png")));
+
+		final NinePatch patch = new NinePatch(testImage, new Rectangle(10, 10, 10, 10));
+
+		Shell shell = new Shell(display);
+		shell.addListener(SWT.Paint, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				event.gc.drawImage(patch.getImage(), 0, 0);
+				patch.fill(event.gc, new Rectangle(200, 0, 100, 100));
+			}
+		});
+
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) {
+				display.sleep();
+			}
+		}
 	}
 
 }
