@@ -5,6 +5,8 @@ import java.util.Iterator;
 
 import net.jeeeyul.swtend.internal.WidgetIterator;
 import net.jeeeyul.swtend.sam.Procedure1;
+import net.jeeeyul.swtend.ui.ColorStop;
+import net.jeeeyul.swtend.ui.Gradient;
 import net.jeeeyul.swtend.ui.HSB;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -577,11 +579,15 @@ public class SWTExtensions {
 				Pattern pattern = new Pattern(getDisplay(), bounds.x, offset - 1, bounds.x, offset + gradientSize, from, to);
 				gc.setForegroundPattern(pattern);
 				gc.drawPath(path);
+				gc.setForegroundPattern(null);
+				pattern.dispose();
 			} else {
 				gc.setClipping(offset, bounds.y, gradientSize, bounds.height);
 				Pattern pattern = new Pattern(getDisplay(), offset - 1, bounds.y, offset + gradientSize, bounds.y, from, to);
 				gc.setForegroundPattern(pattern);
 				gc.drawPath(path);
+				gc.setForegroundPattern(null);
+				pattern.dispose();
 			}
 			offset += gradientSize;
 		}
@@ -733,13 +739,25 @@ public class SWTExtensions {
 	}
 
 	public GC fillGradientRectangle(GC gc, Rectangle bounds, Color[] colors, int[] percents, boolean vertical) {
+		if (colors == null || percents == null || hasDisposed(colors)) {
+			throw new IllegalArgumentException();
+		}
+		if (colors.length - 1 != percents.length) {
+			throw new IllegalArgumentException();
+		}
+
 		int offset = vertical ? bounds.y : bounds.x;
+		int max = vertical ? bounds.y + bounds.height : bounds.x + bounds.width;
 		int gradientSize = 0;
 
 		for (int i = 1; i < colors.length; i++) {
 			Color from = colors[i - 1];
 			Color to = colors[i];
-			gradientSize = bounds.height * percents[i - 1] / 100 - (offset - bounds.y);
+			if (vertical) {
+				gradientSize = bounds.height * percents[i - 1] / 100 - (offset - bounds.y);
+			} else {
+				gradientSize = bounds.width * percents[i - 1] / 100 - (offset - bounds.x);
+			}
 
 			gc.setForeground(from);
 			gc.setBackground(to);
@@ -752,6 +770,48 @@ public class SWTExtensions {
 			offset += gradientSize;
 		}
 
+		if (offset < max) {
+			gc.setBackground(colors[colors.length - 1]);
+			if (vertical) {
+				gc.fillRectangle(bounds.x, offset, bounds.width, max - offset);
+			} else {
+				gc.fillRectangle(offset, bounds.y, max - offset, bounds.height);
+			}
+		}
+
+		return gc;
+	}
+
+	public GC fillGradientRectangle(GC gc, Rectangle bounds, Gradient gradient, boolean vertical) {
+		Color[] colors;
+		int[] percents;
+		int colorOffset = 0;
+		int percentOffset = 1;
+
+		if (gradient.get(0).percent != 0) {
+			colors = new Color[gradient.size() + 1];
+			colors[0] = newColor(gradient.get(0).color);
+			percents = new int[gradient.size()];
+			colorOffset = 1;
+			percentOffset = 0;
+
+		} else {
+			colors = new Color[gradient.size()];
+			percents = new int[gradient.size() - 1];
+		}
+
+		for (int i = 0; i < gradient.size(); i++) {
+			ColorStop stop = gradient.get(i);
+			colors[i + colorOffset] = newColor(stop.color);
+		}
+
+		for (int i = percentOffset; i < gradient.size(); i++) {
+			ColorStop stop = gradient.get(i);
+			percents[i - percentOffset] = stop.percent;
+		}
+
+		fillGradientRectangle(gc, bounds, colors, percents, vertical);
+		safeDispose(colors);
 		return gc;
 	}
 
@@ -1104,6 +1164,18 @@ public class SWTExtensions {
 		return size.x;
 	}
 
+	public boolean hasDisposed(Resource... resources) {
+		for (Resource r : resources) {
+			if (r == null)
+				throw new IllegalArgumentException();
+
+			if (r.isDisposed()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean hasFlags(int flags, int... mask) {
 		for (int each : mask) {
 			if ((flags & each) == 0) {
@@ -1309,28 +1381,12 @@ public class SWTExtensions {
 		return font;
 	}
 
-	public Font newTemporaryFont(String fontName, int height, int style) {
-		return autoDispose(newFont(fontName, height, style));
-	}
-
-	public Font newTemporaryFont(String fontName, int height) {
-		return autoDispose(newFont(fontName, height));
-	}
-
 	public Pattern newGradient(Point from, Point to, Color fromColor, Color toColor) {
 		return new Pattern(getDisplay(), from.x, from.y, to.x, to.y, fromColor, toColor);
 	}
 
-	public Pattern newTemporaryGradient(Point from, Point to, Color fromColor, Color toColor) {
-		return autoDispose(newGradient(from, to, fromColor, toColor));
-	}
-
 	public Pattern newGradient(Point from, Point to, Color fromColor, int fromAlpha, Color toColor, int toAlpha) {
 		return new Pattern(getDisplay(), from.x, from.y, to.x, to.y, fromColor, fromAlpha, toColor, toAlpha);
-	}
-
-	public Pattern newTemporaryGradient(Point from, Point to, Color fromColor, int fromAlpha, Color toColor, int toAlpha) {
-		return autoDispose(newGradient(from, to, fromColor, fromAlpha, toColor, toAlpha));
 	}
 
 	public GridData newGridData(final Procedure1<? super GridData> initializer) {
@@ -1605,6 +1661,22 @@ public class SWTExtensions {
 
 	public Color newTemporaryColor(RGB rgb) {
 		return autoRelease(newColor(rgb));
+	}
+
+	public Font newTemporaryFont(String fontName, int height) {
+		return autoDispose(newFont(fontName, height));
+	}
+
+	public Font newTemporaryFont(String fontName, int height, int style) {
+		return autoDispose(newFont(fontName, height, style));
+	}
+
+	public Pattern newTemporaryGradient(Point from, Point to, Color fromColor, Color toColor) {
+		return autoDispose(newGradient(from, to, fromColor, toColor));
+	}
+
+	public Pattern newTemporaryGradient(Point from, Point to, Color fromColor, int fromAlpha, Color toColor, int toAlpha) {
+		return autoDispose(newGradient(from, to, fromColor, fromAlpha, toColor, toAlpha));
 	}
 
 	public Path newTemporaryPath(Procedure1<Path> initializer) {

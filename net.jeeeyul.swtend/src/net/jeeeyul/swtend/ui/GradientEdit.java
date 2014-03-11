@@ -8,9 +8,11 @@ import java.util.List;
 import net.jeeeyul.swtend.SWTExtensions;
 import net.jeeeyul.swtend.sam.Procedure1;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -23,6 +25,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.progress.UIJob;
 
 public class GradientEdit extends Canvas {
 	private static Gradient clipboard;
@@ -64,6 +67,8 @@ public class GradientEdit extends Canvas {
 	private MenuItem pasteMenu;
 
 	private boolean dispatchModifyEventScheduled = false;
+
+	private UIJob editItemJob;
 
 	public GradientEdit(Composite parent) {
 		super(parent, SWT.DOUBLE_BUFFERED);
@@ -186,23 +191,8 @@ public class GradientEdit extends Canvas {
 
 	private void drawBar(GC gc) {
 		Rectangle barArea = getBarArea();
-		int offset = 0;
-		int gradientWidth = 0;
 
-		for (int i = 0; i <= selection.size(); i++) {
-			ColorStop from = (i > 0) ? selection.get(i - 1) : selection.get(i);
-			ColorStop to = (i < selection.size()) ? selection.get(i) : selection.get(i - 1);
-			Color fromColor = new Color(getDisplay(), from.color.toRGB());
-			Color toColor = new Color(getDisplay(), to.color.toRGB());
-			gradientWidth = (i < selection.size()) ? (int) (barArea.width * (to.percent / 100d) - offset) : barArea.width - offset;
-			gc.setForeground(fromColor);
-			gc.setBackground(toColor);
-			gc.fillGradientRectangle(barArea.x + offset, barArea.y, gradientWidth, barArea.height, false);
-
-			fromColor.dispose();
-			toColor.dispose();
-			offset += gradientWidth;
-		}
+		SWTExtensions.INSTANCE.fillGradientRectangle(gc, barArea, selection, false);
 
 		gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
 		gc.drawLine(barArea.x, barArea.y, barArea.x + barArea.width, barArea.y);
@@ -248,6 +238,22 @@ public class GradientEdit extends Canvas {
 		return SWTExtensions.INSTANCE.shrink(new Rectangle(0, 0, size.x, size.y), 5, 0, 6, 1);
 	}
 
+	private UIJob getEditItemJob() {
+		if (editItemJob == null) {
+			editItemJob = new UIJob(getDisplay(), "Edit Item") {
+				@Override
+				public IStatus runInUIThread(IProgressMonitor monitor) {
+					if (isDisposed() || selectedItem == null) {
+						return Status.OK_STATUS;
+					}
+					editItem(selectedItem);
+					return Status.OK_STATUS;
+				}
+			};
+		}
+		return editItemJob;
+	}
+
 	private GradientEditItem getItemAt(Event event) {
 		return getItemAt(event.x, event.y);
 	}
@@ -282,16 +288,7 @@ public class GradientEdit extends Canvas {
 		final GradientEditItem item = getItemAt(event);
 		if (item != null) {
 			state = 0;
-			getDisplay().asyncExec(new Runnable() {
-
-				@Override
-				public void run() {
-					if (!isDisposed()) {
-						editItem(item);
-					}
-
-				}
-			});
+			getEditItemJob().schedule();
 		}
 
 		else {
