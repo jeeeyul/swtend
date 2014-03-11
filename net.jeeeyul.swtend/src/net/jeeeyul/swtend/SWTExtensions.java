@@ -532,14 +532,6 @@ public class SWTExtensions {
 		return path;
 	}
 
-	/**
-	 * @deprecated Depricated at 1.1.0, Use {@link #COLOR_DARK_GRAY()} instead.
-	 * @return
-	 */
-	public Color darkGrayColor() {
-		return getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY);
-	}
-
 	public GC draw(GC gc, int[] pointArray) {
 		gc.drawPolygon(pointArray);
 		return gc;
@@ -1155,6 +1147,14 @@ public class SWTExtensions {
 		return widget;
 	}
 
+	public boolean isAlive(Resource r) {
+		return r != null && !r.isDisposed();
+	}
+
+	public boolean isAlive(Widget w) {
+		return w != null && !w.isDisposed();
+	}
+
 	public boolean isEmpty(Point point) {
 		return point.x == 0 && point.y == 0;
 	}
@@ -1301,8 +1301,7 @@ public class SWTExtensions {
 	}
 
 	public Font newFont(String fontName, int height) {
-		Font font = new Font(getDisplay(), fontName, height, SWT.NORMAL);
-		return font;
+		return newFont(fontName, height, SWT.NORMAL);
 	}
 
 	public Font newFont(String fontName, int height, int style) {
@@ -1310,12 +1309,28 @@ public class SWTExtensions {
 		return font;
 	}
 
+	public Font newTemporaryFont(String fontName, int height, int style) {
+		return autoDispose(newFont(fontName, height, style));
+	}
+
+	public Font newTemporaryFont(String fontName, int height) {
+		return autoDispose(newFont(fontName, height));
+	}
+
 	public Pattern newGradient(Point from, Point to, Color fromColor, Color toColor) {
 		return new Pattern(getDisplay(), from.x, from.y, to.x, to.y, fromColor, toColor);
 	}
 
+	public Pattern newTemporaryGradient(Point from, Point to, Color fromColor, Color toColor) {
+		return autoDispose(newGradient(from, to, fromColor, toColor));
+	}
+
 	public Pattern newGradient(Point from, Point to, Color fromColor, int fromAlpha, Color toColor, int toAlpha) {
 		return new Pattern(getDisplay(), from.x, from.y, to.x, to.y, fromColor, fromAlpha, toColor, toAlpha);
+	}
+
+	public Pattern newTemporaryGradient(Point from, Point to, Color fromColor, int fromAlpha, Color toColor, int toAlpha) {
+		return autoDispose(newGradient(from, to, fromColor, fromAlpha, toColor, toAlpha));
 	}
 
 	public GridData newGridData(final Procedure1<? super GridData> initializer) {
@@ -1409,27 +1424,24 @@ public class SWTExtensions {
 	}
 
 	public Button newPushButton(final Composite parent, final Procedure1<? super Button> initializer) {
-		Button _button = new Button(parent, SWT.PUSH);
-		Button label = _button;
+		Button button = new Button(parent, SWT.PUSH);
 		if (initializer != null)
-			initializer.apply(label);
-		return label;
+			initializer.apply(button);
+		return button;
 	}
 
 	public Button newRadioButton(final Composite parent, final Procedure1<? super Button> initializer) {
-		Button _button = new Button(parent, SWT.RADIO);
-		Button label = _button;
+		Button button = new Button(parent, SWT.RADIO);
 		if (initializer != null)
-			initializer.apply(label);
-		return label;
+			initializer.apply(button);
+		return button;
 	}
 
 	public Text newReadOnlyTextField(final Composite parent, final Procedure1<? super Text> initializer) {
-		Text _text = new Text(parent, SWT.BORDER | SWT.READ_ONLY);
-		Text label = _text;
+		Text text = new Text(parent, SWT.BORDER | SWT.READ_ONLY);
 		if (initializer != null)
-			initializer.apply(label);
-		return label;
+			initializer.apply(text);
+		return text;
 	}
 
 	public Rectangle newRectangle() {
@@ -1459,12 +1471,6 @@ public class SWTExtensions {
 		return item;
 	}
 
-	public Path newRoundRectanglePath(int x, int y, int width, int height, int radius) {
-		Path path = new Path(getDisplay());
-
-		return path;
-	}
-
 	public Scale newScale(final Composite parent, final Procedure1<? super Scale> initializer) {
 		Scale scale = new Scale(parent, SWT.NORMAL);
 		if (initializer != null)
@@ -1473,11 +1479,10 @@ public class SWTExtensions {
 	}
 
 	public Text newSearchField(final Composite parent, final Procedure1<? super Text> initializer) {
-		Text _text = new Text(parent, SWT.BORDER | SWT.SEARCH);
-		Text label = _text;
+		Text text = new Text(parent, SWT.BORDER | SWT.SEARCH);
 		if (initializer != null)
-			initializer.apply(label);
-		return label;
+			initializer.apply(text);
+		return text;
 	}
 
 	/**
@@ -1717,6 +1722,10 @@ public class SWTExtensions {
 	}
 
 	public UIJob newUIJob(final Procedure1<Void> work) {
+		return newUIJob("Noname", true, false, work);
+	}
+
+	public UIJob newUIJob(String name, boolean system, boolean user, final Procedure1<Void> work) {
 		UIJob uiJob = new UIJob(getDisplay(), "Unnamed Job") {
 			@Override
 			public IStatus runInUIThread(IProgressMonitor monitor) {
@@ -1724,26 +1733,21 @@ public class SWTExtensions {
 				return Status.OK_STATUS;
 			}
 		};
-		uiJob.setSystem(true);
-		uiJob.setUser(false);
+		uiJob.setSystem(system);
+		uiJob.setUser(user);
+		uiJob.setName(name);
 		return uiJob;
 	}
 
 	public Label newVerticalSeperator(final Composite parent, final Procedure1<? super Label> initializer) {
-		Label _label = new Label(parent, SWT.SEPARATOR | SWT.VERTICAL);
-		Label label = _label;
+		Label label = new Label(parent, SWT.SEPARATOR | SWT.VERTICAL);
 		if (initializer != null)
 			initializer.apply(label);
 		return label;
 	}
 
-	public <T extends Widget> void onEvent(final T widget, int eventType, final Procedure1<Event> handler) {
-		widget.addListener(eventType, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public <T extends Widget> void onEvent(final T widget, int eventType, final Listener handler) {
+		widget.addListener(eventType, handler);
 	}
 
 	public void openAndRunLoop(final Shell s) {
@@ -1995,314 +1999,144 @@ public class SWTExtensions {
 		return rectangle;
 	}
 
-	public <T extends Shell> void setOnActivate(final T control, final Procedure1<Event> handler) {
-		control.addListener(SWT.Activate, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public <T extends Shell> void setOnActivate(final T control, final Listener handler) {
+		control.addListener(SWT.Activate, handler);
 	}
 
-	public <T extends MenuItem> void setOnArm(final T control, final Procedure1<Event> handler) {
-		control.addListener(SWT.Arm, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public <T extends MenuItem> void setOnArm(final T control, final Listener handler) {
+		control.addListener(SWT.Arm, handler);
 	}
 
-	public void setOnClick(final Control button, final Procedure1<Event> function) {
-		button.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnClick(final Control button, final Listener listener) {
+		button.addListener(SWT.Selection, listener);
 	}
 
-	public void setOnClose(final Shell control, final Procedure1<Event> function) {
-		control.addListener(SWT.Close, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnClose(final Shell control, final Listener listener) {
+		control.addListener(SWT.Close, listener);
 	}
 
-	public void setOnCollapse(final Tree control, final Procedure1<Event> function) {
-		control.addListener(SWT.Collapse, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnCollapse(final Tree control, final Listener listener) {
+		control.addListener(SWT.Collapse, listener);
 	}
 
-	public void setOnDeactivate(final Shell shell, final Procedure1<Event> handler) {
-		shell.addListener(SWT.Deactivate, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public void setOnDeactivate(final Shell shell, final Listener handler) {
+		shell.addListener(SWT.Deactivate, handler);
 	}
 
-	public void setOnDefaultSelection(final Control control, final Procedure1<Event> function) {
-		control.addListener(SWT.DefaultSelection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnDefaultSelection(final Control control, final Listener listener) {
+		control.addListener(SWT.DefaultSelection, listener);
 	}
 
-	public void setOnDeiconify(final Shell control, final Procedure1<Event> function) {
-		control.addListener(SWT.Deiconify, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnDeiconify(final Shell control, final Listener listener) {
+		control.addListener(SWT.Deiconify, listener);
 	}
 
-	public void setOnDispose(final Control control, final Procedure1<Event> function) {
-		control.addListener(SWT.Dispose, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnDispose(final Control control, final Listener listener) {
+		control.addListener(SWT.Dispose, listener);
 	}
 
-	public <T extends Control> void setOnDragDetect(final T control, final Procedure1<Event> handler) {
-		control.addListener(SWT.DragDetect, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public <T extends Control> void setOnDragDetect(final T control, final Listener handler) {
+		control.addListener(SWT.DragDetect, handler);
 	}
 
-	public <T extends Control> void setOnEraseItem(final T control, final Procedure1<Event> handler) {
-		control.addListener(SWT.EraseItem, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public <T extends Control> void setOnEraseItem(final T control, final Listener handler) {
+		control.addListener(SWT.EraseItem, handler);
 	}
 
-	public <T extends Widget> void setOnEvent(final T widget, int eventType, final Procedure1<Event> handler) {
-		widget.addListener(eventType, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public <T extends Widget> void setOnEvent(final T widget, int eventType, final Listener handler) {
+		widget.addListener(eventType, handler);
 	}
 
-	public void setOnExpand(final Tree control, final Procedure1<Event> function) {
-		control.addListener(SWT.Expand, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnExpand(final Tree control, final Listener listener) {
+		control.addListener(SWT.Expand, listener);
 	}
 
-	public void setOnFocus(final Control control, final Procedure1<Event> handler) {
-		control.addListener(SWT.FocusIn, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public void setOnFocus(final Control control, final Listener handler) {
+		control.addListener(SWT.FocusIn, handler);
 	}
 
-	public void setOnFocusIn(final Control control, final Procedure1<Event> function) {
-		control.addListener(SWT.FocusIn, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnFocusIn(final Control control, final Listener listener) {
+		control.addListener(SWT.FocusIn, listener);
 	}
 
-	public void setOnFocusOut(final Control control, final Procedure1<Event> handler) {
-		control.addListener(SWT.FocusOut, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public void setOnFocusOut(final Control control, final Listener handler) {
+		control.addListener(SWT.FocusOut, handler);
 	}
 
-	public <T extends Control> void setOnHelp(final T control, final Procedure1<Event> handler) {
-		control.addListener(SWT.Help, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public <T extends Control> void setOnHelp(final T control, final Listener handler) {
+		control.addListener(SWT.Help, handler);
 	}
 
-	public void setOnHide(final Shell control, final Procedure1<Event> function) {
-		control.addListener(SWT.Hide, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnHide(final Shell control, final Listener listener) {
+		control.addListener(SWT.Hide, listener);
 	}
 
-	public void setOnIconify(final Shell control, final Procedure1<Event> function) {
-		control.addListener(SWT.Iconify, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnIconify(final Shell control, final Listener listener) {
+		control.addListener(SWT.Iconify, listener);
 	}
 
-	public void setOnKeyDown(final Control button, final Procedure1<Event> function) {
-		button.addListener(SWT.KeyDown, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnKeyDown(final Control button, final Listener listener) {
+		button.addListener(SWT.KeyDown, listener);
 	}
 
-	public void setOnKeyUp(final Control button, final Procedure1<Event> function) {
-		button.addListener(SWT.KeyUp, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnKeyUp(final Control button, final Listener listener) {
+		button.addListener(SWT.KeyUp, listener);
 	}
 
 	public <T extends Control> void setOnMeasureItem(final T control, Listener handler) {
 		control.addListener(SWT.MeasureItem, handler);
 	}
 
-	public <T extends Control> void setOnModified(final T control, final Procedure1<Event> handler) {
-		control.addListener(SWT.Modify, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public <T extends Control> void setOnModified(final T control, final Listener handler) {
+		control.addListener(SWT.Modify, handler);
 	}
 
-	public <T extends Control> void setOnModify(final T control, final Procedure1<Event> handler) {
-		control.addListener(SWT.Modify, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public <T extends Control> void setOnModify(final T control, final Listener handler) {
+		control.addListener(SWT.Modify, handler);
 	}
 
-	public void setOnMouseDoubleClick(final Control button, final Procedure1<Event> function) {
-		button.addListener(SWT.MouseDoubleClick, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnMouseDoubleClick(final Control button, final Listener listener) {
+		button.addListener(SWT.MouseDoubleClick, listener);
 	}
 
-	public void setOnMouseDown(final Control button, final Procedure1<Event> function) {
-		button.addListener(SWT.MouseDown, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnMouseDown(final Control button, final Listener listener) {
+		button.addListener(SWT.MouseDown, listener);
 	}
 
-	public void setOnMouseEnter(final Control button, final Procedure1<Event> function) {
-		button.addListener(SWT.MouseEnter, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnMouseEnter(final Control button, final Listener listener) {
+		button.addListener(SWT.MouseEnter, listener);
 	}
 
-	public void setOnMouseExit(final Control button, final Procedure1<Event> function) {
-		button.addListener(SWT.MouseExit, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnMouseExit(final Control button, final Listener listener) {
+		button.addListener(SWT.MouseExit, listener);
 	}
 
-	public <T extends Control> void setOnMouseHorizontalWheel(final T control, final Procedure1<Event> handler) {
-		control.addListener(SWT.MouseHorizontalWheel, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public <T extends Control> void setOnMouseHorizontalWheel(final T control, final Listener handler) {
+		control.addListener(SWT.MouseHorizontalWheel, handler);
 	}
 
-	public <T extends Control> void setOnMouseHover(final T control, final Procedure1<Event> handler) {
-		control.addListener(SWT.MouseHover, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public <T extends Control> void setOnMouseHover(final T control, final Listener handler) {
+		control.addListener(SWT.MouseHover, handler);
 	}
 
-	public void setOnMouseMove(final Control button, final Procedure1<Event> function) {
-		button.addListener(SWT.MouseMove, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnMouseMove(final Control button, final Listener listener) {
+		button.addListener(SWT.MouseMove, listener);
 	}
 
-	public void setOnMouseUp(final Control button, final Procedure1<Event> function) {
-		button.addListener(SWT.MouseUp, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnMouseUp(final Control button, final Listener listener) {
+		button.addListener(SWT.MouseUp, listener);
 	}
 
-	public <T extends Control> void setOnMouseVerticalWheel(final T control, final Procedure1<Event> handler) {
-		control.addListener(SWT.MouseVerticalWheel, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public <T extends Control> void setOnMouseVerticalWheel(final T control, final Listener handler) {
+		control.addListener(SWT.MouseVerticalWheel, handler);
 	}
 
-	public <T extends Control> void setOnMouseWheel(final T control, final Procedure1<Event> handler) {
-		control.addListener(SWT.MouseWheel, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public <T extends Control> void setOnMouseWheel(final T control, final Listener handler) {
+		control.addListener(SWT.MouseWheel, handler);
 	}
 
-	public void setOnMove(final Control control, final Procedure1<Event> function) {
-		control.addListener(SWT.Move, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				function.apply(event);
-			}
-		});
+	public void setOnMove(final Control control, final Listener listener) {
+		control.addListener(SWT.Move, listener);
 	}
 
 	public void setOnPaint(Control control, Listener renderer) {
@@ -2317,35 +2151,20 @@ public class SWTExtensions {
 		control.addListener(SWT.Resize, listener);
 	}
 
-	public <T extends Widget> void setOnSelection(final T w, final Procedure1<Event> handler) {
-		w.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public <T extends Widget> void setOnSelection(final T w, final Listener handler) {
+		w.addListener(SWT.Selection, handler);
 	}
 
 	public void setOnShow(final Shell shell, Listener listener) {
 		shell.addListener(SWT.Show, listener);
 	}
 
-	public <T extends Control> void setOnTraverse(final T control, final Procedure1<Event> handler) {
-		control.addListener(SWT.Traverse, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public <T extends Control> void setOnTraverse(final T control, final Listener handler) {
+		control.addListener(SWT.Traverse, handler);
 	}
 
-	public <T extends Control> void setOnVerify(final T control, final Procedure1<Event> handler) {
-		control.addListener(SWT.Verify, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				handler.apply(event);
-			}
-		});
+	public <T extends Control> void setOnVerify(final T control, final Listener handler) {
+		control.addListener(SWT.Verify, handler);
 	}
 
 	public Rectangle setRight(Rectangle me, int right) {
