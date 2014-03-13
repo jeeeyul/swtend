@@ -1,8 +1,9 @@
 package net.jeeeyul.swtend;
 
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.Iterator;
 
+import net.jeeeyul.swtend.internal.AutoDisposeQueue;
 import net.jeeeyul.swtend.internal.WidgetIterator;
 import net.jeeeyul.swtend.sam.Procedure1;
 import net.jeeeyul.swtend.ui.ColorStop;
@@ -66,29 +67,13 @@ import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.progress.UIJob;
 
 public class SWTExtensions {
-	private static final String KEY_AUTO_RELASE_SCHEDULED = "swtend-auto-relase-scheduled";
-	private static final String KEY_AUTO_RELASE_QUEUE = "swtend-auto-relase-queue";
 	private static Integer MENU_BAR_HEIGHT = null;
-
 	public static final SWTExtensions INSTANCE = new SWTExtensions();
-
-	private Runnable autoRelease = new Runnable() {
-		@Override
-		public void run() {
-			getDisplay().setData(KEY_AUTO_RELASE_SCHEDULED, Boolean.FALSE);
-
-			HashSet<Resource> queue = getAutoReleaseQueue();
-			Resource[] array = queue.toArray(new Resource[queue.size()]);
-			queue.clear();
-
-			for (Resource r : array) {
-				safeDispose(r);
-			}
-		}
-	};
 
 	private GC sharedGC;
 	private String osName;
+
+	private AutoDisposeQueue autoDisposeQueue;
 
 	public Path addArc(Path path, Rectangle box, int startAngle, int angle) {
 		path.addArc(box.x, box.y, box.width, box.height, startAngle, angle);
@@ -145,7 +130,7 @@ public class SWTExtensions {
 	}
 
 	public <T extends Resource> T autoDispose(T resource) {
-		scheduleAutoRelease(resource);
+		getAutoDisposeQueue().add(resource);
 		return resource;
 	}
 
@@ -157,13 +142,13 @@ public class SWTExtensions {
 	}
 
 	public <T extends Resource> T autoRelease(T resource) {
-		scheduleAutoRelease(resource);
+		autoDispose(resource);
 		return resource;
 	}
 
 	public <T extends Resource> T[] autoRelease(T... resources) {
 		for (T r : resources) {
-			autoRelease(r);
+			autoDispose(r);
 		}
 		return resources;
 	}
@@ -829,14 +814,11 @@ public class SWTExtensions {
 		return new WidgetIterator(root, true);
 	}
 
-	private HashSet<Resource> getAutoReleaseQueue() {
-		@SuppressWarnings("unchecked")
-		HashSet<Resource> queue = (HashSet<Resource>) getDisplay().getData(KEY_AUTO_RELASE_QUEUE);
-		if (queue == null) {
-			queue = new HashSet<Resource>();
-			getDisplay().setData(KEY_AUTO_RELASE_QUEUE, queue);
+	private AutoDisposeQueue getAutoDisposeQueue() {
+		if (autoDisposeQueue == null) {
+			autoDisposeQueue = new AutoDisposeQueue();
 		}
-		return queue;
+		return autoDisposeQueue;
 	}
 
 	public Point getBottom(Rectangle rectangle) {
@@ -1656,11 +1638,11 @@ public class SWTExtensions {
 	}
 
 	public Color newTemporaryColor(HSB hsb) {
-		return autoDispose(newColor(hsb));
+		return getAutoDisposeQueue().getColor(hsb);
 	}
 
 	public Color newTemporaryColor(RGB rgb) {
-		return autoRelease(newColor(rgb));
+		return getAutoDisposeQueue().getColor(rgb);
 	}
 
 	public Font newTemporaryFont(String fontName, int height) {
@@ -1962,13 +1944,19 @@ public class SWTExtensions {
 		}
 	}
 
-	public void safeDispose(Resource... resource) {
+	public <T extends Resource> void safeDispose(Collection<T> resource) {
+		for (T r : resource) {
+			safeDispose(r);
+		}
+	}
+
+	public <T extends Resource> void safeDispose(T... resource) {
 		for (Resource r : resource) {
 			safeDispose(r);
 		}
 	}
 
-	public void safeDispose(Resource r) {
+	public <T extends Resource> void safeDispose(T r) {
 		if (r != null && !r.isDisposed()) {
 			r.dispose();
 		}
@@ -2000,26 +1988,6 @@ public class SWTExtensions {
 				p.apply(Display.getDefault());
 			}
 		});
-	}
-
-	private void scheduleAutoRelease(Resource r) {
-		if (r == null || r.isDisposed()) {
-			return;
-		}
-
-		HashSet<Resource> queue = getAutoReleaseQueue();
-		if (queue.contains(r)) {
-			return;
-		}
-
-		queue.add(r);
-
-		if (getDisplay().getData(KEY_AUTO_RELASE_SCHEDULED) == Boolean.TRUE) {
-			return;
-		}
-
-		getDisplay().setData(KEY_AUTO_RELASE_SCHEDULED, Boolean.TRUE);
-		getDisplay().asyncExec(autoRelease);
 	}
 
 	public Rectangle setBottom(Rectangle me, int bottom) {
@@ -2396,18 +2364,13 @@ public class SWTExtensions {
 	}
 
 	public Color toAutoReleaseColor(HSB hsb) {
-		Color color = hsb.getData("-swt-extension-color-instance");
-		if (color == null || color.isDisposed()) {
-			color = autoRelease(new Color(getDisplay(), hsb.toRGB()));
-			hsb.setData("-swt-extension-color-instance", color);
-		}
-		return color;
+		return newTemporaryColor(hsb.toRGB());
 	}
 
 	public Color[] toAutoReleaseColor(HSB[] hsb) {
 		Color[] result = new Color[hsb.length];
 		for (int i = 0; i < hsb.length; i++) {
-			result[i] = toAutoReleaseColor(hsb[i]);
+			result[i] = newTemporaryColor(hsb[i]);
 		}
 
 		return result;
