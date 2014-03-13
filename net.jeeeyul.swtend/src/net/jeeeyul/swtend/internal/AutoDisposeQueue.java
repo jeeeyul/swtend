@@ -1,5 +1,6 @@
 package net.jeeeyul.swtend.internal;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -21,6 +22,8 @@ public class AutoDisposeQueue extends UIJob {
 
 	public AutoDisposeQueue() {
 		super(Display.getDefault(), "Auto Dispose Queue");
+		setSystem(true);
+		setUser(false);
 	}
 
 	public void add(Resource r) {
@@ -65,6 +68,8 @@ public class AutoDisposeQueue extends UIJob {
 				}
 			}
 		}
+
+		Debug.getInstance().println(MessageFormat.format("{0} resources are disposed.", array.length));
 
 		return Status.OK_STATUS;
 	}
