@@ -559,15 +559,22 @@ public class SWTExtensions {
 			}
 
 			if (vertical) {
-				gc.setClipping(bounds.x, offset, bounds.width, gradientSize);
-				gc.setForeground(COLOR_CYAN());
+				Rectangle clip = new Rectangle(bounds.x, offset, bounds.width, gradientSize);
+				if (oldClip != null) {
+					clip = clip.intersection(oldClip);
+				}
+				gc.setClipping(clip);
 				Pattern pattern = new Pattern(getDisplay(), bounds.x, offset - 1, bounds.x, offset + gradientSize, from, to);
 				gc.setForegroundPattern(pattern);
 				gc.drawPath(path);
 				gc.setForegroundPattern(null);
 				pattern.dispose();
 			} else {
-				gc.setClipping(offset, bounds.y, gradientSize, bounds.height);
+				Rectangle clip = new Rectangle(offset, bounds.y, gradientSize, bounds.height);
+				if (oldClip != null) {
+					clip = clip.intersection(oldClip);
+				}
+				gc.setClipping(clip);
 				Pattern pattern = new Pattern(getDisplay(), offset - 1, bounds.y, offset + gradientSize, bounds.y, from, to);
 				gc.setForegroundPattern(pattern);
 				gc.drawPath(path);
@@ -2501,7 +2508,7 @@ public class SWTExtensions {
 			rectangle.y = y;
 		} else {
 			int bottom = rectangle.y + rectangle.height;
-			if (y <= bottom) {
+			if (y >= bottom) {
 				bottom = y + 1;
 				rectangle.height = bottom - rectangle.y;
 			}
