@@ -12,7 +12,12 @@ public class Debug extends PrintStream {
 	private static final Debug INSTANCE;
 
 	static {
-		DEBUG = "true".equalsIgnoreCase(Platform.getDebugOption("net.jeeeyul.swtend/debug"));
+		if(Platform.isRunning()){
+			DEBUG = "true".equalsIgnoreCase(Platform.getDebugOption("net.jeeeyul.swtend/debug"));
+		}else{
+			DEBUG = false;
+		}
+		
 		if (DEBUG) {
 			stream = System.out;
 		} else {
