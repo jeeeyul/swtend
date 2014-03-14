@@ -250,6 +250,8 @@ public class GradientEdit extends Canvas {
 					return Status.OK_STATUS;
 				}
 			};
+			editItemJob.setSystem(true);
+			editItemJob.setUser(false);
 		}
 		return editItemJob;
 	}
