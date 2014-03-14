@@ -3,6 +3,9 @@ package net.jeeeyul.swtend.geometry;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Event;
 
+/**
+ * @since 1.2
+ */
 public class KRectangle {
 	public int x;
 	public int y;

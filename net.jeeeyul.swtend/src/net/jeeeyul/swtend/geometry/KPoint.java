@@ -2,6 +2,9 @@ package net.jeeeyul.swtend.geometry;
 
 import org.eclipse.swt.graphics.Point;
 
+/**
+ * @since 1.2
+ */
 public class KPoint {
 	public int x = 0;
 	public int y = 0;

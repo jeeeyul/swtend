@@ -10,6 +10,9 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Resource;
 import org.eclipse.swt.widgets.Display;
 
+/**
+ * @since 1.2
+ */
 public class NinePatch extends Resource {
 	private Rectangle centerArea;
 	private Rectangle imageBounds;

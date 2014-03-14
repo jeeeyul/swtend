@@ -1,5 +1,8 @@
 package net.jeeeyul.swtend.ui;
 
+/**
+ * @since 1.2
+ */
 public class ColorStop {
 	public int percent;
 	public HSB color;

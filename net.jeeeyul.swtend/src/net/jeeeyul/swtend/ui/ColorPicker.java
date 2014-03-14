@@ -29,6 +29,9 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+/**
+ * @since 1.2
+ */
 public class ColorPicker extends Dialog {
 	private static final int RECENT_MAX_SIZE = 100;
 

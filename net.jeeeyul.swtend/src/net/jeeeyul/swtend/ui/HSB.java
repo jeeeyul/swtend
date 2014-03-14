@@ -7,6 +7,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
+/**
+ * @since 1.2
+ */
 public class HSB extends LightWeightResource {
 	public static final HSB BLACK = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_BLACK).getRGB());
 	public static final HSB BLUE = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_BLUE).getRGB());

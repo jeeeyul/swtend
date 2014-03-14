@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+/**
+ * @since 1.2
+ */
 public class Gradient extends LightWeightResource implements List<ColorStop> {
 	ArrayList<ColorStop> data = new ArrayList<ColorStop>();
 

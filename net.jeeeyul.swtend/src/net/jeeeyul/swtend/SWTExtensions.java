@@ -66,6 +66,10 @@ import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.progress.UIJob;
 
+/**
+ * @since 1.2
+ * @author Jeeeyul
+ */
 public class SWTExtensions {
 	private static Integer MENU_BAR_HEIGHT = null;
 	public static final SWTExtensions INSTANCE = new SWTExtensions();

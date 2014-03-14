@@ -9,6 +9,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
+
+/**
+ * @since 1.2
+ */
 public class ColorWell extends Canvas {
 	private static final int NONE = 0;
 	private static final int PRESSED = 1;

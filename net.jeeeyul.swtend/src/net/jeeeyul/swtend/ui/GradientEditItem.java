@@ -11,6 +11,9 @@ import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Item;
 
+/**
+ * @since 1.2
+ */
 public class GradientEditItem extends Item {
 	final static Point SIZE = new Point(10, 20);
 	private GradientEdit parent;

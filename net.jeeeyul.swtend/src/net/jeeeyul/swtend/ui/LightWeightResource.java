@@ -3,6 +3,9 @@ package net.jeeeyul.swtend.ui;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @since 1.2
+ */
 public abstract class LightWeightResource {
 	private Map<String, Object> dataMap;
 	private Object data;

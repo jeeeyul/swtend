@@ -27,6 +27,9 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.progress.UIJob;
 
+/**
+ * @since 1.2
+ */
 public class GradientEdit extends Canvas {
 	private static Gradient clipboard;
 
