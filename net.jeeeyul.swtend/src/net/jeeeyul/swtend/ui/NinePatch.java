@@ -19,6 +19,13 @@ public class NinePatch extends Resource {
 	private Image[] patches;
 	private boolean isDisposed = false;
 
+	/**
+	 * Creates a {@link NinePatch} {@link Resource} object. It must be disposed
+	 * after use.
+	 * 
+	 * @param source
+	 * @param centerArea
+	 */
 	public NinePatch(ImageData source, Rectangle centerArea) {
 		this.centerArea = centerArea;
 		imageBounds = new Rectangle(0, 0, source.width, source.height);

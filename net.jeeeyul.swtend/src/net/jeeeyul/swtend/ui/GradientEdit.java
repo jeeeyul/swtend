@@ -7,6 +7,7 @@ import java.util.List;
 
 import net.jeeeyul.swtend.SWTExtensions;
 import net.jeeeyul.swtend.sam.Procedure1;
+import net.jeeeyul.swtend.ui.internal.HueScale;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -156,6 +157,21 @@ public class GradientEdit extends Canvas {
 			@Override
 			public void handleEvent(Event event) {
 				updateMenuEnabilities();
+			}
+		});
+
+		new MenuItem(menu, SWT.SEPARATOR);
+		MenuItem batchMenuItem = new MenuItem(menu, SWT.CASCADE);
+		batchMenuItem.setText("Batch Tasks");
+		Menu batchMenu = new Menu(batchMenuItem);
+		batchMenuItem.setMenu(batchMenu);
+
+		MenuItem rewriteHueMenuItem = new MenuItem(batchMenu, SWT.PUSH);
+		rewriteHueMenuItem.setText("Rewrite Hue");
+		rewriteHueMenuItem.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				rewriteHue();
 			}
 		});
 	}
@@ -602,4 +618,51 @@ public class GradientEdit extends Canvas {
 		pasteMenu.setEnabled(clipboard != null);
 	}
 
+	private void rewriteHue() {
+		final Gradient backup = getSelection().getCopy();
+		final Shell shell = new Shell(getShell(), SWT.NONE);
+		shell.setLayout(new FillLayout());
+		GradientEdit.this.addListener(SWT.Dispose, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				shell.dispose();
+			}
+		});
+
+		final HueScale hueScale = new HueScale(shell, SWT.NORMAL);
+		hueScale.setSelection(getSelection().get(0).color.hue);
+		hueScale.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				float selection = hueScale.getSelection();
+				Gradient gradient = getSelection();
+				for (ColorStop each : gradient) {
+					each.color.hue = selection;
+				}
+				redraw();
+				dispathModifyEvent();
+			}
+		});
+		shell.addListener(SWT.Deactivate, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				shell.dispose();
+			}
+		});
+		shell.addListener(SWT.Traverse, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				if (event.detail == SWT.TRAVERSE_ESCAPE) {
+					setSelection(backup, true);
+				}
+				shell.dispose();
+			}
+		});
+
+		shell.pack();
+		Point location = GradientEdit.this.toDisplay(0, getSize().y);
+		shell.setSize(getSize().x, 35);
+		shell.setLocation(location);
+		shell.open();
+	}
 }

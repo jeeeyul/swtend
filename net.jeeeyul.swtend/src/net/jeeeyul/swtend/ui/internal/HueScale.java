@@ -255,10 +255,6 @@ public class HueScale extends Canvas {
 		gc.setAntialias(SWT.ON);
 		drawGradient(gc);
 		drawSelection(gc);
-		if (isFocusControl()) {
-			Point size = getSize();
-			gc.drawFocus(0, 0, size.x, size.y);
-		}
 	}
 
 	public void setBrightness(float brightness) {

@@ -260,6 +260,12 @@ public class ColorPicker extends Dialog {
 		getRecentPalette().save();
 	}
 
+	/**
+	 * Sets a continuous selection handler.
+	 * 
+	 * @param continuosSelectionHandler
+	 *            a handler that handles continuous selection.
+	 */
 	public void setContinuosSelectionHandler(Procedure1<HSB> continuosSelectionHandler) {
 		this.continuosSelectionHandler = continuosSelectionHandler;
 	}

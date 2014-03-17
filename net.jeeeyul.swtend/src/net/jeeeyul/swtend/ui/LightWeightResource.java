@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Represents a lightweight resource. It is not has to be disposed.
+ * 
  * @since 1.2
  */
 public abstract class LightWeightResource {

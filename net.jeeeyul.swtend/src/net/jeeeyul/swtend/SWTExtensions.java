@@ -117,6 +117,13 @@ public class SWTExtensions {
 		return me;
 	}
 
+	/**
+	 * 
+	 * @param procedure
+	 * 
+	 * @see #newUIJob(Procedure1)
+	 * @see #newUIJob(String, boolean, boolean, Procedure1)
+	 */
 	public void asyncExec(final Procedure1<Void> procedure) {
 		getDisplay().asyncExec(new Runnable() {
 			@Override
@@ -126,6 +133,17 @@ public class SWTExtensions {
 		});
 	}
 
+	/**
+	 * Attaches given event {@link Listener} to given {@link Widget}s.
+	 * 
+	 * @param listener
+	 *            A {@link Listener} to attach.
+	 * @param eventType
+	 *            event type.
+	 * @param widgets
+	 *            {@link Widget}s to attach event {@link Listener}.
+	 * @return Given {@link Listener} object.
+	 */
 	public Listener attachTo(Listener listener, int eventType, Widget... widgets) {
 		for (Widget w : widgets) {
 			w.addListener(eventType, listener);
@@ -133,11 +151,25 @@ public class SWTExtensions {
 		return listener;
 	}
 
+	/**
+	 * Schedule a disposing of given resource in next event loop.
+	 * 
+	 * @param resource
+	 *            A {@link Resource} to dispose in next event loop.
+	 * @return Given {@link Resource}.
+	 */
 	public <T extends Resource> T autoDispose(T resource) {
 		getAutoDisposeQueue().add(resource);
 		return resource;
 	}
 
+	/**
+	 * Schedule a disposing of given resources in next event loop.
+	 * 
+	 * @param resources
+	 *            {@link Resource}s to dispose in next event loop.
+	 * @return Given {@link Resource}s.
+	 */
 	public <T extends Resource> T[] autoDispose(T... resources) {
 		for (T r : resources) {
 			autoDispose(r);
@@ -145,11 +177,22 @@ public class SWTExtensions {
 		return resources;
 	}
 
+	/**
+	 * @param resource
+	 * @return
+	 * @deprecated use {@link #autoDispose(Resource)} instead.
+	 */
 	public <T extends Resource> T autoRelease(T resource) {
 		autoDispose(resource);
 		return resource;
 	}
 
+	/**
+	 * 
+	 * @param resources
+	 * @return
+	 * @deprecated use {@link #autoDispose(Resource...)} instead.
+	 */
 	public <T extends Resource> T[] autoRelease(T... resources) {
 		for (T r : resources) {
 			autoDispose(r);
@@ -157,6 +200,17 @@ public class SWTExtensions {
 		return resources;
 	}
 
+	/**
+	 * Promise disposing of given {@link Resource}s when the given
+	 * {@link Widget} is disposed.
+	 * 
+	 * @param widget
+	 *            {@link Widget} to fire dispose event.
+	 * @param resources
+	 *            {@link Resource}s to dispose when given {@link Widget} is
+	 *            disposed.
+	 * @return Given {@link Widget}.
+	 */
 	public <T extends Widget> T chainDispose(T widget, final Resource... resources) {
 		widget.addListener(SWT.Dispose, new Listener() {
 			@Override
@@ -1314,6 +1368,13 @@ public class SWTExtensions {
 		return composite;
 	}
 
+	/**
+	 * Creates a content {@link Composite} for current {@link TabItem}.
+	 * 
+	 * @param tabItem
+	 * @param initializer
+	 * @return
+	 */
 	public Composite newComposite(final TabItem tabItem, final Procedure1<? super Composite> initializer) {
 		Composite composite = new Composite(tabItem.getParent(), SWT.NORMAL);
 		composite.setLayout(new FillLayout());
@@ -1435,25 +1496,53 @@ public class SWTExtensions {
 		return new Rectangle(left, top, right, bottom);
 	}
 
-	public Label newLabel(final Composite parent, final Procedure1<? super Label> initializer) {
-		Label label = new Label(parent, SWT.NORMAL);
+	/**
+	 * 
+	 * @param parent
+	 * @param style
+	 * @param initializer
+	 * @return
+	 * @since 2.1
+	 */
+	public Label newLabel(final Composite parent, int style, final Procedure1<? super Label> initializer) {
+		Label label = new Label(parent, style);
 		if (initializer != null)
 			initializer.apply(label);
 		return label;
 	}
 
-	public Link newLink(final Composite parent, final Procedure1<? super Link> initializer) {
-		Link link = new Link(parent, SWT.CHECK);
+	public Label newLabel(final Composite parent, final Procedure1<? super Label> initializer) {
+		return newLabel(parent, SWT.NORMAL, initializer);
+	}
+
+	/**
+	 * 
+	 * @param parent
+	 * @param style
+	 * @param initializer
+	 * @return
+	 * @since 2.1
+	 */
+	public Link newLink(final Composite parent, int style, final Procedure1<? super Link> initializer) {
+		Link link = new Link(parent, style);
 		if (initializer != null)
 			initializer.apply(link);
 		return link;
 	}
 
-	public PageBook newPageBook(final Composite parent, final Procedure1<? super PageBook> initializer) {
-		PageBook pageBook = new PageBook(parent, SWT.NORMAL);
+	public Link newLink(final Composite parent, final Procedure1<? super Link> initializer) {
+		return newLink(parent, SWT.NORMAL, initializer);
+	}
+
+	public PageBook newPageBook(final Composite parent, int style, final Procedure1<? super PageBook> initializer) {
+		PageBook pageBook = new PageBook(parent, style);
 		if (initializer != null)
 			initializer.apply(pageBook);
 		return pageBook;
+	}
+
+	public PageBook newPageBook(final Composite parent, final Procedure1<? super PageBook> initializer) {
+		return newPageBook(parent, SWT.NORMAL, initializer);
 	}
 
 	public Text newPasswordField(final Composite parent, final Procedure1<? super Text> initializer) {
@@ -1513,6 +1602,13 @@ public class SWTExtensions {
 		return new Rectangle(0, 0, size.x, size.y);
 	}
 
+	/**
+	 * 
+	 * @param tree
+	 * @param initializer
+	 * @return
+	 * @deprecated use {@link #newTreeItem(Tree, Procedure1)} instead.
+	 */
 	public TreeItem newRootItem(Tree tree, final Procedure1<TreeItem> initializer) {
 		TreeItem item = new TreeItem(tree, SWT.NORMAL);
 		if (initializer != null)
@@ -1520,11 +1616,24 @@ public class SWTExtensions {
 		return item;
 	}
 
-	public Scale newScale(final Composite parent, final Procedure1<? super Scale> initializer) {
-		Scale scale = new Scale(parent, SWT.NORMAL);
+	/**
+	 * 
+	 * @param parent
+	 * @param style
+	 * @param initializer
+	 * @return
+	 * 
+	 * @since 2.1
+	 */
+	public Scale newScale(final Composite parent, int style, final Procedure1<? super Scale> initializer) {
+		Scale scale = new Scale(parent, style);
 		if (initializer != null)
 			initializer.apply(scale);
 		return scale;
+	}
+
+	public Scale newScale(final Composite parent, final Procedure1<? super Scale> initializer) {
+		return newScale(parent, SWT.NORMAL, initializer);
 	}
 
 	public Text newSearchField(final Composite parent, final Procedure1<? super Text> initializer) {
@@ -1592,12 +1701,25 @@ public class SWTExtensions {
 		return new Point(width, height);
 	}
 
-	public Spinner newSpinner(Composite parent, Procedure1<Spinner> initializer) {
-		Spinner spinner = new Spinner(parent, SWT.BORDER);
+	/**
+	 * 
+	 * @param parent
+	 * @param style
+	 * @param initializer
+	 * @return
+	 * 
+	 * @since 2.1
+	 */
+	public Spinner newSpinner(Composite parent, int style, Procedure1<Spinner> initializer) {
+		Spinner spinner = new Spinner(parent, style);
 		if (initializer != null) {
 			initializer.apply(spinner);
 		}
 		return spinner;
+	}
+
+	public Spinner newSpinner(Composite parent, Procedure1<Spinner> initializer) {
+		return newSpinner(parent, SWT.BORDER, initializer);
 	}
 
 	/**
@@ -1620,6 +1742,15 @@ public class SWTExtensions {
 		return tabFolder;
 	}
 
+	/**
+	 * 
+	 * @param parent
+	 * @param initializer
+	 * @return
+	 * 
+	 * @see #newTabItem(TabFolder, Procedure1)
+	 * @see #newComposite(TabItem, Procedure1)
+	 */
 	public TabFolder newTabFolder(Composite parent, final Procedure1<? super TabFolder> initializer) {
 		TabFolder tabFolder = new TabFolder(parent, SWT.NORMAL);
 		if (initializer != null)
@@ -1641,21 +1772,60 @@ public class SWTExtensions {
 		return table;
 	}
 
-	public TableItem newTableItem(Table parent, final Procedure1<TableItem> initializer) {
-		TableItem tableItem = new TableItem(parent, SWT.NORMAL);
+	/**
+	 * @param parent
+	 * @param style
+	 * @param initializer
+	 * @return
+	 * @since 2.1
+	 */
+	public TableItem newTableItem(Table parent, int style, final Procedure1<TableItem> initializer) {
+		TableItem tableItem = new TableItem(parent, style);
 		if (initializer != null)
 			initializer.apply(tableItem);
 		return tableItem;
 	}
 
+	public TableItem newTableItem(Table parent, final Procedure1<TableItem> initializer) {
+		return newTableItem(parent, SWT.NORMAL, initializer);
+	}
+
+	/**
+	 * Creates a new {@link Color} object with given {@link HSB} object. Result
+	 * {@link Color} object should not have to be disposed manually. It will be
+	 * disposed next UI Event loop.
+	 * 
+	 * @param hsb
+	 *            {@link HSB} object to create {@link Color}.
+	 * @return A {@link Color} object.
+	 */
 	public Color newTemporaryColor(HSB hsb) {
 		return getAutoDisposeQueue().getColor(hsb);
 	}
 
+	/**
+	 * Creates a new {@link Color} object with given {@link RGB} object. Result
+	 * {@link Color} object should not have to be disposed manually. It will be
+	 * disposed next UI Event loop.
+	 * 
+	 * @param rgb
+	 *            {@link RGB} object to create {@link Color}.
+	 * @return A {@link Color} Object.
+	 */
 	public Color newTemporaryColor(RGB rgb) {
 		return getAutoDisposeQueue().getColor(rgb);
 	}
 
+	/**
+	 * Creates a new {@link Font} object with given font name and height. Result
+	 * {@link Font} will be disposed next event loop automatically.
+	 * 
+	 * @param fontName
+	 *            font name to create {@link Font}.
+	 * @param height
+	 *            font height to create {@link Font}.
+	 * @return A {@link Font} Object.
+	 */
 	public Font newTemporaryFont(String fontName, int height) {
 		return autoDispose(newFont(fontName, height));
 	}
@@ -1664,6 +1834,21 @@ public class SWTExtensions {
 		return autoDispose(newFont(fontName, height, style));
 	}
 
+	/**
+	 * Creates a new {@link Pattern} object that represent linear gradient with
+	 * given colors and stops. Result {@link Pattern} object will be disposed in
+	 * next event loop automatically.
+	 * 
+	 * @param from
+	 *            A {@link Point} that represent start position of gradient.
+	 * @param to
+	 *            A {@link Point} that represent end position of gradient.
+	 * @param fromColor
+	 *            Gradient start {@link Color}.
+	 * @param toColor
+	 *            Gradient end {@link Color}.
+	 * @return A {@link Pattern} Object.
+	 */
 	public Pattern newTemporaryGradient(Point from, Point to, Color fromColor, Color toColor) {
 		return autoDispose(newGradient(from, to, fromColor, toColor));
 	}
@@ -1678,6 +1863,19 @@ public class SWTExtensions {
 		return result;
 	}
 
+	/**
+	 * 
+	 * @param parent
+	 *            context to create a {@link Text} widget.
+	 * @param style
+	 *            style flags for {@link Text} to create.
+	 * @param initializer
+	 * @return a {@link Text} widget.
+	 * 
+	 * @see #newTextField(Composite, Procedure1)
+	 * @see #newTextField(Composite, int, Procedure1)
+	 * @see #newTextArea(Composite, Procedure1)
+	 */
 	public Text newText(final Composite parent, int style, final Procedure1<? super Text> initializer) {
 		Text text = new Text(parent, style);
 		if (initializer != null)
@@ -1815,6 +2013,13 @@ public class SWTExtensions {
 		widget.addListener(eventType, handler);
 	}
 
+	/**
+	 * Opens a given {@link Shell}, and runs event loop until given shell is
+	 * disposed.
+	 * 
+	 * @param s
+	 *            {@link Shell} to open.
+	 */
 	public void openAndRunLoop(final Shell s) {
 		if (s.isDisposed()) {
 			return;
@@ -2299,6 +2504,17 @@ public class SWTExtensions {
 		return end == 0 ? text.substring(0, 1) : text + ellipses;
 	}
 
+	/**
+	 * Promise disposing of given {@link Resource} when given {@link Widget} is
+	 * disposed.
+	 * 
+	 * @param resource
+	 *            {@link Resource} to dispose when given {@link Widget} is
+	 *            disposed.
+	 * @param widget
+	 *            {@link Widget} to fire dispose event.
+	 * @return given {@link Resource}.
+	 */
 	public <T extends Resource> T shouldDisposeWith(final T resource, Widget widget) {
 		widget.addListener(SWT.Dispose, new Listener() {
 			@Override
@@ -2374,17 +2590,49 @@ public class SWTExtensions {
 		});
 	}
 
-	public Color toAutoReleaseColor(HSB hsb) {
+	/**
+	 * 
+	 * @param hsb
+	 * @return
+	 * @since 2.1
+	 */
+	public Color toAutoDisposeColor(HSB hsb) {
 		return newTemporaryColor(hsb.toRGB());
 	}
 
-	public Color[] toAutoReleaseColor(HSB[] hsb) {
+	/**
+	 * 
+	 * @param hsb
+	 * @return
+	 * @since 2.1
+	 */
+	public Color[] toAutoDisposeColors(HSB[] hsb) {
 		Color[] result = new Color[hsb.length];
 		for (int i = 0; i < hsb.length; i++) {
 			result[i] = newTemporaryColor(hsb[i]);
 		}
 
 		return result;
+	}
+
+	/**
+	 * 
+	 * @param hsb
+	 * @return
+	 * @deprecated use {@link #toAutoDisposeColor(HSB)} insetead.
+	 */
+	public Color toAutoReleaseColor(HSB hsb) {
+		return toAutoDisposeColor(hsb);
+	}
+
+	/**
+	 * 
+	 * @param hsb
+	 * @return
+	 * @deprecated use {@link #toAutoDisposeColors(HSB[])} instead.
+	 */
+	public Color[] toAutoReleaseColor(HSB[] hsb) {
+		return toAutoDisposeColors(hsb);
 	}
 
 	/**
@@ -2439,7 +2687,7 @@ public class SWTExtensions {
 	public Color toTemporaryColor(HSB hsb) {
 		Color color = hsb.getData("-swt-extension-color-instance");
 		if (color == null || color.isDisposed()) {
-			color = autoRelease(new Color(getDisplay(), hsb.toRGB()));
+			color = autoDispose(new Color(getDisplay(), hsb.toRGB()));
 			hsb.setData("-swt-extension-color-instance", color);
 		}
 		return color;
@@ -2448,7 +2696,7 @@ public class SWTExtensions {
 	public Color[] toTemporaryColors(HSB[] hsb) {
 		Color[] result = new Color[hsb.length];
 		for (int i = 0; i < hsb.length; i++) {
-			result[i] = toAutoReleaseColor(hsb[i]);
+			result[i] = toAutoDisposeColor(hsb[i]);
 		}
 
 		return result;
