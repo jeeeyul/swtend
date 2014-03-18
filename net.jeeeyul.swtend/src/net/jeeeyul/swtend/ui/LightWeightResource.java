@@ -38,4 +38,6 @@ public abstract class LightWeightResource {
 	public void setData(String key, Object data) {
 		getDataMap().put(key, data);
 	}
+	
+	abstract LightWeightResource getCopy();
 }

@@ -5,6 +5,7 @@ import org.eclipse.swt.widgets.Event;
 
 /**
  * @since 1.2
+ * @deprecated
  */
 public class KRectangle {
 	public int x;

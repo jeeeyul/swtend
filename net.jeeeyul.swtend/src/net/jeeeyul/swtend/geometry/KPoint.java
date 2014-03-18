@@ -4,6 +4,7 @@ import org.eclipse.swt.graphics.Point;
 
 /**
  * @since 1.2
+ * @deprecated
  */
 public class KPoint {
 	public int x = 0;

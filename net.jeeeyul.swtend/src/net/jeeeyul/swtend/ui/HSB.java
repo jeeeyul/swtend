@@ -8,6 +8,8 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
 /**
+ * Represents a color in hue, saturation, brightness.
+ * 
  * @since 1.2
  */
 public class HSB extends LightWeightResource {
@@ -146,7 +148,27 @@ public class HSB extends LightWeightResource {
 		return Math.min(Math.max(original, min), max);
 	}
 
+	/**
+	 * Creates a new {@link HSB} by mixing this {@link HSB} and given
+	 * {@link HSB}.
+	 * 
+	 * @param color
+	 *            color to mix.
+	 * @param strength
+	 *            0f to 1f. 0.5f means 1:1 blending.
+	 * @return blended {@link HSB}.
+	 * 
+	 * @since 2.1
+	 */
+	public HSB getMixedWith(HSB color, float strength) {
+		return getCopy().mixWith(color, strength);
+	}
+
 	public HSB mixWith(HSB color, float strength) {
+		if (color == null || strength < 0 || strength > 1f) {
+			throw new IllegalArgumentException();
+		}
+
 		RGB thisRGB = toRGB();
 		RGB otherRGB = color.toRGB();
 		RGB newRGB = new RGB(0, 0, 0);
@@ -164,6 +186,12 @@ public class HSB extends LightWeightResource {
 		return this;
 	}
 
+	/**
+	 * @param newHue
+	 * @return
+	 * 
+	 * @deprecated
+	 */
 	public HSB rewriteHue(float newHue) {
 		return new HSB(newHue, saturation, brightness);
 	}

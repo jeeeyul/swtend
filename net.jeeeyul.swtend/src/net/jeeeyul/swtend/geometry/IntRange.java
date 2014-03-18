@@ -2,6 +2,7 @@ package net.jeeeyul.swtend.geometry;
 
 /**
  * @since 1.2
+ * @deprecated
  */
 public class IntRange {
 	public int min = 0;

@@ -598,6 +598,50 @@ public class SWTExtensions {
 		return gc;
 	}
 
+	/**
+	 * 
+	 * @param gc
+	 * @param path
+	 * @param gradient
+	 * @param vertical
+	 * @return
+	 * 
+	 * @since 2.1
+	 */
+	public GC drawGradientPath(GC gc, Path path, Gradient gradient, boolean vertical) {
+		Color[] colors;
+		int[] percents;
+		int colorOffset = 0;
+		int percentOffset = 1;
+
+		if (gradient.get(0).percent != 0) {
+			colors = new Color[gradient.size() + 1];
+			colors[0] = newColor(gradient.get(0).color);
+			percents = new int[gradient.size()];
+			colorOffset = 1;
+			percentOffset = 0;
+
+		} else {
+			colors = new Color[gradient.size()];
+			percents = new int[gradient.size() - 1];
+		}
+
+		for (int i = 0; i < gradient.size(); i++) {
+			ColorStop stop = gradient.get(i);
+			colors[i + colorOffset] = newColor(stop.color);
+		}
+
+		for (int i = percentOffset; i < gradient.size(); i++) {
+			ColorStop stop = gradient.get(i);
+			percents[i - percentOffset] = stop.percent;
+		}
+
+		drawGradientPath(gc, path, colors, percents, vertical);
+		safeDispose(colors);
+
+		return gc;
+	}
+
 	public GC drawGradientPath(GC gc, Path path, Color[] colors, int[] percents, boolean vertical) {
 		Rectangle oldClip = gc.getClipping();
 
@@ -1584,6 +1628,16 @@ public class SWTExtensions {
 
 	public Rectangle newRectangle() {
 		return new Rectangle(0, 0, 0, 0);
+	}
+
+	/**
+	 * 
+	 * @param e
+	 * @return
+	 * @since 2.1
+	 */
+	public Rectangle newRectangle(Event e) {
+		return new Rectangle(e.x, e.y, e.width, e.height);
 	}
 
 	public Rectangle newRectangle(int x, int y, int width, int height) {
@@ -2807,5 +2861,18 @@ public class SWTExtensions {
 
 		gc.setClipping(oldClip);
 		return gc;
+	}
+
+	/**
+	 * 
+	 * @param width
+	 * @param height
+	 * @return
+	 * 
+	 * @since 2.1
+	 */
+	public Image newImage(int width, int height) {
+		Image image = new Image(getDisplay(), width, height);
+		return image;
 	}
 }
