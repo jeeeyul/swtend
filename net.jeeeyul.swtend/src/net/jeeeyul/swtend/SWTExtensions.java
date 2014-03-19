@@ -79,14 +79,48 @@ public class SWTExtensions {
 
 	private AutoDisposeQueue autoDisposeQueue;
 
+	/**
+	 * @since 2.1
+	 */
 	public final int CORNER_TOP_LEFT = 1;
+	
+	/**
+	 * @since 2.1
+	 */
 	public final int CORNER_TOP_RIGHT = 2;
+	/**
+	 * @since 2.1
+	 */
 	public final int CORNER_BOTTOM_LEFT = 4;
+	
+	/**
+	 * @since 2.1
+	 */
 	public final int CORNER_BOTTOM_RIGHT = 8;
+	
+	/**
+	 * @since 2.1
+	 */
 	public final int CORNER_TOP = CORNER_TOP_LEFT | CORNER_TOP_RIGHT;
+	
+	/**
+	 * @since 2.1
+	 */
 	public final int CORNER_BOTTOM = CORNER_BOTTOM_LEFT | CORNER_BOTTOM_RIGHT;
+	
+	/**
+	 * @since 2.1
+	 */
 	public final int CORNER_LEFT = CORNER_TOP_LEFT | CORNER_BOTTOM_LEFT;
+	
+	/**
+	 * @since 2.1
+	 */
 	public final int CORNER_RIGHT = CORNER_TOP_RIGHT | CORNER_BOTTOM_RIGHT;
+	
+	/**
+	 * @since 2.1
+	 */
 	public final int CORNER_ALL = CORNER_TOP | CORNER_BOTTOM;
 
 	public Path addArc(Path path, Rectangle box, int startAngle, int angle) {
@@ -842,6 +876,10 @@ public class SWTExtensions {
 		return gridData;
 	}
 
+	
+	/**
+	 * @since 2.1
+	 */
 	public GC fillArc(GC gc, Rectangle arcBox, int startAngle, int angle) {
 		gc.fillArc(arcBox.x, arcBox.y, arcBox.width, arcBox.height, startAngle, angle);
 		return gc;
@@ -924,14 +962,23 @@ public class SWTExtensions {
 		return gc;
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public GC fillGradientRoundRectangle(GC gc, Rectangle bounds, int radius, Color[] colors, int percents[], boolean vertical) {
 		return fillGradientRoundRectangle(gc, bounds, radius, CORNER_ALL, colors, percents, vertical);
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public GC fillGradientRoundRectangle(GC gc, Rectangle bounds, int radius, Gradient gradient, boolean vertical) {
 		return fillGradientRoundRectangle(gc, bounds, radius, CORNER_ALL, gradient, vertical);
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public GC fillGradientRoundRectangle(GC gc, Rectangle bounds, int radius, int cornerFlags, HSB[] hsb, int percents[], boolean vertical) {
 		Color[] colors = new Color[hsb.length];
 		for(int i=0; i<hsb.length; i++){
@@ -944,6 +991,9 @@ public class SWTExtensions {
 		return gc;
 	}
 	
+	/**
+	 * @since 2.1
+	 */
 	public GC fillGradientRoundRectangle(GC gc, Rectangle bounds, int radius, int cornerFlags, Color[] colors, int percents[], boolean vertical) {
 		if (colors == null || percents == null || hasDisposed(colors)) {
 			throw new IllegalArgumentException();
@@ -1012,6 +1062,9 @@ public class SWTExtensions {
 		return gc;
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public GC fillGradientRoundRectangle(GC gc, Rectangle bounds, int radius, int cornerFlags, Gradient gradient, boolean vertical) {
 		Color[] colors;
 		int[] percents;
@@ -1050,6 +1103,9 @@ public class SWTExtensions {
 		return gc;
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public GC fillRoundRectangle(GC gc, int x, int y, int width, int height, int radius, int cornerFlags) {
 		return fillRoundRectangle(gc, new Rectangle(x, y, width, height), radius, cornerFlags);
 	}
@@ -1059,6 +1115,9 @@ public class SWTExtensions {
 		return gc;
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public GC fillRoundRectangle(GC gc, Rectangle rectangle, int radius, int cornerFlags) {
 		if (radius == 0) {
 			gc.fillRectangle(rectangle);
