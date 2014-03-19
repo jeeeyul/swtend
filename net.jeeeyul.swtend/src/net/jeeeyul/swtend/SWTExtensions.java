@@ -78,7 +78,18 @@ public class SWTExtensions {
 	private String osName;
 
 	private AutoDisposeQueue autoDisposeQueue;
-
+	
+	public final int CORNER_TOP_LEFT = 1;
+	public final int CORNER_TOP_RIGHT = 2;
+	public final int CORNER_BOTTOM_LEFT = 4;
+	public final int CORNER_BOTTOM_RIGHT = 8;
+	public final int CORNER_TOP = CORNER_TOP_LEFT | CORNER_TOP_RIGHT;
+	public final int CORNER_BOTTOM = CORNER_BOTTOM_LEFT | CORNER_BOTTOM_RIGHT;
+	public final int CORNER_LEFT = CORNER_TOP_LEFT | CORNER_BOTTOM_LEFT;
+	public final int CORNER_RIGHT = CORNER_TOP_RIGHT | CORNER_BOTTOM_RIGHT;
+	public final int CORNER_ALL = CORNER_TOP | CORNER_BOTTOM;
+	
+	
 	public Path addArc(Path path, Rectangle box, int startAngle, int angle) {
 		path.addArc(box.x, box.y, box.width, box.height, startAngle, angle);
 		return path;
@@ -642,6 +653,46 @@ public class SWTExtensions {
 		return gc;
 	}
 
+	
+	public GC fillGradientRoundRectangle(GC gc, Rectangle bounds, int radius, Gradient gradient, boolean vertical){
+		return fillGradientRoundRectangle(gc, bounds, radius, CORNER_ALL, gradient, vertical);
+	}
+	
+	public GC fillGradientRoundRectangle(GC gc, Rectangle bounds, int radius, int cornerFlags, Gradient gradient, boolean vertical){
+		Color[] colors;
+		int[] percents;
+		int colorOffset = 0;
+		int percentOffset = 1;
+
+		if (gradient.get(0).percent != 0) {
+			colors = new Color[gradient.size() + 1];
+			colors[0] = newColor(gradient.get(0).color);
+			percents = new int[gradient.size()];
+			colorOffset = 1;
+			percentOffset = 0;
+
+		} else {
+			colors = new Color[gradient.size()];
+			percents = new int[gradient.size() - 1];
+		}
+
+		for (int i = 0; i < gradient.size(); i++) {
+			ColorStop stop = gradient.get(i);
+			colors[i + colorOffset] = newColor(stop.color);
+		}
+
+		for (int i = percentOffset; i < gradient.size(); i++) {
+			ColorStop stop = gradient.get(i);
+			percents[i - percentOffset] = stop.percent;
+		}
+
+		fillGradientRoundRectangle(gc, bounds, radius, cornerFlags, colors, percents, vertical);
+		safeDispose(colors);
+		return gc;
+	}
+	
+	
+	
 	public GC drawGradientPath(GC gc, Path path, Color[] colors, int[] percents, boolean vertical) {
 		Rectangle oldClip = gc.getClipping();
 
@@ -875,6 +926,78 @@ public class SWTExtensions {
 
 		return gc;
 	}
+	
+	public GC fillGradientRoundRectangle(GC gc, Rectangle bounds, int radius, Color[] colors, int percents[], boolean vertical) {
+		return fillGradientRoundRectangle(gc, bounds, radius, CORNER_ALL, colors, percents, vertical);
+	}
+
+	public GC fillGradientRoundRectangle(GC gc, Rectangle bounds, int radius, int cornerFlags, Color[] colors, int percents[], boolean vertical) {
+		if (colors == null || percents == null || hasDisposed(colors)) {
+			throw new IllegalArgumentException();
+		}
+		if (colors.length - 1 != percents.length) {
+			throw new IllegalArgumentException();
+		}
+
+		Rectangle oldClipping = gc.getClipping();
+
+		int offset = vertical ? bounds.y : bounds.x;
+		int max = vertical ? bounds.y + bounds.height : bounds.x + bounds.width;
+		int gradientSize = 0;
+
+		for (int i = 1; i < colors.length; i++) {
+			Color from = colors[i - 1];
+			Color to = colors[i];
+			if (vertical) {
+				gradientSize = bounds.height * percents[i - 1] / 100 - (offset - bounds.y);
+			} else {
+				gradientSize = bounds.width * percents[i - 1] / 100 - (offset - bounds.x);
+			}
+
+			gc.setForeground(from);
+			gc.setBackground(to);
+
+			Pattern pattern = null;
+
+			Rectangle area = null;
+			if (vertical) {
+				area = new Rectangle(bounds.x, offset, bounds.width, gradientSize);
+				pattern = newGradient(getTop(area), getBottom(area), from, to);
+
+			} else {
+				area = new Rectangle(offset, bounds.y, gradientSize, bounds.height);
+				pattern = newGradient(getLeft(area), getRight(area), from, to);
+			}
+			if (oldClipping != null) {
+				area = area.intersection(oldClipping);
+			}
+			gc.setClipping(area);
+			gc.setBackgroundPattern(pattern);
+			fillRoundRectangle(gc, bounds.x, bounds.y, bounds.width, bounds.height, radius, cornerFlags);
+
+			offset += gradientSize;
+		}
+
+		if (offset < max) {
+			Rectangle area = null;
+			if (vertical) {
+				area = new Rectangle(bounds.x, offset, bounds.width, max - offset);
+			} else {
+				area = new Rectangle(offset, bounds.y, max - offset, bounds.height);
+			}
+
+			if (oldClipping != null) {
+				area = area.intersection(oldClipping);
+			}
+			gc.setClipping(area);
+			gc.setBackground(colors[colors.length - 1]);
+			gc.fillRoundRectangle(bounds.x, bounds.y, bounds.width, bounds.height, radius, radius);
+		}
+		
+		gc.setClipping(oldClipping);
+
+		return gc;
+	}
 
 	public GC fillGradientRectangle(GC gc, Rectangle bounds, Gradient gradient, boolean vertical) {
 		Color[] colors;
@@ -948,6 +1071,53 @@ public class SWTExtensions {
 
 	public Point getCenter(Rectangle rectangle) {
 		return new Point(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2);
+	}
+	
+	public GC fillArc(GC gc, Rectangle arcBox, int startAngle, int angle){
+		gc.fillArc(arcBox.x, arcBox.y, arcBox.width, arcBox.height, startAngle, angle);
+		return gc;
+	}
+	
+	public GC fillRoundRectangle(GC gc, int x, int y, int width, int height, int radius, int cornerFlags) {
+		return fillRoundRectangle(gc, new Rectangle(x, y, width, height), radius, cornerFlags);
+	}
+
+	public GC fillRoundRectangle(GC gc, Rectangle rectangle, int radius, int cornerFlags) {
+		Rectangle cornerBox = newRectangleWithSize(radius * 2);
+		Rectangle topLeft = getRelocatedTopLeftWith(cornerBox, rectangle);
+		Rectangle topRight = getRelocatedTopRightWith(cornerBox, rectangle);
+		Rectangle bottomLeft = getRelocatedBottomLeftWith(cornerBox, rectangle);
+		Rectangle bottomRight = getRelocatedBottomRightWith(cornerBox, rectangle);
+		
+		if(hasFlags(cornerFlags, CORNER_TOP_LEFT)){
+			fillArc(gc, topLeft, 90, 90);
+		}else{
+			gc.fillRectangle(topLeft);
+		}		
+		
+		gc.fillRectangle(rectangle.x + radius, rectangle.y, rectangle.width - radius*2, radius);
+		
+		if(hasFlags(cornerFlags,CORNER_TOP_RIGHT)){
+			fillArc(gc, topRight, 0, 90);
+		}else{
+			gc.fillRectangle(topRight);
+		}
+		
+		gc.fillRectangle(rectangle.x, rectangle.y + radius, rectangle.width, rectangle.height - radius * 2);
+		
+		if(hasFlags(cornerFlags, CORNER_BOTTOM_LEFT)){
+			fillArc(gc, bottomLeft, 180, 90);
+		}else{
+			gc.fillRectangle(bottomLeft);
+		}
+		
+		gc.fillRectangle(rectangle.x + radius, rectangle.y + rectangle.height - radius, rectangle.width - radius*2, radius);
+		if(hasFlags(cornerFlags, CORNER_BOTTOM_RIGHT)){
+			fillArc(gc, bottomRight, 270, 90);
+		}else{
+			gc.fillRectangle(bottomRight);
+		}
+		return gc;
 	}
 
 	public Point getCopy(Point point) {
