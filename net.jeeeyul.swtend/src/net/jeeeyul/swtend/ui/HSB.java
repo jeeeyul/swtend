@@ -29,6 +29,27 @@ public class HSB extends LightWeightResource {
 	public static final HSB WHITE = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_WHITE).getRGB());
 	public static final HSB YELLOW = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_YELLOW).getRGB());
 
+	public static final HSB WIDGET_DARK_SHADOW = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW).getRGB());
+	public static final HSB WIDGET_NORMAL_SHADOW = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW).getRGB());
+	public static final HSB WIDGET_LIGHT_SHADOW = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW).getRGB());
+	public static final HSB WIDGET_HIGHLIGHT_SHADOW = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW).getRGB());
+	public static final HSB WIDGET_FOREGROUND = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND).getRGB());
+	public static final HSB WIDGET_BACKGROUND = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).getRGB());
+	public static final HSB WIDGET_BORDER = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BORDER).getRGB());
+	public static final HSB LIST_FOREGROUND = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_LIST_FOREGROUND).getRGB());
+	public static final HSB LIST_BACKGROUND = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_LIST_BACKGROUND).getRGB());
+	public static final HSB LIST_SELECTION = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_LIST_SELECTION).getRGB());
+	public static final HSB LIST_SELECTION_TEXT = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT).getRGB());
+	public static final HSB INFO_FOREGROUND = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_INFO_FOREGROUND).getRGB());
+	public static final HSB INFO_BACKGROUND = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_INFO_BACKGROUND).getRGB());
+	public static final HSB TITLE_FOREGROUND = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_TITLE_FOREGROUND).getRGB());
+	public static final HSB TITLE_BACKGROUND = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_TITLE_BACKGROUND).getRGB());
+	public static final HSB TITLE_BACKGROUND_GRADIENT = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT).getRGB());
+	public static final HSB TITLE_INACTIVE_FOREGROUND = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND).getRGB());
+	public static final HSB TITLE_INACTIVE_BACKGROUND = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND).getRGB());
+	public static final HSB TITLE_INACTIVE_BACKGROUND_GRADIENT = new HSB(Display.getDefault().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT)
+			.getRGB());
+
 	public static HSB deserialize(String literal) {
 		HSB result = new HSB();
 
@@ -116,6 +137,16 @@ public class HSB extends LightWeightResource {
 		this.hue = hsb[0];
 		this.saturation = hsb[1];
 		this.brightness = hsb[2];
+	}
+
+	public HSB scaleBrightness(float amp) {
+		this.brightness = limit(this.brightness * amp, 0f, 1f);
+		return this;
+	}
+
+	public HSB scaleSaturation(float amp) {
+		this.saturation = limit(this.saturation * amp, 0f, 1f);
+		return this;
 	}
 
 	public HSB ampBrightness(float amp) {

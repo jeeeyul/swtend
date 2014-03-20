@@ -1111,7 +1111,7 @@ public class SWTExtensions {
 	}
 
 	public GC fillRoundRectangle(GC gc, Rectangle rectangle, int radius) {
-		gc.fillRoundRectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height, radius, radius);
+		fillRoundRectangle(gc, rectangle, radius, CORNER_ALL);
 		return gc;
 	}
 
