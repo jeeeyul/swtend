@@ -2,7 +2,7 @@
 <feature
       id="net.jeeeyul.swtend.feature"
       label="SWTend"
-      version="2.1.0.qualifier"
+      version="2.1.1.qualifier"
       provider-name="jeeeyul@gmail.com">
 
    <description url="https://github.com/jeeeyul/swtend">
