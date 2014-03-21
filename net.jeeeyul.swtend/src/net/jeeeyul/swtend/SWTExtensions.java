@@ -1314,8 +1314,6 @@ public class SWTExtensions {
 
 		dummy.pack();
 
-		dummy.open();
-
 		TOOLBAR_HEIGHT = toolBar.computeSize(-1, -1).y;
 		dummy.dispose();
 		anImage.dispose();

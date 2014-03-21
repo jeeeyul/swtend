@@ -10,7 +10,7 @@ class ClipTest {
 			layout=newGridLayout
 			newToolBar[
 				newToolItem[
-					text ="hello"
+					text ="한글"
 				]
 				
 			]
