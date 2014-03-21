@@ -979,21 +979,6 @@ public class SWTExtensions {
 	/**
 	 * @since 2.1
 	 */
-	public GC fillGradientRoundRectangle(GC gc, Rectangle bounds, int radius, int cornerFlags, HSB[] hsb, int percents[], boolean vertical) {
-		Color[] colors = new Color[hsb.length];
-		for (int i = 0; i < hsb.length; i++) {
-			colors[i] = newColor(hsb[i]);
-		}
-
-		fillGradientRoundRectangle(gc, bounds, radius, cornerFlags, colors, percents, vertical);
-		safeDispose(colors);
-
-		return gc;
-	}
-
-	/**
-	 * @since 2.1
-	 */
 	public GC fillGradientRoundRectangle(GC gc, Rectangle bounds, int radius, int cornerFlags, Color[] colors, int percents[], boolean vertical) {
 		if (colors == null || percents == null || hasDisposed(colors)) {
 			throw new IllegalArgumentException();
@@ -1095,6 +1080,21 @@ public class SWTExtensions {
 
 		fillGradientRoundRectangle(gc, bounds, radius, cornerFlags, colors, percents, vertical);
 		safeDispose(colors);
+		return gc;
+	}
+
+	/**
+	 * @since 2.1
+	 */
+	public GC fillGradientRoundRectangle(GC gc, Rectangle bounds, int radius, int cornerFlags, HSB[] hsb, int percents[], boolean vertical) {
+		Color[] colors = new Color[hsb.length];
+		for (int i = 0; i < hsb.length; i++) {
+			colors[i] = newColor(hsb[i]);
+		}
+
+		fillGradientRoundRectangle(gc, bounds, radius, cornerFlags, colors, percents, vertical);
+		safeDispose(colors);
+
 		return gc;
 	}
 
@@ -1290,9 +1290,10 @@ public class SWTExtensions {
 	}
 
 	/**
-	 * @return
+	 * @return returns minimum height of a toolbar that contains an tool item
+	 *         who has an 16x16 icon.
 	 * 
-	 * @since 2.1
+	 * @since 2.2
 	 */
 	public int getMinimumToolBarHeight() {
 		if (TOOLBAR_HEIGHT != null) {
@@ -1312,7 +1313,7 @@ public class SWTExtensions {
 		anItem.setImage(anImage);
 
 		dummy.pack();
-		
+
 		dummy.open();
 
 		TOOLBAR_HEIGHT = toolBar.computeSize(-1, -1).y;
