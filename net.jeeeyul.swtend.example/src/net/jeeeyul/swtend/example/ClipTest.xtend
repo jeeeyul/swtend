@@ -11,9 +11,10 @@ class ClipTest {
 			onPaint = [
 				var gc = it.gc
 				gc.antialias = SWT.ON
-				val offset = newRectangle(10, 10, 100, 22)
+				val offset = newRectangle(10, 10, 100, 30)
 				gc.fillGradientRoundRectangle(offset, 10, CORNER_TOP, #[COLOR_RED, COLOR_WHITE, COLOR_MAGENTA], #[50, 100], true)
-				gc.fillGradientRoundRectangle(offset.getTranslated(110, 0), 20, CORNER_TOP_RIGHT, #[COLOR_RED, COLOR_WHITE, COLOR_MAGENTA], #[50, 100], false)
+				
+				gc.fillGradientRoundRectangle(offset.getTranslated(110, 0), 10, CORNER_TOP_RIGHT, #[COLOR_RED, COLOR_WHITE, COLOR_MAGENTA], #[50, 100], false)
 				
 				gc.fillRoundRectangle(offset.getTranslated(0, 30), 10, CORNER_ALL)
 			]

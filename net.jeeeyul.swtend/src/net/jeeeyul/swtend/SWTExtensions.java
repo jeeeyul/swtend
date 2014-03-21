@@ -1131,17 +1131,17 @@ public class SWTExtensions {
 		Rectangle bottomRight = getRelocatedBottomRightWith(cornerBox, rectangle);
 
 		if (hasFlags(cornerFlags, CORNER_TOP_LEFT)) {
-			fillArc(gc, topLeft, 90, 90);
+			fillOval(gc, topLeft);
 		} else {
 			gc.fillRectangle(rectangle.x, rectangle.y, radius, radius);
 		}
 
 		if(rectangle.width - radius * 2 > 0){
-			gc.fillRectangle(rectangle.x + radius, rectangle.y, rectangle.width - radius * 2 + 1, radius);
+			gc.fillRectangle(rectangle.x + radius, rectangle.y, rectangle.width - radius * 2, radius);
 		}
 
 		if (hasFlags(cornerFlags, CORNER_TOP_RIGHT)) {
-			fillArc(gc, topRight, 0, 90);
+			fillOval(gc, topRight);
 		} else {
 			gc.fillRectangle(rectangle.x + rectangle.width - radius, rectangle.y, radius, radius);
 		}
@@ -1150,7 +1150,7 @@ public class SWTExtensions {
 			gc.fillRectangle(rectangle.x, rectangle.y + radius, rectangle.width, rectangle.height - radius * 2);
 		}
 		if (hasFlags(cornerFlags, CORNER_BOTTOM_LEFT)) {
-			fillArc(gc, bottomLeft, 180, 90);
+			fillOval(gc, bottomLeft);
 		} else {
 			gc.fillRectangle(rectangle.x, rectangle.y + rectangle.height - radius, radius, radius);
 		}
@@ -1160,7 +1160,7 @@ public class SWTExtensions {
 		}
 
 		if (hasFlags(cornerFlags, CORNER_BOTTOM_RIGHT)) {
-			fillArc(gc, bottomRight, 270, 90);
+			fillOval(gc, bottomRight);
 		} else {
 			gc.fillRectangle(rectangle.x + rectangle.width - radius, rectangle.y + rectangle.height - radius, radius, radius);
 		}
