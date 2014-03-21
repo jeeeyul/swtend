@@ -72,6 +72,7 @@ import org.eclipse.ui.progress.UIJob;
  */
 public class SWTExtensions {
 	private static Integer MENU_BAR_HEIGHT = null;
+	private static Integer TOOLBAR_HEIGHT = null;
 	public static final SWTExtensions INSTANCE = new SWTExtensions();
 
 	private GC sharedGC;
@@ -83,7 +84,7 @@ public class SWTExtensions {
 	 * @since 2.1
 	 */
 	public final int CORNER_TOP_LEFT = 1;
-	
+
 	/**
 	 * @since 2.1
 	 */
@@ -92,32 +93,32 @@ public class SWTExtensions {
 	 * @since 2.1
 	 */
 	public final int CORNER_BOTTOM_LEFT = 4;
-	
+
 	/**
 	 * @since 2.1
 	 */
 	public final int CORNER_BOTTOM_RIGHT = 8;
-	
+
 	/**
 	 * @since 2.1
 	 */
 	public final int CORNER_TOP = CORNER_TOP_LEFT | CORNER_TOP_RIGHT;
-	
+
 	/**
 	 * @since 2.1
 	 */
 	public final int CORNER_BOTTOM = CORNER_BOTTOM_LEFT | CORNER_BOTTOM_RIGHT;
-	
+
 	/**
 	 * @since 2.1
 	 */
 	public final int CORNER_LEFT = CORNER_TOP_LEFT | CORNER_BOTTOM_LEFT;
-	
+
 	/**
 	 * @since 2.1
 	 */
 	public final int CORNER_RIGHT = CORNER_TOP_RIGHT | CORNER_BOTTOM_RIGHT;
-	
+
 	/**
 	 * @since 2.1
 	 */
@@ -876,7 +877,6 @@ public class SWTExtensions {
 		return gridData;
 	}
 
-	
 	/**
 	 * @since 2.1
 	 */
@@ -981,16 +981,16 @@ public class SWTExtensions {
 	 */
 	public GC fillGradientRoundRectangle(GC gc, Rectangle bounds, int radius, int cornerFlags, HSB[] hsb, int percents[], boolean vertical) {
 		Color[] colors = new Color[hsb.length];
-		for(int i=0; i<hsb.length; i++){
+		for (int i = 0; i < hsb.length; i++) {
 			colors[i] = newColor(hsb[i]);
 		}
-		
+
 		fillGradientRoundRectangle(gc, bounds, radius, cornerFlags, colors, percents, vertical);
 		safeDispose(colors);
-		
+
 		return gc;
 	}
-	
+
 	/**
 	 * @since 2.1
 	 */
@@ -1136,7 +1136,7 @@ public class SWTExtensions {
 			gc.fillRectangle(rectangle.x, rectangle.y, radius, radius);
 		}
 
-		if(rectangle.width - radius * 2 > 0){
+		if (rectangle.width - radius * 2 > 0) {
 			gc.fillRectangle(rectangle.x + radius, rectangle.y, rectangle.width - radius * 2, radius);
 		}
 
@@ -1287,6 +1287,39 @@ public class SWTExtensions {
 		MENU_BAR_HEIGHT = boundsWithMenu.height - boundsWithoutMenu.height;
 
 		return MENU_BAR_HEIGHT;
+	}
+
+	/**
+	 * @return
+	 * 
+	 * @since 2.1
+	 */
+	public int getMinimumToolBarHeight() {
+		if (TOOLBAR_HEIGHT != null) {
+			return TOOLBAR_HEIGHT;
+		}
+
+		if (Display.getCurrent() == null) {
+			throw new SWTException("Invalid Thread Exception");
+		}
+
+		Shell dummy = new Shell();
+		dummy.setLayout(new GridLayout());
+		ToolBar toolBar = new ToolBar(dummy, SWT.FLAT | SWT.RIGHT);
+		ToolItem anItem = new ToolItem(toolBar, SWT.NORMAL);
+		anItem.setText("test");
+		Image anImage = new Image(getDisplay(), 16, 16);
+		anItem.setImage(anImage);
+
+		dummy.pack();
+		
+		dummy.open();
+
+		TOOLBAR_HEIGHT = toolBar.computeSize(-1, -1).y;
+		dummy.dispose();
+		anImage.dispose();
+
+		return TOOLBAR_HEIGHT;
 	}
 
 	public Point getNegated(Point me) {
