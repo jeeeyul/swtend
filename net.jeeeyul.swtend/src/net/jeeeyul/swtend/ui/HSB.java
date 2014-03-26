@@ -75,10 +75,7 @@ public class HSB extends LightWeightResource {
 
 	public static void main(String[] args) {
 		HSB hsb = new HSB(0, 1f, 1f);
-		System.out.println(hsb.serialize());
-		System.out.println(HSB.deserialize(hsb.serialize()));
-		System.out.println(hsb.toHTMLCode());
-		System.out.println(HSB.deserialize("49.611309, 0.5, 0.7"));
+		System.out.println(hsb.shiftHue(380f));
 	}
 
 	public float hue;
@@ -139,20 +136,22 @@ public class HSB extends LightWeightResource {
 		this.brightness = hsb[2];
 	}
 
-	public HSB scaleBrightness(float amp) {
-		this.brightness = limit(this.brightness * amp, 0f, 1f);
-		return this;
-	}
-
-	public HSB scaleSaturation(float amp) {
-		this.saturation = limit(this.saturation * amp, 0f, 1f);
-		return this;
-	}
-
+	/**
+	 * @param amp
+	 * @return
+	 * @deprecated use {@link #getBrightnessScaled(float)} instead.
+	 */
 	public HSB ampBrightness(float amp) {
 		return new HSB(hue, saturation, limit(this.brightness * amp, 0f, 1f));
 	}
 
+	/**
+	 * 
+	 * @param amp
+	 * @return
+	 * 
+	 * @deprecated use {@link #getSaturationScaled(float)} instead.
+	 */
 	public HSB ampSaturation(float amp) {
 		return new HSB(hue, limit(this.saturation * amp, 0f, 1f), brightness);
 	}
@@ -166,17 +165,12 @@ public class HSB extends LightWeightResource {
 		return super.equals(obj);
 	}
 
+	public HSB getBrightnessScaled(float amp) {
+		return getCopy().scaleBrightness(amp);
+	}
+
 	public HSB getCopy() {
 		return new HSB(hue, saturation, brightness);
-	}
-
-	@Override
-	public int hashCode() {
-		return toString().hashCode();
-	}
-
-	private float limit(float original, float min, float max) {
-		return Math.min(Math.max(original, min), max);
 	}
 
 	/**
@@ -193,6 +187,19 @@ public class HSB extends LightWeightResource {
 	 */
 	public HSB getMixedWith(HSB color, float strength) {
 		return getCopy().mixWith(color, strength);
+	}
+
+	public HSB getSaturationScaled(float amp) {
+		return getCopy().scaleSaturation(amp);
+	}
+
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
+
+	private float limit(float original, float min, float max) {
+		return Math.min(Math.max(original, min), max);
 	}
 
 	public HSB mixWith(HSB color, float strength) {
@@ -217,14 +224,36 @@ public class HSB extends LightWeightResource {
 		return this;
 	}
 
+	public HSB shiftHue(float amount) {
+		this.hue = (this.hue + amount) % 360f;
+		while (this.hue < 0) {
+			this.hue += 360f;
+		}
+		return this;
+	}
+
+	public HSB getHueShifted(float amount) {
+		return getCopy().shiftHue(amount);
+	}
+
 	/**
 	 * @param newHue
 	 * @return
 	 * 
-	 * @deprecated
+	 * @deprecated just access {@link #hue} instead.
 	 */
 	public HSB rewriteHue(float newHue) {
 		return new HSB(newHue, saturation, brightness);
+	}
+
+	public HSB scaleBrightness(float amp) {
+		this.brightness = limit(this.brightness * amp, 0f, 1f);
+		return this;
+	}
+
+	public HSB scaleSaturation(float amp) {
+		this.saturation = limit(this.saturation * amp, 0f, 1f);
+		return this;
 	}
 
 	public String serialize() {

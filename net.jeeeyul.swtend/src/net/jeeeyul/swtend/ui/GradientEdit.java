@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.progress.UIJob;
 
@@ -172,6 +173,33 @@ public class GradientEdit extends Canvas {
 			@Override
 			public void handleEvent(Event event) {
 				rewriteHue();
+			}
+		});
+
+		MenuItem shiftHueMenuItem = new MenuItem(batchMenu, SWT.PUSH);
+		shiftHueMenuItem.setText("Shift Hue");
+		shiftHueMenuItem.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				shiftHue();
+			}
+		});
+		
+		MenuItem scaleBrightnessMenuItem = new MenuItem(batchMenu, SWT.PUSH);
+		scaleBrightnessMenuItem.setText("Amp Brightness");
+		scaleBrightnessMenuItem.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				ampBrightness();
+			}
+		});
+		
+		MenuItem scaleSaturationMenuItem = new MenuItem(batchMenu, SWT.PUSH);
+		scaleSaturationMenuItem.setText("Amp Saturation");
+		scaleSaturationMenuItem.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				ampSaturation();
 			}
 		});
 	}
@@ -638,6 +666,165 @@ public class GradientEdit extends Canvas {
 				Gradient gradient = getSelection();
 				for (ColorStop each : gradient) {
 					each.color.hue = selection;
+				}
+				redraw();
+				dispathModifyEvent();
+			}
+		});
+		shell.addListener(SWT.Deactivate, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				shell.dispose();
+			}
+		});
+		shell.addListener(SWT.Traverse, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				if (event.detail == SWT.TRAVERSE_ESCAPE) {
+					setSelection(backup, true);
+				}
+				shell.dispose();
+			}
+		});
+
+		shell.pack();
+		Point location = GradientEdit.this.toDisplay(0, getSize().y);
+		shell.setSize(getSize().x, 35);
+		shell.setLocation(location);
+		shell.open();
+	}
+
+	private void shiftHue() {
+		final Gradient backup = getSelection().getCopy();
+		final Shell shell = new Shell(getShell(), SWT.NONE);
+		FillLayout layout = new FillLayout();
+		layout.marginWidth = 5;
+		shell.setLayout(layout);
+		GradientEdit.this.addListener(SWT.Dispose, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				shell.dispose();
+			}
+		});
+
+		final Scale shiftScale = new Scale(shell, SWT.NORMAL);
+		shiftScale.setMinimum(0);
+		shiftScale.setMaximum(720);
+		shiftScale.setSelection(360);
+
+		shiftScale.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				float amp = shiftScale.getSelection() - 360f;
+				Gradient current = getSelection();
+				for (int i = 0; i < current.size(); i++) {
+					current.get(i).color.hue = backup.get(i).color.getHueShifted(amp).hue;
+				}
+				redraw();
+				dispathModifyEvent();
+			}
+		});
+		shell.addListener(SWT.Deactivate, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				shell.dispose();
+			}
+		});
+		shell.addListener(SWT.Traverse, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				if (event.detail == SWT.TRAVERSE_ESCAPE) {
+					setSelection(backup, true);
+				}
+				shell.dispose();
+			}
+		});
+
+		shell.pack();
+		Point location = GradientEdit.this.toDisplay(0, getSize().y);
+		shell.setSize(getSize().x, 35);
+		shell.setLocation(location);
+		shell.open();
+	}
+
+	private void ampBrightness() {
+		final Gradient backup = getSelection().getCopy();
+		final Shell shell = new Shell(getShell(), SWT.NONE);
+		FillLayout layout = new FillLayout();
+		layout.marginWidth = 5;
+		shell.setLayout(layout);
+		GradientEdit.this.addListener(SWT.Dispose, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				shell.dispose();
+			}
+		});
+
+		final Scale brightnessScale = new Scale(shell, SWT.NORMAL);
+		brightnessScale.setMinimum(0);
+		brightnessScale.setMaximum(200);
+		brightnessScale.setSelection(100);
+
+		brightnessScale.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				float amp = brightnessScale.getSelection() / 100f;
+				Gradient current = getSelection();
+				for (int i = 0; i < current.size(); i++) {
+					current.get(i).color.brightness = backup.get(i).color.getBrightnessScaled(amp).brightness;
+				}
+				redraw();
+				dispathModifyEvent();
+			}
+		});
+		shell.addListener(SWT.Deactivate, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				shell.dispose();
+			}
+		});
+		shell.addListener(SWT.Traverse, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				if (event.detail == SWT.TRAVERSE_ESCAPE) {
+					setSelection(backup, true);
+				}
+				shell.dispose();
+			}
+		});
+
+		shell.pack();
+		Point location = GradientEdit.this.toDisplay(0, getSize().y);
+		shell.setSize(getSize().x, 35);
+		shell.setLocation(location);
+		shell.open();
+	}
+	
+	private void ampSaturation() {
+		final Gradient backup = getSelection().getCopy();
+		final Shell shell = new Shell(getShell(), SWT.NONE);
+		FillLayout layout = new FillLayout();
+		layout.marginWidth = 5;
+		shell.setLayout(layout);
+		GradientEdit.this.addListener(SWT.Dispose, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				shell.dispose();
+			}
+		});
+
+		final Scale saturationScale = new Scale(shell, SWT.NORMAL);
+		saturationScale.setMinimum(0);
+		saturationScale.setMaximum(200);
+		saturationScale.setSelection(100);
+
+		saturationScale.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				float amp = saturationScale.getSelection() / 100f;
+				Gradient current = getSelection();
+				for (int i = 0; i < current.size(); i++) {
+					current.get(i).color.saturation = backup.get(i).color.getSaturationScaled(amp).saturation;
 				}
 				redraw();
 				dispathModifyEvent();
