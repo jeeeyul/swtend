@@ -711,6 +711,7 @@ public class GradientEdit extends Canvas {
 		shiftScale.setMinimum(0);
 		shiftScale.setMaximum(720);
 		shiftScale.setSelection(360);
+		shiftScale.setPageIncrement(30);
 
 		shiftScale.addListener(SWT.Selection, new Listener() {
 			@Override
@@ -764,6 +765,7 @@ public class GradientEdit extends Canvas {
 		brightnessScale.setMinimum(0);
 		brightnessScale.setMaximum(200);
 		brightnessScale.setSelection(100);
+		brightnessScale.setPageIncrement(20);
 
 		brightnessScale.addListener(SWT.Selection, new Listener() {
 			@Override
@@ -817,7 +819,7 @@ public class GradientEdit extends Canvas {
 		saturationScale.setMinimum(0);
 		saturationScale.setMaximum(200);
 		saturationScale.setSelection(100);
-
+		saturationScale.setPageIncrement(20);
 		saturationScale.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
