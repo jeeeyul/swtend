@@ -2,6 +2,12 @@
 
 [xtend](http://xtend-lang.org) libraries for SWT, SWT + Xtend
 
+This project is maintained, however but it is not opend. Currently this project is used by my other projects internal purpose. 
+Eventually, When I think APIs are stable enough, I will publish documets about this project.
+
+
+Here are some hint that explains what **SWTend** is:
+
 ### Builder Pattern to create SWT UI
 ```xtend
 var ui = newComposite[
