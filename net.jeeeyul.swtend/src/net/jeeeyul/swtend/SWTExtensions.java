@@ -2520,6 +2520,26 @@ public class SWTExtensions {
 		}
 	}
 
+	/**
+	 * @since 2.2
+	 * @param widgets
+	 */
+	public <W extends Widget> void safeDispose(W... widgets) {
+		for (Widget w : widgets) {
+			safeDispose(w);
+		}
+	}
+
+	/**
+	 * @since 2.2
+	 * @param widget
+	 */
+	public <W extends Widget> void safeDispose(W widget) {
+		if (widget != null && !widget.isDisposed()) {
+			widget.dispose();
+		}
+	}
+
 	public <T extends Resource> void safeDispose(T r) {
 		if (r != null && !r.isDisposed()) {
 			r.dispose();
