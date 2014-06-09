@@ -237,6 +237,7 @@ public class GradientEdit extends Canvas {
 	}
 
 	private void drawBar(GC gc) {
+		gc.setAlpha(255);
 		Rectangle barArea = getBarArea();
 
 		SWTExtensions.INSTANCE.fillGradientRectangle(gc, barArea, selection, false);
@@ -282,7 +283,7 @@ public class GradientEdit extends Canvas {
 	@Override
 	public Rectangle getClientArea() {
 		Point size = getSize();
-		return SWTExtensions.INSTANCE.shrink(new Rectangle(0, 0, size.x, size.y), 5, 0, 6, 1);
+		return SWTExtensions.INSTANCE.shrink(new Rectangle(0, 0, size.x, size.y), GradientEditItem.SIZE.x / 2, 0, GradientEditItem.SIZE.x / 2 + 1, 1);
 	}
 
 	private UIJob getEditItemJob() {

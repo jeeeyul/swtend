@@ -1,5 +1,7 @@
 package net.jeeeyul.swtend.ui;
 
+import net.jeeeyul.swtend.SWTExtensions;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
@@ -8,7 +10,6 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-
 
 /**
  * @since 1.2
@@ -30,7 +31,8 @@ public class ColorWell extends Canvas {
 	}
 
 	public ColorWell(Composite parent, int style) {
-		super(parent, style | SWT.BORDER);
+		super(parent, SWT.DOUBLE_BUFFERED);
+		
 		addListener(SWT.Paint, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
@@ -100,18 +102,21 @@ public class ColorWell extends Canvas {
 		Color color = new Color(getDisplay(), selection.toRGB());
 		event.gc.setBackground(color);
 		Rectangle clientArea = getClientArea();
-		event.gc.fillRectangle(clientArea);
+		Rectangle shape = SWTExtensions.INSTANCE.getShrinked(clientArea, 2);
+
+		event.gc.fillRoundRectangle(shape.x, shape.y, shape.width, shape.height, 5, 5);
 		color.dispose();
 
 		if (state == PRESSED) {
-			event.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
+			event.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION));
 			event.gc.setAlpha(100);
 			event.gc.setLineWidth(3);
 
-			int[] shadow = new int[] { clientArea.x, clientArea.y + clientArea.height, clientArea.x, clientArea.y, clientArea.x + clientArea.width,
-					clientArea.y };
-			event.gc.drawPolyline(shadow);
+			SWTExtensions.INSTANCE.drawRoundRectangle(event.gc, SWTExtensions.INSTANCE.getResized(shape, -1, -1), 5);
 		}
+		event.gc.setAlpha(60);
+		event.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
+		SWTExtensions.INSTANCE.drawRoundRectangle(event.gc, SWTExtensions.INSTANCE.getResized(shape, -1, -1), 5);
 	}
 
 	public void setSelection(HSB selection, boolean notify) {
