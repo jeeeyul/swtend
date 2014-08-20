@@ -171,20 +171,50 @@ public class Gradient extends LightWeightResource implements List<ColorStop> {
 		return result;
 	}
 
-	public HSB getAverageColor() {
+	public HSB getColorInPosition(int percent) {
+		percent = Math.min(Math.max(percent, 0), 100);
 		if (size() == 0) {
 			throw new IllegalStateException();
 		}
 
-		float hue = 0f;
-		float saturation = 0f;
-		float brightness = 0f;
-		for (ColorStop each : this) {
-			hue += each.color.hue;
-			saturation += each.color.saturation;
-			brightness += each.color.brightness;
+		if (size() == 1) {
+			return get(0).color;
 		}
-		float size = (float) size();
-		return new HSB(hue / size, saturation / size, brightness / size);
+
+		ColorStop from = null;
+		ColorStop to = null;
+		for (int i = 0; i < this.size(); i++) {
+			to = get(i);
+			if (to.percent >= percent) {
+				break;
+			}
+		}
+		if (to == null) {
+			to = get(size() - 1);
+		}
+		int toIndex = indexOf(to);
+		from = toIndex > 0 ? get(toIndex - 1) : to;
+		if (to.percent < percent) {
+			return to.color;
+		}
+
+		int delta = to.percent - from.percent;
+		if (delta == 0) {
+			return to.color;
+		}
+
+		float strength = (percent - from.percent) / (float) delta;
+		return from.color.getMixedWith(to.color, strength);
+	}
+
+	/**
+	 * @deprecated use {@link #getMiddlePointColor()}
+	 */
+	public HSB getAverageColor() {
+		return getColorInPosition(50);
+	}
+
+	public HSB getMiddlePointColor() {
+		return getColorInPosition(50);
 	}
 }

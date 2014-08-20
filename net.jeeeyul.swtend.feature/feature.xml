@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><feature id="net.jeeeyul.swtend.feature" label="SWTend" provider-name="jeeeyul@gmail.com" version="2.3.3.qualifier">
+<?xml version="1.0" encoding="UTF-8"?><feature id="net.jeeeyul.swtend.feature" label="SWTend" provider-name="jeeeyul@gmail.com" version="2.2.4.qualifier">
 
    <description url="https://github.com/jeeeyul/swtend">
       Provides xtend extensions for SWT.

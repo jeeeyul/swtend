@@ -184,7 +184,7 @@ public class GradientEdit extends Canvas {
 				shiftHue();
 			}
 		});
-		
+
 		MenuItem scaleBrightnessMenuItem = new MenuItem(batchMenu, SWT.PUSH);
 		scaleBrightnessMenuItem.setText("Amp Brightness");
 		scaleBrightnessMenuItem.addListener(SWT.Selection, new Listener() {
@@ -193,7 +193,7 @@ public class GradientEdit extends Canvas {
 				ampBrightness();
 			}
 		});
-		
+
 		MenuItem scaleSaturationMenuItem = new MenuItem(batchMenu, SWT.PUSH);
 		scaleSaturationMenuItem.setText("Amp Saturation");
 		scaleSaturationMenuItem.addListener(SWT.Selection, new Listener() {
@@ -802,7 +802,7 @@ public class GradientEdit extends Canvas {
 		shell.setLocation(location);
 		shell.open();
 	}
-	
+
 	private void ampSaturation() {
 		final Gradient backup = getSelection().getCopy();
 		final Shell shell = new Shell(getShell(), SWT.NONE);
