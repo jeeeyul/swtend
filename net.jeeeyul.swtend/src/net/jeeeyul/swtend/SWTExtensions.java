@@ -1024,6 +1024,8 @@ public class SWTExtensions {
 			fillRoundRectangle(gc, bounds.x, bounds.y, bounds.width, bounds.height, radius, cornerFlags);
 
 			offset += gradientSize;
+			
+			pattern.dispose();
 		}
 
 		if (offset < max) {
@@ -2207,7 +2209,7 @@ public class SWTExtensions {
 
 	public Path newTemporaryPath(Procedure1<Path> initializer) {
 		Path result = newPath(initializer);
-		autoRelease(result);
+		autoDispose(result);
 		return result;
 	}
 
