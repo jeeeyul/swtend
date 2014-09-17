@@ -6,11 +6,11 @@ import org.eclipse.swt.graphics.Point
 import org.eclipse.swt.graphics.Rectangle
 import org.eclipse.swt.widgets.Shell
 
-class AutoReleaseAndGraphics {
+class autoDisposeAndGraphics {
 	extension SWTExtensions = SWTExtensions.INSTANCE
 
 	def static void main(String[] args) {
-		new AutoReleaseAndGraphics().run()
+		new autoDisposeAndGraphics().run()
 	}
 
 	def run() {
@@ -22,14 +22,14 @@ class AutoReleaseAndGraphics {
 				var extension Shell = it.widget as Shell
 				
 				// gradient and font be disposed next run loop
-				var gradient = newGradient(clientArea.top, clientArea.bottom, COLOR_RED, COLOR_YELLOW).autoRelease
-				val font = newFont("Georgia", 80).autoRelease
+				var gradient = newGradient(clientArea.top, clientArea.bottom, COLOR_RED, COLOR_YELLOW).autoDispose
+				val font = newFont("Georgia", 80).autoDispose
 				
 				// creating shape
 				val box = clientArea.shrink(50)
 				var path = newPath[
 					// path will be disposed next run loop
-					autoRelease()
+					autoDispose()
 					
 					// round shapes
 					addRoundRectangle(box, 10)
@@ -45,7 +45,7 @@ class AutoReleaseAndGraphics {
 				
 				// rotate context
 				gc.transform = newTransform[
-					autoRelease() // transform will be disposed next loop
+					autoDispose() // transform will be disposed next loop
 					translate(box.center);
 					rotate(-8)
 					translate(box.center.negated)

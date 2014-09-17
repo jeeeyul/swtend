@@ -21,10 +21,8 @@ class CloseTest {
 				gc.background = color.toAutoDisposeColor
 				gc.fill(path)
 				
-				gc.background = color.ampBrightness(0.3f).toAutoDisposeColor
-				gc.withClip(createPath(bounds, width))[
-					gc.fillPath(shadowPath)
-				]
+				gc.background = color.getBrightnessScaled(0.3f).toAutoDisposeColor
+				gc.fillPath(shadowPath)
 			]
 		].openAndRunLoop
 	}
