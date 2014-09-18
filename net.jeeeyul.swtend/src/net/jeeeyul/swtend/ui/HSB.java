@@ -137,6 +137,14 @@ public class HSB extends LightWeightResource {
 	}
 
 	/**
+	 * @since 2.2
+	 * @param systemColorKey
+	 */
+	public HSB(int systemColorKey) {
+		this(Display.getDefault().getSystemColor(systemColorKey).getRGB());
+	}
+
+	/**
 	 * @param amp
 	 * @return
 	 * @deprecated use {@link #getBrightnessScaled(float)} instead.

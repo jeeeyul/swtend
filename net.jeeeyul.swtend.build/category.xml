@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><site>
-	<feature id="net.jeeeyul.swtend.feature" url="features/net.jeeeyul.swtend.feature_2.2.4.qualifier.jar" version="2.2.4.qualifier">
+	<feature id="net.jeeeyul.swtend.feature" url="features/net.jeeeyul.swtend.feature_2.2.5.qualifier.jar" version="2.2.5.qualifier">
 		<category name="eclipse-jeeeyul"/>
 	</feature>
 	<category-def label="Jeeeyul's Eclipse Plugins" name="eclipse-jeeeyul"/>

@@ -3,7 +3,7 @@ Bundle-SymbolicName: net.jeeeyul.swtend
 Export-Package: net.jeeeyul.swtend,net.jeeeyul.swtend.geometry,net.jee
  eyul.swtend.sam,net.jeeeyul.swtend.ui
 Bundle-Name: SWTend
-Bundle-Version: 2.2.4.qualifier
+Bundle-Version: 2.2.5.qualifier
 Bundle-ClassPath: .
 Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime
 Bundle-ManifestVersion: 2

@@ -3,15 +3,24 @@ package net.jeeeyul.swtend.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.jeeeyul.swtend.internal.CollectionContentProvider;
 import net.jeeeyul.swtend.sam.Procedure1;
 import net.jeeeyul.swtend.ui.internal.ColorFieldSet;
 import net.jeeeyul.swtend.ui.internal.HueCanvas;
 import net.jeeeyul.swtend.ui.internal.HueScale;
 import net.jeeeyul.swtend.ui.internal.Palette;
 import net.jeeeyul.swtend.ui.internal.PipetteTool;
+import net.jeeeyul.swtend.ui.internal.SystemColor;
+import net.jeeeyul.swtend.ui.internal.SystemColorLabelProvider;
 import net.jeeeyul.swtend.ui.internal.UserHomePalette;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.viewers.IOpenListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.OpenEvent;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -148,6 +157,7 @@ public class ColorPicker extends Dialog {
 
 		createChooseTab();
 		createRecentTab();
+		createSystemColorsTab();
 
 		getShell().setText("Color Picker");
 		getShell().setImage(getPipetteImage());
@@ -156,6 +166,42 @@ public class ColorPicker extends Dialog {
 		hueCanvas.setFocus();
 
 		return container;
+	}
+
+	private void createSystemColorsTab() {
+		Composite composite = new Composite(tabFolder, SWT.NORMAL);
+		GridLayout layout = new GridLayout();
+		composite.setLayout(layout);
+		layout.marginWidth = layout.marginHeight = 0;
+
+		TableViewer viewer = new TableViewer(composite, SWT.BORDER);
+
+		TabItem tabItem = new TabItem(tabFolder, SWT.NORMAL | SWT.V_SCROLL);
+		tabItem.setText("System");
+		tabItem.setControl(composite);
+
+		viewer.setContentProvider(new CollectionContentProvider());
+		viewer.setLabelProvider(new SystemColorLabelProvider());
+		viewer.setInput(SystemColor.getSystemColors());
+
+		GridData layoutData = new GridData(GridData.FILL_BOTH);
+		layoutData.heightHint = 100;
+		viewer.getControl().setLayoutData(layoutData);
+
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				SystemColor selection = (SystemColor) ((IStructuredSelection) event.getSelection()).getFirstElement();
+				setSelection(new HSB(selection.key));
+			}
+		});
+
+		viewer.addOpenListener(new IOpenListener() {
+			@Override
+			public void open(OpenEvent event) {
+				okPressed();
+			}
+		});
 	}
 
 	private void createRecentTab() {

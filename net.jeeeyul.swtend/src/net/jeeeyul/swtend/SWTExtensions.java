@@ -1024,7 +1024,7 @@ public class SWTExtensions {
 			fillRoundRectangle(gc, bounds.x, bounds.y, bounds.width, bounds.height, radius, cornerFlags);
 
 			offset += gradientSize;
-			
+
 			pattern.dispose();
 		}
 
@@ -3186,5 +3186,18 @@ public class SWTExtensions {
 
 		gc.setClipping(oldClip);
 		return gc;
+	}
+
+	public boolean intersects(Rectangle rectangle, int x, int y) {
+		if (x == rectangle.x || x == rectangle.x + rectangle.width) {
+			return rectangle.y <= y && y <= rectangle.y + rectangle.height;
+		} else if (y == rectangle.y || y == rectangle.y + rectangle.height) {
+			return rectangle.x <= x && x <= rectangle.x + rectangle.width;
+		} else
+			return false;
+	}
+
+	public boolean intersects(Rectangle rectangle, Point point) {
+		return intersects(rectangle, point.x, point.y);
 	}
 }
