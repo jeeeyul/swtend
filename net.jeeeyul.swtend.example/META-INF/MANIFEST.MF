@@ -7,3 +7,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: net.jeeeyul.swtend;bundle-version="2.2.2",
  org.eclipse.xtend.lib,
  org.eclipse.ui
+Automatic-Module-Name: net.jeeeyul.swtend.example
