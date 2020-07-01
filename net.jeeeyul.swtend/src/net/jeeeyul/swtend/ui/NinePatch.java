@@ -1,7 +1,5 @@
 package net.jeeeyul.swtend.ui;
 
-import net.jeeeyul.swtend.SWTExtensions;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -9,6 +7,8 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Resource;
 import org.eclipse.swt.widgets.Display;
+
+import net.jeeeyul.swtend.SWTExtensions;
 
 /**
  * @since 1.2
@@ -18,16 +18,15 @@ public class NinePatch extends Resource {
 	private Rectangle imageBounds;
 	private Image[] patches;
 	private boolean isDisposed = false;
+	private boolean fShouldRenderCenterArea = true;
 
-	/**
-	 * Creates a {@link NinePatch} {@link Resource} object. It must be disposed
-	 * after use.
-	 * 
-	 * @param source
-	 * @param centerArea
-	 */
 	public NinePatch(ImageData source, Rectangle centerArea) {
+		this(source, centerArea, true);
+	}
+
+	public NinePatch(ImageData source, Rectangle centerArea, boolean renderCenter) {
 		this.centerArea = centerArea;
+		fShouldRenderCenterArea = renderCenter;
 		imageBounds = new Rectangle(0, 0, source.width, source.height);
 		buildPatches(source);
 	}
@@ -131,7 +130,9 @@ public class NinePatch extends Resource {
 		drawPart(gc, getPatchIndex(SWT.TOP, SWT.RIGHT), getCorner(dest, SWT.TOP, SWT.RIGHT));
 
 		drawPart(gc, getPatchIndex(SWT.CENTER, SWT.LEFT), getCorner(dest, SWT.CENTER, SWT.LEFT));
-		drawPart(gc, getPatchIndex(SWT.CENTER, SWT.CENTER), getCorner(dest, SWT.CENTER, SWT.CENTER));
+		if (fShouldRenderCenterArea) {
+			drawPart(gc, getPatchIndex(SWT.CENTER, SWT.CENTER), getCorner(dest, SWT.CENTER, SWT.CENTER));
+		}
 		drawPart(gc, getPatchIndex(SWT.CENTER, SWT.RIGHT), getCorner(dest, SWT.CENTER, SWT.RIGHT));
 
 		drawPart(gc, getPatchIndex(SWT.BOTTOM, SWT.LEFT), getCorner(dest, SWT.BOTTOM, SWT.LEFT));
