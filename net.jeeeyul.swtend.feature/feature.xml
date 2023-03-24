@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<feature id="net.jeeeyul.swtend.feature" label="SWTend" provider-name="jeeeyul@gmail.com" version="2.2.8.qualifier">
-                       
+<feature id="net.jeeeyul.swtend.feature" label="SWTend" provider-name="jeeeyul@gmail.com" version="2.2.9.qualifier">
+                           
+    
     
     
     
@@ -8,7 +9,8 @@
     <description url="https://github.com/jeeeyul/swtend">
       Provides xtend extensions for SWT.
    </description>
-                       
+                           
+    
     
     
     
@@ -16,7 +18,8 @@
     <copyright url="https://github.com/jeeeyul/swtend">
       All Copyright 2012 reserved to jeeeyul@gmail.com
    </copyright>
-                       
+                           
+    
     
     
     
@@ -93,55 +96,64 @@ Everyone is permitted to copy and distribute copies of this Agreement, but in or
 
 This Agreement is governed by the laws of the State of New York and the intellectual property laws of the United States of America. No party to this Agreement will bring a legal action under this Agreement more than one year after the cause of action arose. Each party waives its rights to a jury trial in any resulting litigation.
    </license>
-                       
+                           
+    
     
     
     
     
     <url>
-                                              
+                                                      
+        
         
         
         
         
         <update label="Jeeeyul's Eclipse Plugins" url="http://eclipse.jeeeyul.net/update"/>
-                                           
+                                                   
+    
     
     
     
     
     </url>
-                       
+                           
+    
     
     
     
     
     <requires>
-                                              
+                                                      
+        
         
         
         
         
         <import plugin="org.eclipse.ui"/>
-                                              
+                                                      
+        
         
         
         
         
         <import plugin="org.eclipse.core.runtime"/>
-                                           
+                                                   
+    
     
     
     
     
     </requires>
-                       
+                           
+    
     
     
     
     
     <plugin download-size="0" id="net.jeeeyul.swtend" install-size="0" unpack="false" version="0.0.0"/>
-                    
+                        
+
 
 
 
