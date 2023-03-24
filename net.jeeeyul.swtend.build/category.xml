@@ -1,22 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <site>
-            	
+                    	
     
     
-    <feature id="net.jeeeyul.swtend.feature" url="features/net.jeeeyul.swtend.feature_2.2.7.qualifier.jar" version="2.2.7.qualifier">
-                        		
+    
+    
+    <feature id="net.jeeeyul.swtend.feature" url="features/net.jeeeyul.swtend.feature_2.2.8.qualifier.jar" version="2.2.8.qualifier">
+                                        		
+        
+        
         
         
         <category name="eclipse-jeeeyul"/>
-                        	
+                                        	
+    
+    
     
     
     </feature>
-            	
+                    	
+    
+    
     
     
     <category-def label="Jeeeyul's Eclipse Plugins" name="eclipse-jeeeyul"/>
-            
+                    
+
+
 
 
 </site>
