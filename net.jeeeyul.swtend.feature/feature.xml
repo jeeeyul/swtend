@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <feature id="net.jeeeyul.swtend.feature" label="SWTend" provider-name="jeeeyul@gmail.com" version="2.2.10.qualifier">
-                               
+                                                               
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -10,7 +18,15 @@
     <description url="https://github.com/jeeeyul/swtend">
       Provides xtend extensions for SWT.
    </description>
-                               
+                                                               
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -20,7 +36,15 @@
     <copyright url="https://github.com/jeeeyul/swtend">
       All Copyright 2012 reserved to jeeeyul@gmail.com
    </copyright>
-                               
+                                                               
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -99,7 +123,15 @@ Everyone is permitted to copy and distribute copies of this Agreement, but in or
 
 This Agreement is governed by the laws of the State of New York and the intellectual property laws of the United States of America. No party to this Agreement will bring a legal action under this Agreement more than one year after the cause of action arose. Each party waives its rights to a jury trial in any resulting litigation.
    </license>
-                               
+                                                               
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -107,7 +139,15 @@ This Agreement is governed by the laws of the State of New York and the intellec
     
     
     <url>
-                                                              
+                                                                                                                              
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -115,7 +155,15 @@ This Agreement is governed by the laws of the State of New York and the intellec
         
         
         <update label="Jeeeyul's Eclipse Plugins" url="http://eclipse.jeeeyul.net/update"/>
-                                                           
+                                                                                                                           
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -123,7 +171,15 @@ This Agreement is governed by the laws of the State of New York and the intellec
     
     
     </url>
-                               
+                                                               
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -131,7 +187,15 @@ This Agreement is governed by the laws of the State of New York and the intellec
     
     
     <requires>
-                                                              
+                                                                                                                              
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -139,7 +203,15 @@ This Agreement is governed by the laws of the State of New York and the intellec
         
         
         <import plugin="org.eclipse.ui"/>
-                                                              
+                                                                                                                              
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -147,7 +219,15 @@ This Agreement is governed by the laws of the State of New York and the intellec
         
         
         <import plugin="org.eclipse.core.runtime"/>
-                                                           
+                                                                                                                           
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -155,7 +235,15 @@ This Agreement is governed by the laws of the State of New York and the intellec
     
     
     </requires>
-                               
+                                                               
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -163,7 +251,15 @@ This Agreement is governed by the laws of the State of New York and the intellec
     
     
     <plugin download-size="0" id="net.jeeeyul.swtend" install-size="0" unpack="false" version="0.0.0"/>
-                            
+                                                            
+
+
+
+
+
+
+
+
 
 
 

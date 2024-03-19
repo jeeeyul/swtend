@@ -1,6 +1,42 @@
-<?xml version="1.0" encoding="UTF-8"?><site>
-   <feature id="net.jeeeyul.swtend.feature" url="features/net.jeeeyul.swtend.feature_2.2.5.qualifier.jar" version="2.2.5.qualifier">
-      <category name="eclipse-jeeeyul-beta"/>
-   </feature>
-   <category-def label="Jeeeyul's Eclipse Plugins (Beta)" name="eclipse-jeeeyul-beta"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<site>
+                               
+    
+    
+    
+    
+    
+    
+    <feature id="net.jeeeyul.swtend.feature" url="features/net.jeeeyul.swtend.feature_2.2.10.qualifier.jar" version="2.2.10.qualifier">
+                                                              
+        
+        
+        
+        
+        
+        
+        <category name="eclipse-jeeeyul-beta"/>
+                                                           
+    
+    
+    
+    
+    
+    
+    </feature>
+                               
+    
+    
+    
+    
+    
+    
+    <category-def label="Jeeeyul's Eclipse Plugins (Beta)" name="eclipse-jeeeyul-beta"/>
+                            
+
+
+
+
+
+
 </site>
